@@ -1,0 +1,507 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="CAMS_DatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Activity">
+          <Key>
+            <PropertyRef Name="Login" />
+            <PropertyRef Name="Mode" />
+            <PropertyRef Name="ComputerId" />
+          </Key>
+          <Property Name="Login" Type="datetime" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Logout" Type="datetime" />
+          <Property Name="Mode" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="ComputerId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Computer">
+          <Key>
+            <PropertyRef Name="ComputerId" />
+          </Key>
+          <Property Name="ComputerId" Type="int" Nullable="false" />
+          <Property Name="MAC" Type="char" MaxLength="12" />
+          <Property Name="ComputerName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CurrentLab" Type="int" />
+          <Property Name="LocationInLab" Type="decimal" Precision="9" Scale="9" />
+        </EntityType>
+        <EntityType Name="ComputerLabs">
+          <Key>
+            <PropertyRef Name="LabId" />
+            <PropertyRef Name="ComputerId" />
+          </Key>
+          <Property Name="LabId" Type="int" Nullable="false" />
+          <Property Name="ComputerId" Type="int" Nullable="false" />
+          <Property Name="Entrance" Type="date" Nullable="false" />
+          <Property Name="Exit" Type="date" />
+        </EntityType>
+        <EntityType Name="Department">
+          <Key>
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="DepartmentId" Type="int" Nullable="false" />
+          <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Domain" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Lab">
+          <Key>
+            <PropertyRef Name="LabId" />
+          </Key>
+          <Property Name="LabId" Type="int" Nullable="false" />
+          <Property Name="LabName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Building" Type="nvarchar" MaxLength="50" />
+          <Property Name="RoomNumber" Type="char" MaxLength="10" />
+          <Property Name="DepartmentId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="MailNotifications" Type="bit" />
+          <Property Name="DisconnectedPeriod" Type="int" />
+          <Property Name="NotActivePeriod" Type="int" />
+        </EntityType>
+        <EntityType Name="UserDepartments">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="DepartmentId" Type="int" Nullable="false" />
+          <Property Name="AccessType" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <Association Name="FK_Activity&#x9;ToComputer">
+          <End Role="Computer" Type="Self.Computer" Multiplicity="1" />
+          <End Role="Activity" Type="Self.Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computer">
+              <PropertyRef Name="ComputerId" />
+            </Principal>
+            <Dependent Role="Activity">
+              <PropertyRef Name="ComputerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Computer_Lab">
+          <End Role="Lab" Type="Self.Lab" Multiplicity="0..1" />
+          <End Role="Computer" Type="Self.Computer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lab">
+              <PropertyRef Name="LabId" />
+            </Principal>
+            <Dependent Role="Computer">
+              <PropertyRef Name="CurrentLab" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComputerLabs_Computer">
+          <End Role="Computer" Type="Self.Computer" Multiplicity="1" />
+          <End Role="ComputerLabs" Type="Self.ComputerLabs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computer">
+              <PropertyRef Name="ComputerId" />
+            </Principal>
+            <Dependent Role="ComputerLabs">
+              <PropertyRef Name="ComputerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComputerLabs_Lab">
+          <End Role="Lab" Type="Self.Lab" Multiplicity="1" />
+          <End Role="ComputerLabs" Type="Self.ComputerLabs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lab">
+              <PropertyRef Name="LabId" />
+            </Principal>
+            <Dependent Role="ComputerLabs">
+              <PropertyRef Name="LabId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Lab_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="1" />
+          <End Role="Lab" Type="Self.Lab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="Lab">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserDepartments_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="1" />
+          <End Role="UserDepartments" Type="Self.UserDepartments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="UserDepartments">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserDepartments_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="UserDepartments" Type="Self.UserDepartments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserDepartments">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CAMS_DatabaseModelStoreContainer">
+          <EntitySet Name="Activity" EntityType="Self.Activity" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Computer" EntityType="Self.Computer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ComputerLabs" EntityType="Self.ComputerLabs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Lab" EntityType="Self.Lab" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserDepartments" EntityType="Self.UserDepartments" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Activity&#x9;ToComputer" Association="Self.FK_Activity&#x9;ToComputer">
+            <End Role="Computer" EntitySet="Computer" />
+            <End Role="Activity" EntitySet="Activity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Computer_Lab" Association="Self.FK_Computer_Lab">
+            <End Role="Lab" EntitySet="Lab" />
+            <End Role="Computer" EntitySet="Computer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComputerLabs_Computer" Association="Self.FK_ComputerLabs_Computer">
+            <End Role="Computer" EntitySet="Computer" />
+            <End Role="ComputerLabs" EntitySet="ComputerLabs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComputerLabs_Lab" Association="Self.FK_ComputerLabs_Lab">
+            <End Role="Lab" EntitySet="Lab" />
+            <End Role="ComputerLabs" EntitySet="ComputerLabs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Lab_Department" Association="Self.FK_Lab_Department">
+            <End Role="Department" EntitySet="Department" />
+            <End Role="Lab" EntitySet="Lab" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserDepartments_Department" Association="Self.FK_UserDepartments_Department">
+            <End Role="Department" EntitySet="Department" />
+            <End Role="UserDepartments" EntitySet="UserDepartments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserDepartments_User" Association="Self.FK_UserDepartments_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserDepartments" EntitySet="UserDepartments" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CAMS_DatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Activity">
+          <Key>
+            <PropertyRef Name="Login" />
+            <PropertyRef Name="Mode" />
+            <PropertyRef Name="ComputerId" />
+          </Key>
+          <Property Name="Login" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Logout" Type="DateTime" Precision="3" />
+          <Property Name="Mode" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="ComputerId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Computer" Relationship="Self.FK_Activity_ToComputer" FromRole="Activity" ToRole="Computer" />
+        </EntityType>
+        <EntityType Name="Computer">
+          <Key>
+            <PropertyRef Name="ComputerId" />
+          </Key>
+          <Property Name="ComputerId" Type="Int32" Nullable="false" />
+          <Property Name="MAC" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="ComputerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CurrentLab" Type="Int32" />
+          <Property Name="LocationInLab" Type="Decimal" Precision="9" Scale="9" />
+          <NavigationProperty Name="Activities" Relationship="Self.FK_Activity_ToComputer" FromRole="Computer" ToRole="Activity" />
+          <NavigationProperty Name="Lab" Relationship="Self.FK_Computer_Lab" FromRole="Computer" ToRole="Lab" />
+          <NavigationProperty Name="ComputerLabs" Relationship="Self.FK_ComputerLabs_Computer" FromRole="Computer" ToRole="ComputerLabs" />
+        </EntityType>
+        <EntityType Name="ComputerLab">
+          <Key>
+            <PropertyRef Name="LabId" />
+            <PropertyRef Name="ComputerId" />
+          </Key>
+          <Property Name="LabId" Type="Int32" Nullable="false" />
+          <Property Name="ComputerId" Type="Int32" Nullable="false" />
+          <Property Name="Entrance" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Exit" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Computer" Relationship="Self.FK_ComputerLabs_Computer" FromRole="ComputerLabs" ToRole="Computer" />
+          <NavigationProperty Name="Lab" Relationship="Self.FK_ComputerLabs_Lab" FromRole="ComputerLabs" ToRole="Lab" />
+        </EntityType>
+        <EntityType Name="Department">
+          <Key>
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Domain" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Labs" Relationship="Self.FK_Lab_Department" FromRole="Department" ToRole="Lab" />
+          <NavigationProperty Name="UserDepartments" Relationship="Self.FK_UserDepartments_Department" FromRole="Department" ToRole="UserDepartments" />
+        </EntityType>
+        <EntityType Name="Lab">
+          <Key>
+            <PropertyRef Name="LabId" />
+          </Key>
+          <Property Name="LabId" Type="Int32" Nullable="false" />
+          <Property Name="LabName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Building" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RoomNumber" Type="String" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Computers" Relationship="Self.FK_Computer_Lab" FromRole="Lab" ToRole="Computer" />
+          <NavigationProperty Name="ComputerLabs" Relationship="Self.FK_ComputerLabs_Lab" FromRole="Lab" ToRole="ComputerLabs" />
+          <NavigationProperty Name="Department" Relationship="Self.FK_Lab_Department" FromRole="Lab" ToRole="Department" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MailNotifications" Type="Boolean" />
+          <Property Name="DisconnectedPeriod" Type="Int32" />
+          <Property Name="NotActivePeriod" Type="Int32" />
+          <NavigationProperty Name="UserDepartments" Relationship="Self.FK_UserDepartments_User" FromRole="User" ToRole="UserDepartments" />
+        </EntityType>
+        <EntityType Name="UserDepartment">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <Property Name="AccessType" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Department" Relationship="Self.FK_UserDepartments_Department" FromRole="UserDepartments" ToRole="Department" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserDepartments_User" FromRole="UserDepartments" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Activity_ToComputer">
+          <End Role="Computer" Type="Self.Computer" Multiplicity="1" />
+          <End Role="Activity" Type="Self.Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computer">
+              <PropertyRef Name="ComputerId" />
+            </Principal>
+            <Dependent Role="Activity">
+              <PropertyRef Name="ComputerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Computer_Lab">
+          <End Role="Lab" Type="Self.Lab" Multiplicity="0..1" />
+          <End Role="Computer" Type="Self.Computer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lab">
+              <PropertyRef Name="LabId" />
+            </Principal>
+            <Dependent Role="Computer">
+              <PropertyRef Name="CurrentLab" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComputerLabs_Computer">
+          <End Role="Computer" Type="Self.Computer" Multiplicity="1" />
+          <End Role="ComputerLabs" Type="Self.ComputerLab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computer">
+              <PropertyRef Name="ComputerId" />
+            </Principal>
+            <Dependent Role="ComputerLabs">
+              <PropertyRef Name="ComputerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComputerLabs_Lab">
+          <End Role="Lab" Type="Self.Lab" Multiplicity="1" />
+          <End Role="ComputerLabs" Type="Self.ComputerLab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lab">
+              <PropertyRef Name="LabId" />
+            </Principal>
+            <Dependent Role="ComputerLabs">
+              <PropertyRef Name="LabId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Lab_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="1" />
+          <End Role="Lab" Type="Self.Lab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="Lab">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserDepartments_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="1" />
+          <End Role="UserDepartments" Type="Self.UserDepartment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="UserDepartments">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserDepartments_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="UserDepartments" Type="Self.UserDepartment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserDepartments">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CAMS_DatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Activities" EntityType="Self.Activity" />
+          <EntitySet Name="Computers" EntityType="Self.Computer" />
+          <EntitySet Name="ComputerLabs" EntityType="Self.ComputerLab" />
+          <EntitySet Name="Departments" EntityType="Self.Department" />
+          <EntitySet Name="Labs" EntityType="Self.Lab" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserDepartments" EntityType="Self.UserDepartment" />
+          <AssociationSet Name="FK_Activity_ToComputer" Association="Self.FK_Activity_ToComputer">
+            <End Role="Computer" EntitySet="Computers" />
+            <End Role="Activity" EntitySet="Activities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Computer_Lab" Association="Self.FK_Computer_Lab">
+            <End Role="Lab" EntitySet="Labs" />
+            <End Role="Computer" EntitySet="Computers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComputerLabs_Computer" Association="Self.FK_ComputerLabs_Computer">
+            <End Role="Computer" EntitySet="Computers" />
+            <End Role="ComputerLabs" EntitySet="ComputerLabs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComputerLabs_Lab" Association="Self.FK_ComputerLabs_Lab">
+            <End Role="Lab" EntitySet="Labs" />
+            <End Role="ComputerLabs" EntitySet="ComputerLabs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Lab_Department" Association="Self.FK_Lab_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="Lab" EntitySet="Labs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserDepartments_Department" Association="Self.FK_UserDepartments_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="UserDepartments" EntitySet="UserDepartments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserDepartments_User" Association="Self.FK_UserDepartments_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserDepartments" EntitySet="UserDepartments" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CAMS_DatabaseModelStoreContainer" CdmEntityContainer="CAMS_DatabaseEntities">
+          <EntitySetMapping Name="Activities">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.Activity">
+              <MappingFragment StoreEntitySet="Activity">
+                <ScalarProperty Name="Login" ColumnName="Login" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Logout" ColumnName="Logout" />
+                <ScalarProperty Name="Mode" ColumnName="Mode" />
+                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Computers">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.Computer">
+              <MappingFragment StoreEntitySet="Computer">
+                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
+                <ScalarProperty Name="MAC" ColumnName="MAC" />
+                <ScalarProperty Name="ComputerName" ColumnName="ComputerName" />
+                <ScalarProperty Name="CurrentLab" ColumnName="CurrentLab" />
+                <ScalarProperty Name="LocationInLab" ColumnName="LocationInLab" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ComputerLabs">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.ComputerLab">
+              <MappingFragment StoreEntitySet="ComputerLabs">
+                <ScalarProperty Name="LabId" ColumnName="LabId" />
+                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
+                <ScalarProperty Name="Entrance" ColumnName="Entrance" />
+                <ScalarProperty Name="Exit" ColumnName="Exit" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Departments">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.Department">
+              <MappingFragment StoreEntitySet="Department">
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+                <ScalarProperty Name="Domain" ColumnName="Domain" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Labs">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.Lab">
+              <MappingFragment StoreEntitySet="Lab">
+                <ScalarProperty Name="LabId" ColumnName="LabId" />
+                <ScalarProperty Name="LabName" ColumnName="LabName" />
+                <ScalarProperty Name="Building" ColumnName="Building" />
+                <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="MailNotifications" ColumnName="MailNotifications" />
+                <ScalarProperty Name="DisconnectedPeriod" ColumnName="DisconnectedPeriod" />
+                <ScalarProperty Name="NotActivePeriod" ColumnName="NotActivePeriod" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserDepartments">
+            <EntityTypeMapping TypeName="CAMS_DatabaseModel.UserDepartment">
+              <MappingFragment StoreEntitySet="UserDepartments">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="AccessType" ColumnName="AccessType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

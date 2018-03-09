@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="58f02290500e42e0922c58e2b12b2cf2" Name="Diagram1">
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Activity" Width="1.5" PointX="4.375" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Computer" Width="1.5" PointX="6.25" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.ComputerLab" Width="1.5" PointX="8.375" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Department" Width="1.5" PointX="6.25" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Lab" Width="1.5" PointX="8.375" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.User" Width="1.5" PointX="2.5" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.UserDepartment" Width="1.5" PointX="4.375" PointY="4" IsExpanded="true" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_Activity_ToComputer" ManuallyRouted="false" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_Computer_Lab" ManuallyRouted="false" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Computer" ManuallyRouted="false" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Lab" ManuallyRouted="false" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_Lab_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_UserDepartments_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_UserDepartments_User" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
