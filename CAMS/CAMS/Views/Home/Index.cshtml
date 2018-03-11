@@ -2,22 +2,14 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>תפוסת כיתות נוכחית</h1>
-    <p class="lead">כאן תוכלו לצפות בתפוסת המחשבים בכיתות המחשוב ברחבי האוניברסיטה</p>
+<div class="row" dir="rtl">
+    <h1>לוגו של האוניברסיטה</h1>
 </div>
-
-<div class="row">
-    <div class="col-md-3">
-        <h2>@Html.ActionLink("משתמשים", "Index", "Users")</h2>
+<div dir="rtl">
+    <div>@*TBD - put this view without the actionlink *@
+        <h5>@Html.ActionLink("תצוגת טבלה", "Index", "Labs")</h5> 
     </div>
-    <div class="col-md-3">
-        <h2>@Html.ActionLink("כיתות מחשוב", "Index", "Labs")</h2>
-    </div>
-    <div class="col-md-3">
-        <h2>@Html.ActionLink("דוחות", "Index", "Activities")</h2>
-    </div>
-    <div class="col-md-3">
-        <h2>@Html.ActionLink("התראות", "Index", "Activities")</h2>
+    <div>
+        <h5>תצוגה על גבי מפה</h5>
     </div>
 </div>
