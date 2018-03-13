@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CAMS.Models;
 
 namespace CAMS.Controllers
 {
@@ -15,8 +16,9 @@ namespace CAMS.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
-
+            //ViewBag.Message = "Your application description page.";
+            ViewBag.Message = ActivitiesModel.GetComputersActivity(new List<Models.Computer>());
+            
             return View();
         }
 
