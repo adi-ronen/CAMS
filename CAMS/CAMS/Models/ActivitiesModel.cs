@@ -30,9 +30,18 @@ namespace CAMS.Models
 
             //string path = @"\..\Scripts\powerShell\computerActivity.ps1";
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Scripts\powerShell\computerActivity.ps1");
-
-            return runScript(loadScript(path));
-            //return script();
+            string ans="";
+            for( int i = 1; i < 10; i++)
+            {
+                string compName = "lb-107-" + i;
+                string logedOn = IsComputerLogedOn(compName);
+                if (logedOn.Contains("T"))
+                    ans+= " "+compName+":"+  GetUserLogOn(compName);
+                else
+                    ans += " " + compName + ":" + "not connected";
+            }
+            return ans;
+          
 
 
 
@@ -50,39 +59,17 @@ namespace CAMS.Models
             }
         }
 
-        //private static String script()
-        //{
-        //    String ans = string.Empty;
-
-        //    // Initialize PowerShell engine
-        //    var shell = PowerShell.Create();
-
-        //    // Add the script to the PowerShell object
-        //    //@"C:\Users\Olga\Source\Repos\CAMS\CAMS\CAMS\Scripts\powerShell\computerActivity.ps1"
-        //    shell.Commands.AddScript("$Env:USERNAME");
-
-        //    // Execute the script
-        //    var results = shell.Invoke();
-
-        //    // display results, with BaseObject converted to string
-        //    // Note : use |out-string for console-like output
-        //    if (results.Count > 0)
-        //    {
-        //        // We use a string builder ton create our result text
-        //        var builder = new StringBuilder();
-
-        //        foreach (var psObject in results)
-        //        {
-        //            // Convert the Base Object to a string and append it to the string builder.
-        //            // Add \r\n for line breaks
-        //            builder.Append(psObject.BaseObject.ToString() + "\r\n");
-        //        }
-
-        //        // Encode the string in HTML (prevent security issue with 'dangerous' caracters like < >
-        //        ans = builder.ToString();
-        //    }
-        //    return ans;
-        //}
+        private static string GetUserLogOn(String compNum)
+        {
+            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNum+").UserName";
+            String ans = runScript(script);
+            return ans;
+        }
+        private static string IsComputerLogedOn(String compNum)
+        {
+            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compNum + " -Quiet)";
+            return runScript(script);
+        }
 
 
 

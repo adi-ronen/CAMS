@@ -15,14 +15,14 @@ function Get-LoggedOnUser
      )
      foreach ($comp in $ComputerName)
      {
-         $output = @{ 'ComputerName' = $comp }
-         $output.UserName = (Get-WmiObject -Class win32_computersystem -ComputerName $comp).UserName
+         $output = (Get-WmiObject -Class win32_computersystem -ComputerName $comp).UserName
          [PSCustomObject]$output
      }
  }
 
-write-output @(Get-LoggedOnUser -ComputerName MyPrecius)
-write-output @(Test-Connection -BufferSize 32 -Count 1 -ComputerName MyPrecius -Quiet)
+write-output @(Get-LoggedOnUser -ComputerName $compName)
+write-output @(Test-Connection -BufferSize 32 -Count 1 -ComputerName $compName -Quiet)
+
 
 #backround job
 #$job = Test-Connection -ComputerName (Get-Content "Servers.txt") -AsJob
