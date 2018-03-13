@@ -13,7 +13,16 @@ namespace CAMS.Controllers
         {
             using (CAMS_DatabaseEntities db = new CAMS_DatabaseEntities())
             {
-                return View(db.Labs.ToList());
+                var result = from a in db.Labs
+                             select new
+                             {
+                                 a.LabName,
+                                 a.RoomNumber,
+                                 a.Building,
+                                 a.Computers.Count,
+                                 a.Department
+                             };
+                return View(result.ToList());
             }
         }
 
