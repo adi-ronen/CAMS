@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CAMS.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,7 +11,10 @@ namespace CAMS.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            using (CAMS_DatabaseEntities db = new CAMS_DatabaseEntities())
+            {
+                return View(db.Labs.ToList());
+            }
         }
 
         public ActionResult About()
@@ -26,5 +30,7 @@ namespace CAMS.Controllers
 
             return View();
         }
+
+
     }
 }
