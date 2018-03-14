@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using CAMS.Models;
+using static CAMS.Constant;
 
 namespace CAMS.Controllers
 {
@@ -36,6 +37,18 @@ namespace CAMS.Controllers
 
             return View(computer);
         }
+        public Activity LastActivityDetails(int id)
+        {
+            Computer computer = db.Computers.Find(id);
+            if (computer == null)
+            {
+                return null;
+            }
+            // Activity a = computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+            Activity a = computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+            //if null that means the cumputer is currently in On state with no user loged in
+            return a;
+        }
 
         // GET: Computers/Create
         public ActionResult Create()
@@ -60,6 +73,14 @@ namespace CAMS.Controllers
 
             ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
             return View(computer);
+        }
+
+        public void AddActivity(Activity act,Computer comp)
+        {
+            db.Activities.Add(act);
+            comp.Activities.Add(act);
+            db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
+            db.SaveChanges();
         }
 
         // GET: Computers/Edit/5

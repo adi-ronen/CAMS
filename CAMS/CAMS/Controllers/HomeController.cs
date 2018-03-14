@@ -17,7 +17,14 @@ namespace CAMS.Controllers
         public ActionResult About()
         {
             //ViewBag.Message = "Your application description page.";
-            ViewBag.Message = ActivitiesModel.GetComputersActivity(new List<Models.Computer>());
+            List<Models.Computer> list = new List<Computer>();
+            for (int i = 0; i <= 30; i++)
+            {
+                Computer c = new Computer();
+                c.ComputerName = "lb-107-" + i;
+                list.Add(c);
+            }
+            ViewBag.Message = ActivitiesModel.GetComputersActivity(list);
             
             return View();
         }

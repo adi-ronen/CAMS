@@ -7,47 +7,73 @@ using System.IO;
 using System.Text;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Text.RegularExpressions;
+using CAMS.Controllers;
+using static CAMS.Constant;
 
 namespace CAMS.Models
 {
     public class ActivitiesModel
     {
         CAMS_DatabaseEntities _db = new CAMS_DatabaseEntities();
+        ComputersController _cController = new ComputersController();
+        ActivitiesController _aController = new ActivitiesController();
+
         /// <summary>
         /// get current cumputer activity for a computer list using active directory. 
         /// </summary>
         /// <param name="ComputerList"></param>
-        public static String GetComputersActivity(List<Computer> ComputerList)
+        public String GetComputersActivity(List<Computer> ComputerList)
         {
-            //foreach (Computer comp in ComputerList)
-            //{
-            //powershell ask for "enable", "username" --> find how to execute ps command and get output
-            //get his last activity from activity table that is not "class mode" 
-            //compare and update as nedded
-            /*
-             * if 
-             */
-
-            //string path = @"\..\Scripts\powerShell\computerActivity.ps1";
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Scripts\powerShell\computerActivity.ps1");
-            string ans="";
-            for( int i = 1; i < 10; i++)
+            
+            string ans = "";
+            foreach (var comp in ComputerList)
             {
-                string compName = "lb-107-" + i;
-                string logedOn = IsComputerLogedOn(compName);
+                //check for the last activity of the computer
+                Activity lastAct=_cController.LastActivityDetails(comp.ComputerId);
+
+
+                string logedOn = IsComputerLogedOn(comp.ComputerName);
                 if (logedOn.Contains("T"))
-                    ans+= " "+compName+":"+  GetUserLogOn(compName);
+                {
+                    ans += " " + comp.ComputerName + ": ON ";
+                    String userName = GetUserLogOn(comp.ComputerName);
+                    if (!Regex.Replace(userName, @"\s+", "").Equals(""))
+                    {
+                        ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
+                        ans += "- user: " + userName;
+                    }
+                    else
+                    {
+                        //computer is avilable- compare with last activity and update if neseccery 
+                        ans += "- user: none";
+                    }
+                }
                 else
-                    ans += " " + compName + ":" + "not connected";
+                {
+                    //computer is disconnected- compare with last activity and update if neseccery 
+
+                    if (lastAct == null)
+                    {
+                        //new off activity
+                        Activity act = new Activity();
+                        act.Mode = ActivityMode.Off.ToString();
+                        act.Login = DateTime.Now;
+                        act.ComputerId = comp.ComputerId;
+                        act.Computer = comp;
+                        _cController.AddActivity(act, comp);
+                    }
+                    else if(lastAct.Mode!= ActivityMode.Off.ToString())
+                    {
+                        
+                    }
+                    ans += " " + comp.ComputerName + ": Disconected";
+                }
             }
-            return ans;
-          
 
-
-
-            //}
-            //return "none";
-        }
+            //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Scripts\powerShell\computerActivity.ps1");
+                return ans;
+            }
 
        //TBD - איסוף שיבוץ חדרים
        public void GetClassesSchedule(List<Lab> LabList)
@@ -59,22 +85,21 @@ namespace CAMS.Models
             }
         }
 
-        private static string GetUserLogOn(String compNum)
+        private string GetUserLogOn(string compNames)
         {
-            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNum+").UserName";
+            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + ").UserName";
             String ans = runScript(script);
             return ans;
         }
-        private static string IsComputerLogedOn(String compNum)
+        private string IsComputerLogedOn(String compName)
         {
-            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compNum + " -Quiet)";
+            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName + " -Quiet)";
             return runScript(script);
         }
 
 
 
-
-        private static string runScript(string scriptText)
+        private string runScript(string scriptText)
         {
             // create Powershell runspace 
             Runspace runspace = RunspaceFactory.CreateRunspace();
@@ -109,47 +134,47 @@ namespace CAMS.Models
             return stringBuilder.ToString();
         }
 
-        // helper method that takes your script path, loads up the script 
-        // into a variable, and passes the variable to the RunScript method 
-        // that will then execute the contents 
-        private static string loadScript(string filename)
-        {
-            try
-            {
-                // Create an instance of StreamReader to read from our file. 
-                // The using statement also closes the StreamReader. 
-                using (StreamReader sr = new StreamReader(filename))
-                {
+        //// helper method that takes your script path, loads up the script 
+        //// into a variable, and passes the variable to the RunScript method 
+        //// that will then execute the contents 
+        //private string loadScript(string filename)
+        //{
+        //    try
+        //    {
+        //        // Create an instance of StreamReader to read from our file. 
+        //        // The using statement also closes the StreamReader. 
+        //        using (StreamReader sr = new StreamReader(filename))
+        //        {
 
-                    // use a string builder to get all our lines from the file 
-                    StringBuilder fileContents = new StringBuilder();
+        //            // use a string builder to get all our lines from the file 
+        //            StringBuilder fileContents = new StringBuilder();
 
-                    // string to hold the current line 
-                    string curLine;
+        //            // string to hold the current line 
+        //            string curLine;
 
-                    // loop through our file and read each line into our 
-                    // stringbuilder as we go along 
-                    while ((curLine = sr.ReadLine()) != null)
-                    {
-                        // read each line and MAKE SURE YOU ADD BACK THE 
-                        // LINEFEED THAT IT THE ReadLine() METHOD STRIPS OFF 
-                        fileContents.Append(curLine + "\n");
-                    }
+        //            // loop through our file and read each line into our 
+        //            // stringbuilder as we go along 
+        //            while ((curLine = sr.ReadLine()) != null)
+        //            {
+        //                // read each line and MAKE SURE YOU ADD BACK THE 
+        //                // LINEFEED THAT IT THE ReadLine() METHOD STRIPS OFF 
+        //                fileContents.Append(curLine + "\n");
+        //            }
 
-                    // call RunScript and pass in our file contents 
-                    // converted to a string 
-                    return fileContents.ToString();
-                }
-            }
-            catch (Exception e)
-            {
-                // Let the user know what went wrong. 
-                string errorText = "The file could not be read:";
-                errorText += e.Message + "\n";
-                return errorText;
-            }
+        //            // call RunScript and pass in our file contents 
+        //            // converted to a string 
+        //            return fileContents.ToString();
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        // Let the user know what went wrong. 
+        //        string errorText = "The file could not be read:";
+        //        errorText += e.Message + "\n";
+        //        return errorText;
+        //    }
 
-        }
+        //}
 
 
 
