@@ -11,10 +11,7 @@ namespace CAMS.Controllers
     {
         public ActionResult Index()
         {
-            using (CAMS_DatabaseEntities db = new CAMS_DatabaseEntities())
-            {
-                return View(db.Labs.ToList());
-            }
+            return View();
         }
 
         public ActionResult About()

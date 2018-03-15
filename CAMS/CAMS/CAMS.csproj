@@ -227,6 +227,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <EmbeddedResource Include="Images\marcus_map.png" />
+    <EmbeddedResource Include="Images\logoHome.png" />
     <Content Include="Models\CAMS_DatabaseModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>CAMS_DatabaseModel.edmx</DependentUpon>

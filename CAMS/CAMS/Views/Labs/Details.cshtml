@@ -4,47 +4,21 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>תפוסה נוכחית</h2>
 
 <div>
-    <h4>Lab</h4>
+    <h4> @Html.DisplayFor(model => model.LabName)</h4>
+    <div>
+        <h6>בניין: @Html.DisplayFor(model => model.Building)</h6>
+        <h6>כיתה: @Html.DisplayFor(model => model.RoomNumber)</h6>
+    </div>
+
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.LabName)
-        </dt>
+    <div class="labs">
 
-        <dd>
-            @Html.DisplayFor(model => model.LabName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Building)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Building)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.RoomNumber)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.RoomNumber)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Department.DepartmentName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Department.DepartmentName)
-        </dd>
-
-    </dl>
+    </div>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.LabId }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("ערוך", "Edit", new { id = Model.LabId }) |
+    @Html.ActionLink("חזרה לרשימה", "Index")
 </p>

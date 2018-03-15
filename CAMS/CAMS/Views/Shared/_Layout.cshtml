@@ -4,15 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Computer Activity and Monitoring System (CAMS)</title>
+    <link href='https://fonts.googleapis.com/css?family=Alef' rel='stylesheet'>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body dir="rtl">
+<body dir="rtl" style="font-family:Alef;text-align:right">
+    <div class="navbar navbar-fixed-top" style="box-shadow: 0 8px 6px -6px #999;">
+        <div class="container">
+                <img src="~/Images/logoHome.png" alt="אוניברסיטת בן גוריון">
+        </div>
+    </div>
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer dir="ltr">
-            <p>&copy; @DateTime.Now.Year - Software and Information System Engineering Department - Ben Gurion University of the Negev </p>
+        <footer>
+            <p>&copy; @DateTime.Now.Year כל הזכויות שמורות המחלקה להנדסת מערכות תוכנה ומידע - אוניברסיטת בן-גוריון בנגב </p>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
