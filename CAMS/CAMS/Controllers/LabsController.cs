@@ -10,9 +10,8 @@ using CAMS.Models;
 
 namespace CAMS.Controllers
 {
-    public class LabsController : Controller
+    public class LabsController : BaseController
     {
-        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         // GET: Labs
         public ActionResult Index()
@@ -33,7 +32,7 @@ namespace CAMS.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new LabModel(lab));
+            return View(new LabModel(lab,this));
         }
 
         // GET: Labs/Create
@@ -129,5 +128,7 @@ namespace CAMS.Controllers
             }
             base.Dispose(disposing);
         }
+
+
     }
 }

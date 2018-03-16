@@ -15,7 +15,6 @@ namespace CAMS.Models
 {
     public class ActivitiesModel
     {
-        ComputersController _cController = new ComputersController();
         ActivitiesController _aController = new ActivitiesController();
 
         /// <summary>
@@ -26,12 +25,15 @@ namespace CAMS.Models
         {
             
             string ans = "";
+
+            //TBD- make it asyncronic!
             foreach (var comp in ComputerList)
             {
                 //check for the last activity of the computer
-                Activity lastAct=_cController.LastActivityDetails(comp.ComputerId);
+                Activity lastAct=_aController.LastActivityDetails(comp.ComputerId);
 
                 string logedOn = IsComputerLogedOn(comp.ComputerName);
+                // TBD- change the ugly T: isComputerLogedOn should return a boolean (in the func use trim)
                 if (logedOn.Contains("T"))
                 {
                     ans += " " + comp.ComputerName + ": ON ";
@@ -111,13 +113,13 @@ namespace CAMS.Models
 
         private void CloseActivity(Activity lastAct)
         {
-            _cController.CloseActivity(lastAct);
+            _aController.CloseActivity(lastAct);
         }
 
         private void AddNewActivity(Computer comp, ActivityMode mode, string userName)
         {
 
-            _cController.CreateNewActivity(comp, mode, userName);
+            _aController.CreateNewActivity(comp, mode, userName);
         }
 
 

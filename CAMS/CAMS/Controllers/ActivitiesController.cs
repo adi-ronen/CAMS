@@ -10,9 +10,8 @@ using CAMS.Models;
 
 namespace CAMS.Controllers
 {
-    public class ActivitiesController : Controller
+    public class ActivitiesController : BaseController
     {
-        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         // GET: Activities
         public ActionResult Index()
