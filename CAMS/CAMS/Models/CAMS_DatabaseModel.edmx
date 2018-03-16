@@ -50,8 +50,8 @@
             <PropertyRef Name="LabId" />
           </Key>
           <Property Name="LabId" Type="int" Nullable="false" />
-          <Property Name="LabName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Building" Type="nvarchar" MaxLength="50" />
+          <Property Name="TodaysClasses" Type="nvarchar" MaxLength="150" />
+          <Property Name="Building" Type="nvarchar" MaxLength="150" />
           <Property Name="RoomNumber" Type="char" MaxLength="10" />
           <Property Name="DepartmentId" Type="int" Nullable="false" />
         </EntityType>
@@ -252,13 +252,13 @@
             <PropertyRef Name="LabId" />
           </Key>
           <Property Name="LabId" Type="Int32" Nullable="false" />
-          <Property Name="LabName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Building" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Building" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="RoomNumber" Type="String" MaxLength="10" FixedLength="true" Unicode="false" />
           <Property Name="DepartmentId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Computers" Relationship="Self.FK_Computer_Lab" FromRole="Lab" ToRole="Computer" />
           <NavigationProperty Name="ComputerLabs" Relationship="Self.FK_ComputerLabs_Lab" FromRole="Lab" ToRole="ComputerLabs" />
           <NavigationProperty Name="Department" Relationship="Self.FK_Lab_Department" FromRole="Lab" ToRole="Department" />
+          <Property Name="TodaysClasses" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -453,8 +453,8 @@
           <EntitySetMapping Name="Labs">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.Lab">
               <MappingFragment StoreEntitySet="Lab">
+                <ScalarProperty Name="TodaysClasses" ColumnName="TodaysClasses" />
                 <ScalarProperty Name="LabId" ColumnName="LabId" />
-                <ScalarProperty Name="LabName" ColumnName="LabName" />
                 <ScalarProperty Name="Building" ColumnName="Building" />
                 <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
                 <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />

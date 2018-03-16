@@ -1,12 +1,10 @@
 ﻿body {
-    padding-top: 50px;
     padding-bottom: 20px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 15px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -21,4 +19,32 @@ input,
 select,
 textarea {
     max-width: 280px;
+}
+
+.labs {
+    background-color: lightsteelblue;
+    width: 960px;
+    height: 460px;
+    border-color: steelblue
+}
+
+h2  {
+    display: inline-block;
+    border-bottom: 4px solid #0076aa;
+    padding-bottom: 5px;
+}
+
+h3 {
+    display: inline-block;
+    border-bottom: 4px solid #f7931e;
+    padding-bottom: 5px;
+}
+a {
+    color: #0072c6;
+}
+    a:hover {
+        color: #0072c6;
+    }
+table {
+    background-color: #fdfdfd
 }

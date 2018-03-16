@@ -1,15 +1,16 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-
 <div class="row" dir="rtl">
     <h1>לוגו של האוניברסיטה</h1>
 </div>
 <div dir="rtl">
-    <div>@*TBD - put this view without the actionlink *@
-        <h5>@Html.ActionLink("תצוגת טבלה", "Index", "Labs")</h5> 
+    <div>
+        @*TBD - put this view without the actionlink *@
+        @{ Html.RenderPartial("~/Views/Labs/Index.cshtml"); }
     </div>
     <div>
-        <h5>תצוגה על גבי מפה</h5>
+        @*TBD -תצוגה על גבי מפה*@
+        <h5></h5>
     </div>
 </div>

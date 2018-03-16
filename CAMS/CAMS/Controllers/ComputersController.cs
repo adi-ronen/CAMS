@@ -58,7 +58,7 @@ namespace CAMS.Controllers
         // GET: Computers/Create
         public ActionResult Create()
         {
-            ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName");
+            ViewBag.CurrentLab = new SelectList(db.Labs, "LabId");
             return View();
         }
 
