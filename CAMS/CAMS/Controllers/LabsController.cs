@@ -33,7 +33,7 @@ namespace CAMS.Controllers
             {
                 return HttpNotFound();
             }
-            return View(lab);
+            return View(new LabModel(lab));
         }
 
         // GET: Labs/Create

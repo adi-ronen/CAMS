@@ -215,7 +215,7 @@
     <Compile Include="Models\ComputerLab.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ComputersModel.cs" />
+    <Compile Include="Models\LabModel.cs" />
     <Compile Include="Models\Department.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>

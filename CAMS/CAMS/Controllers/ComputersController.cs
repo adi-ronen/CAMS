@@ -48,9 +48,18 @@ namespace CAMS.Controllers
             {
                 return null;
             }
-            // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
-            //if null that means the cumputer is currently in On state with no user loged in
-            return comp.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+            try
+            {
+                // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+                return comp.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+
+            }
+            catch (InvalidOperationException)
+            {
+                //if no element was found that means the cumputer is currently in On state with no user loged in
+
+                return null;
+            }
         }
 
 

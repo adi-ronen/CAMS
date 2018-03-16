@@ -1,4 +1,5 @@
-﻿@model CAMS.Models.Lab
+﻿@model CAMS.Models.LabModel
+
 
 @{
     ViewBag.Title = "Details";
@@ -8,16 +9,20 @@
 
 <div>
     <div>
-        <h6>בניין: @Html.DisplayFor(model => model.Building)</h6>
-        <h6>כיתה: @Html.DisplayFor(model => model.RoomNumber)</h6>
+        <h6>בניין: @Html.DisplayFor(model => model.Lab.Building)</h6>
+        <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
     </div>
 
     <hr />
     <div class="labs">
+        @foreach (var item in Model.Lab.Computers)
+        {
+        <a> @item.ComputerName:@Model.GetComputerState(item).ToString() </a>
+        }
 
     </div>
 </div>
 <p>
-    @Html.ActionLink("ערוך", "Edit", new { id = Model.LabId }) |
+    @Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId }) |
     @Html.ActionLink("חזרה לרשימה", "Index")
 </p>

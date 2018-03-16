@@ -7,10 +7,16 @@ using static CAMS.Constant;
 
 namespace CAMS.Models
 {
-    public class ComputersModel
+    public class LabModel
     {
 
         ComputersController _cController = new ComputersController();
+        public Lab Lab;
+
+        public LabModel(Lab lab)
+        {
+            this.Lab = lab;
+        }
 
 
         public ActivityMode GetComputerState(Computer comp)
