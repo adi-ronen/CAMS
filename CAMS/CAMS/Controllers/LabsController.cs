@@ -33,7 +33,7 @@ namespace CAMS.Controllers
             {
                 return HttpNotFound();
             }
-            return View(lab);
+            return View(new LabModel(lab));
         }
 
         // GET: Labs/Create
@@ -119,6 +119,7 @@ namespace CAMS.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
 
         protected override void Dispose(bool disposing)
         {

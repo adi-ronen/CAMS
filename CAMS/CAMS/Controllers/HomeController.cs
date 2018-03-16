@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CAMS.Models;
 
 namespace CAMS.Controllers
 {
@@ -16,8 +17,16 @@ namespace CAMS.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
-
+            //ViewBag.Message = "Your application description page.";
+            List<Models.Computer> list = new List<Computer>();
+            for (int i = 0; i <= 30; i++)
+            {
+                Computer c = new Computer();
+                c.ComputerName = "lb-107-" + i;
+                list.Add(c);
+            }
+            //ViewBag.Message = ActivitiesModel.GetComputersActivity(list);
+            
             return View();
         }
 
