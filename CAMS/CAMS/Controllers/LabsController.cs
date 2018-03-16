@@ -48,7 +48,7 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "LabId,LabName,Building,RoomNumber,DepartmentId")] Lab lab)
+        public ActionResult Create([Bind(Include = "LabId,TodaysClasses,Building,RoomNumber,DepartmentId")] Lab lab)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "LabId,LabName,Building,RoomNumber,DepartmentId")] Lab lab)
+        public ActionResult Edit([Bind(Include = "LabId,TodaysClasses,Building,RoomNumber,DepartmentId")] Lab lab)
         {
             if (ModelState.IsValid)
             {

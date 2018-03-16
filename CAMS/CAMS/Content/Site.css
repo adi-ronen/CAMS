@@ -40,10 +40,10 @@ h3 {
     padding-bottom: 5px;
 }
 a {
-    color: #f7931e;
+    color: #0072c6;
 }
     a:hover {
-        border-bottom: 4px solid #f7931e;
+        color: #0072c6;
     }
 table {
     background-color: #fdfdfd
