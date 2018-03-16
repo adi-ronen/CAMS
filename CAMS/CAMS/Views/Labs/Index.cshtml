@@ -6,7 +6,7 @@
 
 <p>
         @*if limitted acsses or full conrol*@
-               @Html.ActionLink("צור חדש", "Create")
+               @*@Html.ActionLink("צור חדש", "Create")*@
     </p>
 @*add here sorting, search and filters*@
 <table class="table table-bordered table-condensed text-right">
@@ -31,7 +31,7 @@
                 @Html.DisplayFor(modelItem => item.RoomNumber)
             </td>
             <td>
-                אין
+                @Html.DisplayFor(modelItem => item.TodaysClasses)
             </td>
             <td>
                 @*TBD - classes for today*@

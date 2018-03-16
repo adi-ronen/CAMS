@@ -14,7 +14,12 @@
 
     <hr />
     <div class="labs">
-
+        @foreach (var item in Model.Computers)
+        {
+            @if(item.GetStatus(item.ComputerName))
+            <img resource=""/>
+          @Html.DisplayFor(modelItem => item.ComputerName)
+        }
     </div>
 </div>
 <p>

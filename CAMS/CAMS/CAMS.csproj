@@ -244,6 +244,9 @@
     <Content Include="Content\Site.css" />
     <EmbeddedResource Include="Images\marcus_map.png" />
     <EmbeddedResource Include="Images\logoHome.png" />
+    <Content Include="Images\black.png" />
+    <Content Include="Images\green.png" />
+    <Content Include="Images\red.png" />
     <Content Include="Logon.aspx" />
     <Content Include="Models\CAMS_DatabaseModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
