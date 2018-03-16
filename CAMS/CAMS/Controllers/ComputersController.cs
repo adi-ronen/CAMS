@@ -40,15 +40,20 @@ namespace CAMS.Controllers
         public Activity LastActivityDetails(int id)
         {
             Computer computer = db.Computers.Find(id);
-            if (computer == null)
+            return LastActivityDetails(computer);
+        }
+        public Activity LastActivityDetails(Computer comp)
+        {
+            if (comp == null)
             {
                 return null;
             }
-            // Activity a = computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
-            Activity a = computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+            // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
             //if null that means the cumputer is currently in On state with no user loged in
-            return a;
+            return comp.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
         }
+
+
 
         // GET: Computers/Create
         public ActionResult Create()
@@ -75,12 +80,27 @@ namespace CAMS.Controllers
             return View(computer);
         }
 
-        public void AddActivity(Activity act,Computer comp)
+        public void CreateNewActivity(Computer comp, ActivityMode mode, string userName)
         {
+            Activity act = new Activity();
+            if (userName != null)
+                act.UserName = userName;
+            act.Mode = mode.ToString();
+            act.Login = DateTime.Now;
+            act.ComputerId = comp.ComputerId;
+            act.Computer = comp;
             db.Activities.Add(act);
             comp.Activities.Add(act);
             db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
             db.SaveChanges();
+        }
+
+        public void CloseActivity(Activity act)
+        {
+            act.Logout= DateTime.Now;
+            db.Entry(act).State = EntityState.Modified; //same as above
+            db.SaveChanges();
+
         }
 
         // GET: Computers/Edit/5

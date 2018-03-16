@@ -15,7 +15,6 @@ namespace CAMS.Models
 {
     public class ActivitiesModel
     {
-        CAMS_DatabaseEntities _db = new CAMS_DatabaseEntities();
         ComputersController _cController = new ComputersController();
         ActivitiesController _aController = new ActivitiesController();
 
@@ -32,7 +31,6 @@ namespace CAMS.Models
                 //check for the last activity of the computer
                 Activity lastAct=_cController.LastActivityDetails(comp.ComputerId);
 
-
                 string logedOn = IsComputerLogedOn(comp.ComputerName);
                 if (logedOn.Contains("T"))
                 {
@@ -41,32 +39,45 @@ namespace CAMS.Models
                     if (!Regex.Replace(userName, @"\s+", "").Equals(""))
                     {
                         ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
+                        if(lastAct==null)
+                        {
+                            //create user activity
+                            AddNewActivity(comp, ActivityMode.User, userName);
+                        }
+                        else if(lastAct.UserName!=userName)
+                        {
+                            //close current activity and create new user activity
+                            CloseActivity(lastAct);
+                            AddNewActivity(comp, ActivityMode.User, userName);
+                        }
                         ans += "- user: " + userName;
                     }
                     else
                     {
                         //computer is avilable- compare with last activity and update if neseccery 
-                        ans += "- user: none";
+                        //if last activity is null- no need to update. if not close the last activity 
+                        if (lastAct != null)
+                        {
+                            CloseActivity(lastAct);
+                        }
                     }
                 }
                 else
                 {
                     //computer is disconnected- compare with last activity and update if neseccery 
-
                     if (lastAct == null)
                     {
-                        //new off activity
-                        Activity act = new Activity();
-                        act.Mode = ActivityMode.Off.ToString();
-                        act.Login = DateTime.Now;
-                        act.ComputerId = comp.ComputerId;
-                        act.Computer = comp;
-                        _cController.AddActivity(act, comp);
+                        //create off activity
+                        AddNewActivity(comp, ActivityMode.Off, null);
                     }
                     else if(lastAct.Mode!= ActivityMode.Off.ToString())
                     {
-                        
+                        //close current activity and create new off activity
+                        CloseActivity(lastAct);
+                        AddNewActivity(comp, ActivityMode.Off, null);
+
                     }
+                    // else- it already in off mode- dont change anything 
                     ans += " " + comp.ComputerName + ": Disconected";
                 }
             }
@@ -75,8 +86,8 @@ namespace CAMS.Models
                 return ans;
             }
 
-       //TBD - איסוף שיבוץ חדרים
-       public void GetClassesSchedule(List<Lab> LabList)
+        //TBD - איסוף שיבוץ חדרים
+        public void GetClassesSchedule(List<Lab> LabList)
         {
             //open connection with classes pacment system databse
             foreach (Lab lab in LabList)
@@ -96,6 +107,19 @@ namespace CAMS.Models
             String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName + " -Quiet)";
             return runScript(script);
         }
+
+
+        private void CloseActivity(Activity lastAct)
+        {
+            _cController.CloseActivity(lastAct);
+        }
+
+        private void AddNewActivity(Computer comp, ActivityMode mode, string userName)
+        {
+
+            _cController.CreateNewActivity(comp, mode, userName);
+        }
+
 
 
 

@@ -24,7 +24,7 @@ namespace CAMS.Controllers
                 c.ComputerName = "lb-107-" + i;
                 list.Add(c);
             }
-            ViewBag.Message = ActivitiesModel.GetComputersActivity(list);
+            //ViewBag.Message = ActivitiesModel.GetComputersActivity(list);
             
             return View();
         }
