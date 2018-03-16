@@ -25,7 +25,7 @@
           <Property Name="MAC" Type="char" MaxLength="12" />
           <Property Name="ComputerName" Type="nvarchar" MaxLength="50" />
           <Property Name="CurrentLab" Type="int" />
-          <Property Name="LocationInLab" Type="decimal" Precision="9" Scale="9" />
+          <Property Name="LocationInLab" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="ComputerLabs">
           <Key>
@@ -220,7 +220,7 @@
           <Property Name="MAC" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="ComputerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CurrentLab" Type="Int32" />
-          <Property Name="LocationInLab" Type="Decimal" Precision="9" Scale="9" />
+          <Property Name="LocationInLab" Type="String" />
           <NavigationProperty Name="Activities" Relationship="Self.FK_Activity_ToComputer" FromRole="Computer" ToRole="Activity" />
           <NavigationProperty Name="Lab" Relationship="Self.FK_Computer_Lab" FromRole="Computer" ToRole="Lab" />
           <NavigationProperty Name="ComputerLabs" Relationship="Self.FK_ComputerLabs_Computer" FromRole="Computer" ToRole="ComputerLabs" />
