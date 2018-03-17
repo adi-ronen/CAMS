@@ -10,7 +10,7 @@ using PagedList;
 namespace CAMS.Controllers
 {
     [RequireHttps]
-    public class LabsController : Controller
+    public class LabsController : BaseController
 
     {
 
