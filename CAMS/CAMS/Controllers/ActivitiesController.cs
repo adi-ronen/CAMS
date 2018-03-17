@@ -10,9 +10,8 @@ using CAMS.Models;
 
 namespace CAMS.Controllers
 {
-    public class ActivitiesController : Controller
+    public class ActivitiesController : BaseController
     {
-        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         // GET: Activities
         public ActionResult Index()
@@ -127,6 +126,18 @@ namespace CAMS.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        internal void UpdateLabSchedule(Lab lab, string classes)
+        {
+            lab.TodaysClasses = classes;
+            db.Entry(lab).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+
+        internal List<Lab> GetAllLabs()
+        {
+            return db.Labs.Select(e => e).ToList<Lab>();
         }
     }
 }
