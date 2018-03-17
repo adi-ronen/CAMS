@@ -9,6 +9,7 @@ using PagedList;
 
 namespace CAMS.Controllers
 {
+    [RequireHttps]
     public class LabsController : Controller
     {
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();

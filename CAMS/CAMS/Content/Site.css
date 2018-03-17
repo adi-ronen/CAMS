@@ -29,6 +29,12 @@ textarea {
     position: relative;
 }
 
+input{
+    border: 1px solid #c6c6c6;
+    border-radius: 4px;
+    
+}
+
 h2  {
     display: inline-block;
     border-bottom: 4px solid #0076aa;
