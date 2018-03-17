@@ -127,5 +127,17 @@ namespace CAMS.Controllers
             }
             base.Dispose(disposing);
         }
+
+        internal void UpdateLabSchedule(Lab lab, string classes)
+        {
+            lab.TodaysClasses = classes;
+            db.Entry(lab).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+
+        internal List<Lab> GetAllLabs()
+        {
+            return db.Labs.Select(e => e).ToList<Lab>();
+        }
     }
 }
