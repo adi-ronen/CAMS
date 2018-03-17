@@ -71,10 +71,10 @@ namespace CAMS
             HitPage(DummyPageUrl);
             switch (key)
             {
-                case "collection":
+                case collectionCacheItemKey:
                     checkComputersActivity();
                     break;
-                case "schedule":
+                case scheduleCacheItemKey:
                     checkSchedual();
                     break;
             }
@@ -96,6 +96,7 @@ namespace CAMS
             {
                 Thread.CurrentThread.IsBackground = true;
                 activitiesModel.GetComputersActivity();
+
             }).Start();
         }
 
