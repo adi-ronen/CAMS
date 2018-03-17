@@ -15,19 +15,23 @@ namespace CAMS.Models
 {
     public class ActivitiesModel
     {
-        ActivitiesController _aController = new ActivitiesController();
+        ActivitiesController _aController;
+
+        public ActivitiesModel(ActivitiesController activitiesController)
+        {
+            _aController = activitiesController;
+        }
 
         /// <summary>
-        /// get current cumputer activity for a computer list using active directory. 
+        /// get current cumputer activity. 
         /// </summary>
-        /// <param name="ComputerList"></param>
-        public String GetComputersActivity(List<Computer> ComputerList)
+        public String GetComputersActivity()
         {
-            
+            List<Computer> compList = new List<Computer>();
             string ans = "";
 
             //TBD- make it asyncronic!
-            foreach (var comp in ComputerList)
+            foreach (var comp in compList)
             {
                 //check for the last activity of the computer
                 Activity lastAct=_aController.LastActivityDetails(comp.ComputerId);
@@ -89,10 +93,11 @@ namespace CAMS.Models
             }
 
         //TBD - איסוף שיבוץ חדרים
-        public void GetClassesSchedule(List<Lab> LabList)
+        public void GetClassesSchedule()
         {
+            List<Lab> labList = new List<Lab>();
             //open connection with classes pacment system databse
-            foreach (Lab lab in LabList)
+            foreach (Lab lab in labList)
             {
                 //get the classes that are plenned in this lab for today
             }
