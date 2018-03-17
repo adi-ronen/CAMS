@@ -22,10 +22,17 @@ textarea {
 }
 
 .labs {
-    background-color: lightsteelblue;
+    background-color: #fdfdfd;
     width: 960px;
     height: 460px;
-    border-color: steelblue
+    border: 1px solid #c6c6c6;
+    position: relative;
+}
+
+input{
+    border: 1px solid #c6c6c6;
+    border-radius: 4px;
+    
 }
 
 h2  {
@@ -44,6 +51,7 @@ a {
 }
     a:hover {
         color: #0072c6;
+        text-decoration:none;
     }
 table {
     background-color: #fdfdfd
