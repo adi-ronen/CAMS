@@ -15,42 +15,54 @@ namespace CAMS.Models
 {
     public class ActivitiesModel
     {
-        ComputersController _cController = new ComputersController();
-        ActivitiesController _aController = new ActivitiesController();
+        ActivitiesController _aController;
+
+        public ActivitiesModel(ActivitiesController activitiesController)
+        {
+            _aController = activitiesController;
+        }
 
         /// <summary>
-        /// get current cumputer activity for a computer list using active directory. 
+        /// get current cumputer activity. 
         /// </summary>
-        /// <param name="ComputerList"></param>
-        public String GetComputersActivity(List<Computer> ComputerList)
+        public void GetComputersActivity()
         {
-            
-            string ans = "";
-            foreach (var comp in ComputerList)
+            //List<Lab> labs = GetLabs();
+            List<Lab> labs = new List<Lab>();
+            foreach (Lab lab in labs)
+            {
+                GetComputerActivity(lab.Computers);
+            }
+        }
+
+        private void GetComputerActivity(ICollection<Computer> compList)
+        {
+
+            //TBD- make it asyncronic!
+            foreach (var comp in compList)
             {
                 //check for the last activity of the computer
-                Activity lastAct=_cController.LastActivityDetails(comp.ComputerId);
+                Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
 
                 string logedOn = IsComputerLogedOn(comp.ComputerName);
+                // TBD- change the ugly T: isComputerLogedOn should return a boolean (in the func use trim)
                 if (logedOn.Contains("T"))
                 {
-                    ans += " " + comp.ComputerName + ": ON ";
                     String userName = GetUserLogOn(comp.ComputerName);
                     if (!Regex.Replace(userName, @"\s+", "").Equals(""))
                     {
                         ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
-                        if(lastAct==null)
+                        if (lastAct == null)
                         {
                             //create user activity
                             AddNewActivity(comp, ActivityMode.User, userName);
                         }
-                        else if(lastAct.UserName!=userName)
+                        else if (lastAct.UserName != userName)
                         {
                             //close current activity and create new user activity
                             CloseActivity(lastAct);
                             AddNewActivity(comp, ActivityMode.User, userName);
                         }
-                        ans += "- user: " + userName;
                     }
                     else
                     {
@@ -70,7 +82,7 @@ namespace CAMS.Models
                         //create off activity
                         AddNewActivity(comp, ActivityMode.Off, null);
                     }
-                    else if(lastAct.Mode!= ActivityMode.Off.ToString())
+                    else if (lastAct.Mode != ActivityMode.Off.ToString())
                     {
                         //close current activity and create new off activity
                         CloseActivity(lastAct);
@@ -78,22 +90,34 @@ namespace CAMS.Models
 
                     }
                     // else- it already in off mode- dont change anything 
-                    ans += " " + comp.ComputerName + ": Disconected";
                 }
             }
+            
+        }
 
-            //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Scripts\powerShell\computerActivity.ps1");
-                return ans;
-            }
 
         //TBD - איסוף שיבוץ חדרים
-        public void GetClassesSchedule(List<Lab> LabList)
+        public void GetClassesSchedule()
         {
+            List<Lab> labList = GetLabs();
             //open connection with classes pacment system databse
-            foreach (Lab lab in LabList)
+            foreach (Lab lab in labList)
             {
                 //get the classes that are plenned in this lab for today
+
+                string classes = "";
+
+                //_aController.UpdateLabSchedule(lab, classes);
+
+
+
+
             }
+        }
+
+        private List<Lab> GetLabs()
+        {
+            return _aController.GetAllLabs();
         }
 
         private string GetUserLogOn(string compNames)
@@ -111,13 +135,13 @@ namespace CAMS.Models
 
         private void CloseActivity(Activity lastAct)
         {
-            _cController.CloseActivity(lastAct);
+            _aController.CloseActivity(lastAct);
         }
 
         private void AddNewActivity(Computer comp, ActivityMode mode, string userName)
         {
 
-            _cController.CreateNewActivity(comp, mode, userName);
+            _aController.CreateNewActivity(comp, mode, userName);
         }
 
 
@@ -157,49 +181,7 @@ namespace CAMS.Models
             // now been converted to text 
             return stringBuilder.ToString();
         }
-
-        //// helper method that takes your script path, loads up the script 
-        //// into a variable, and passes the variable to the RunScript method 
-        //// that will then execute the contents 
-        //private string loadScript(string filename)
-        //{
-        //    try
-        //    {
-        //        // Create an instance of StreamReader to read from our file. 
-        //        // The using statement also closes the StreamReader. 
-        //        using (StreamReader sr = new StreamReader(filename))
-        //        {
-
-        //            // use a string builder to get all our lines from the file 
-        //            StringBuilder fileContents = new StringBuilder();
-
-        //            // string to hold the current line 
-        //            string curLine;
-
-        //            // loop through our file and read each line into our 
-        //            // stringbuilder as we go along 
-        //            while ((curLine = sr.ReadLine()) != null)
-        //            {
-        //                // read each line and MAKE SURE YOU ADD BACK THE 
-        //                // LINEFEED THAT IT THE ReadLine() METHOD STRIPS OFF 
-        //                fileContents.Append(curLine + "\n");
-        //            }
-
-        //            // call RunScript and pass in our file contents 
-        //            // converted to a string 
-        //            return fileContents.ToString();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        // Let the user know what went wrong. 
-        //        string errorText = "The file could not be read:";
-        //        errorText += e.Message + "\n";
-        //        return errorText;
-        //    }
-
-        //}
-
+        
 
 
 

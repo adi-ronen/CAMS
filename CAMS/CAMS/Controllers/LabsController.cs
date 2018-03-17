@@ -11,8 +11,8 @@ namespace CAMS.Controllers
 {
     [RequireHttps]
     public class LabsController : Controller
+
     {
-        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -69,7 +69,7 @@ namespace CAMS.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new LabModel(lab));
+            return View(new LabModel(lab,this));
         }
 
         // GET: Labs/Create
@@ -165,5 +165,7 @@ namespace CAMS.Controllers
             }
             base.Dispose(disposing);
         }
+
+
     }
 }
