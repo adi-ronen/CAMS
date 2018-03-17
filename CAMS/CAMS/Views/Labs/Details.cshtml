@@ -12,14 +12,32 @@
         <h6>בניין: @Html.DisplayFor(model => model.Lab.Building)</h6>
         <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
     </div>
-
     <hr />
     <div class="labs">
         @foreach (var item in Model.Lab.Computers)
         {
-        <a> @item.ComputerName:@Model.GetComputerState(item).ToString() </a>
-        }
+            string source = "";
+            switch (@Model.GetComputerState(item))
+            {
 
+                case Constant.ActivityMode.On:
+                    source = "green.png";
+                    break;
+                case Constant.ActivityMode.Off:
+                    source = "black.png";
+                    break;
+                case Constant.ActivityMode.Class:
+                    source = "red.png";
+                    break;
+                case Constant.ActivityMode.User:
+                    source = "red.png";
+                    break;
+            }
+            string top = item.LocationInLab.Split(',')[0];
+            string right = item.LocationInLab.Split(',')[1];
+        <img src="~/Images/@source" width="70" title="@item.ComputerName" style="position:absolute;top:@top;right:@right"/>
+
+}
     </div>
 </div>
 <p>
