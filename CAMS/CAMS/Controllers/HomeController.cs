@@ -9,7 +9,7 @@ using PagedList;
 namespace CAMS.Controllers
 {
     [RequireHttps]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -51,7 +51,7 @@ namespace CAMS.Controllers
             }
             int pageSize = 8;
             int pageNumber = (page ?? 1);
-            return View(Labs.ToPagedList(pageNumber, pageSize));
+            return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize),this));
         }
 
         public ActionResult About()
