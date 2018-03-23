@@ -1,5 +1,7 @@
 ﻿body {
     padding-bottom: 20px;
+    font-family:Alef;
+    text-align:right;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -72,4 +74,8 @@ table {
 
 .row{
     margin:0px;
+}
+
+.mynavbar {
+    box-shadow: 0 8px 6px -6px #999;
 }
