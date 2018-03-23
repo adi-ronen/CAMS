@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<CAMS.Models.Lab>
+﻿@model CAMS.Models.LabsViewModel
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 @{
@@ -28,7 +28,7 @@
         <td>מספר עמדות פנויות</td>
         <th></th>
     </tr>
-    @foreach (var item in Model)
+    @foreach (var item in Model.Labs)
     {
         <tr>
             <td>
@@ -53,7 +53,7 @@
             </td>
             <td>
                 @*TBD - classes for today*@
-                @Html.DisplayFor(modelItem => item.Computers.Count)
+                @Model.NumberOfAvilableComputers(item)/@item.Computers.Count
             </td>
             <td>
                 @*TBD -  only full control can delete and only limited can edit*@
@@ -65,7 +65,7 @@
     }
 </table>
 <br />
-עמוד @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) מתוך @Model.PageCount
+עמוד @(Model.Labs.PageCount < Model.Labs.PageNumber ? 0 : Model.Labs.PageNumber) מתוך @Model.Labs.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("Index",
+@Html.PagedListPager(Model.Labs, page => Url.Action("Index",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
