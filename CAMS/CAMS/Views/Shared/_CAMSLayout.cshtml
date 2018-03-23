@@ -9,15 +9,15 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body dir="rtl" style="font-family:Alef;text-align:right">
-    <div class="navbar navbar-fixed-top mynavbar" style="box-shadow: 0 8px 6px -6px #999;">
+    <div class="navbar navbar-fixed-top mynavbar" style="box-shadow: 0 8px 6px -6px #999;padding-bottom:0;">
         <div class="container">
             <img src="~/Images/logoHome.png" alt="אוניברסיטת בן גוריון">
-            <ul>
-                <li>דוחות</li>
-                <li>התראות</li>
-                <li>כיתות מחשוב</li>
-                <li>הרשאות</li>
-            </ul>
+            <div class="nav navbar-nav navbar-right menubar collapse navbar-collapse">
+                <a href="~/Activities/Index">דוחות</a>
+                <a href="~/Labs/Index">כיתות מחשוב</a>
+                <a href="#">התראות</a>
+                <a href="#">הרשאות</a>
+            </div>
         </div>
     </div>
     <div class="container body-content">
