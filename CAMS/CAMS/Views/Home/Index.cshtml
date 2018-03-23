@@ -1,16 +1,71 @@
-﻿@{
+﻿@model PagedList.IPagedList<CAMS.Models.Lab>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
     ViewBag.Title = "Home Page";
 }
-<div class="row" dir="rtl">
-    <h1>לוגו של האוניברסיטה</h1>
-</div>
-<div dir="rtl">
-    <div>
-        @*TBD - put this view without the actionlink *@
-        @{ Html.RenderPartial("~/Views/Labs/Index.cshtml"); }
-    </div>
-    <div>
-        @*TBD -תצוגה על גבי מפה*@
-        <h5></h5>
-    </div>
-</div>
+<h2 class="text-right">כיתות מחשוב</h2>
+
+<p>
+    @*if limitted acsses or full conrol*@
+    @*@Html.ActionLink("צור חדש", "Create")*@
+</p>
+@using (Html.BeginForm("Index", "Labs", FormMethod.Get))
+{
+    <p>
+        חפש לפי שם מחלקה/ בניין: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="חפש" />
+    </p>
+}
+
+
+<table class="table table-bordered table-condensed text-right">
+    <tr>
+        <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
+        <td>@Html.ActionLink("בניין", "Index", new { sortOrder = ViewBag.BuildingSortParm, currentFilter = ViewBag.CurrentFilter })</td>
+        <td>כיתה</td>
+        <td>שיעורים מתוכננים להיום</td>
+        <td>מספר עמדות פנויות</td>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Building)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomNumber)
+            </td>
+            <td>
+                @if (item.TodaysClasses == null)
+                {
+                    @Html.Raw("אין")
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.TodaysClasses)
+                }
+
+            </td>
+            <td>
+                @*TBD - classes for today*@
+                @Html.DisplayFor(modelItem => item.Computers.Count)
+            </td>
+            <td>
+                @*TBD -  only full control can delete and only limited can edit*@
+                @*@Html.ActionLink("עריכה", "Edit", new { id = item.LabId }) |*@
+                @Html.ActionLink("תפוסה נוכחית", "Details", new { id = item.LabId }, new { @class = "action-link" })
+                @*|@Html.ActionLink("מחיקה", "Delete", new { id = item.LabId })*@
+            </td>
+        </tr>
+    }
+</table>
+<br />
+עמוד @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) מתוך @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

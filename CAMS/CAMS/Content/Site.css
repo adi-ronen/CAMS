@@ -23,16 +23,29 @@ textarea {
 
 .labs {
     background-color: #fdfdfd;
-    width: 960px;
-    height: 460px;
+    width: 900px;
+    height: 500px;
     border: 1px solid #c6c6c6;
     position: relative;
 }
-
-input{
+.key {
+    background-color: #fdfdfd;
+    width: 200px;
+    height: 500px;
+}
+.todaysclasses {
     border: 1px solid #c6c6c6;
     border-radius: 4px;
-    
+    margin-right: 10px;
+    width: 120px;
+    margin-top: -10px;
+    text-align: center;
+    background: #f9f9f9;
+}
+
+input {
+    border: 1px solid #c6c6c6;
+    border-radius: 4px;
 }
 
 h2  {
@@ -55,4 +68,8 @@ a {
     }
 table {
     background-color: #fdfdfd
+}
+
+.row{
+    margin:0px;
 }
