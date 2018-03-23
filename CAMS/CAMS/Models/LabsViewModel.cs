@@ -11,13 +11,13 @@ namespace CAMS.Models
     public class LabsViewModel
     {
         public IPagedList<Lab> Labs;
-        private LabsController _lController;
+        private BaseController _lController;
 
 
-        public LabsViewModel(IPagedList<Lab> pagedList, LabsController labsController)
+        public LabsViewModel(IPagedList<Lab> pagedList, BaseController controller)
         {
             this.Labs = pagedList;
-            this._lController = labsController;
+            this._lController = controller;
         }
         public int NumberOfAvilableComputers(Lab lab)
         {
