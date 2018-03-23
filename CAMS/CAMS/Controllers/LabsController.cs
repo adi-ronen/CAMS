@@ -54,8 +54,10 @@ namespace CAMS.Controllers
             }
             int pageSize = 8;
             int pageNumber = (page ?? 1);
-            return View(Labs.ToPagedList(pageNumber, pageSize));
+            //return View(Labs.ToPagedList(pageNumber, pageSize));
+            return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize),this));
         }
+        
 
         // GET: Labs/Details/5
         public ActionResult Details(int? id)
@@ -69,7 +71,7 @@ namespace CAMS.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new LabModel(lab,this));
+            return View(new LabDetailsViewModel(lab,this));
         }
 
         // GET: Labs/Create
