@@ -1,15 +1,10 @@
-﻿@model PagedList.IPagedList<CAMS.Models.Lab>
+﻿@model CAMS.Models.LabsViewModel
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 @{
-    ViewBag.Title = "Home Page";
+                ViewBag.Title = "Home Page";
 }
 <h2 class="text-right">כיתות מחשוב</h2>
-
-<p>
-    @*if limitted acsses or full conrol*@
-    @*@Html.ActionLink("צור חדש", "Create")*@
-</p>
 @using (Html.BeginForm("Index", "Labs", FormMethod.Get))
 {
     <p>
@@ -17,18 +12,16 @@
         <input type="submit" value="חפש" />
     </p>
 }
-
-
 <table class="table table-bordered table-condensed text-right">
     <tr>
         <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
         <td>@Html.ActionLink("בניין", "Index", new { sortOrder = ViewBag.BuildingSortParm, currentFilter = ViewBag.CurrentFilter })</td>
         <td>כיתה</td>
         <td>שיעורים מתוכננים להיום</td>
-        <td>מספר עמדות פנויות</td>
+        <td>מספר עמדות פנויות/ סה"כ עמדות</td>
         <th></th>
     </tr>
-    @foreach (var item in Model)
+    @foreach (var item in Model.Labs)
     {
         <tr>
             <td>
@@ -49,23 +42,16 @@
                 {
                     @Html.DisplayFor(modelItem => item.TodaysClasses)
                 }
-
             </td>
             <td>
-                @*TBD - classes for today*@
-                @Html.DisplayFor(modelItem => item.Computers.Count)
+                @Model.NumberOfAvilableComputers(item)/@item.Computers.Count
             </td>
             <td>
-                @*TBD -  only full control can delete and only limited can edit*@
-                @*@Html.ActionLink("עריכה", "Edit", new { id = item.LabId }) |*@
                 @Html.ActionLink("תפוסה נוכחית", "Details", new { id = item.LabId }, new { @class = "action-link" })
-                @*|@Html.ActionLink("מחיקה", "Delete", new { id = item.LabId })*@
             </td>
         </tr>
     }
 </table>
 <br />
-עמוד @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) מתוך @Model.PageCount
-
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+עמוד @(Model.Labs.PageCount < Model.Labs.PageNumber ? 0 : Model.Labs.PageNumber) מתוך @Model.Labs.PageCount
+@Html.PagedListPager(Model.Labs, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
