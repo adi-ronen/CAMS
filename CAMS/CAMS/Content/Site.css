@@ -111,4 +111,5 @@ table {
 .nav > a {
     position: relative;
     display: block;
+    padding-bottom: 0;
 }
