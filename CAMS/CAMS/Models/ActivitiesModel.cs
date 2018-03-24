@@ -16,7 +16,7 @@ namespace CAMS.Models
     public class ActivitiesModel
     {
         ActivitiesController _aController;
-
+        //TBD- add arguments to Repoet details + properties so it can be bind from Views/Activities/Create (Create Report)
         public ActivitiesModel(ActivitiesController activitiesController)
         {
             _aController = activitiesController;

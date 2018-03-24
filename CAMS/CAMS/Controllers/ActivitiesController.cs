@@ -12,7 +12,6 @@ namespace CAMS.Controllers
 {
     public class ActivitiesController : BaseController
     {
-
         // GET: Activities
         public ActionResult Index()
         {
@@ -38,6 +37,7 @@ namespace CAMS.Controllers
         // GET: Activities/Create
         public ActionResult Create()
         {
+            //TBD- get all the labs that the user can create a report with
             ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC");
             return View();
         }
@@ -49,6 +49,7 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Login,UserName,Logout,Mode,ComputerId")] Activity activity)
         {
+            //TBD- bind with the report details... 
             if (ModelState.IsValid)
             {
                 db.Activities.Add(activity);
@@ -57,7 +58,7 @@ namespace CAMS.Controllers
             }
 
             ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
-            return View(activity);
+            return View(activity); //TBD- view report? HOW?!
         }
 
         // GET: Activities/Edit/5

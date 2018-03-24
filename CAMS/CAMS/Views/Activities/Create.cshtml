@@ -1,72 +1,56 @@
-﻿@model CAMS.Models.Activity
+﻿@model CAMS.Models.ActivitiesModel
 
 @{
     ViewBag.Title = "Create";
 }
 
-<h2>Create</h2>
-
-
-@using (Html.BeginForm()) 
+<h2>דוחות</h2>
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>Activity</h4>
+        <h4>דוח חדש</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Login, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Login, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Login, "", new { @class = "text-danger" })
+        <div class="form-group row">
+            <div>
+                @Html.Label("תאריך התחלה", htmlAttributes: new { @class = "control-label" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.Label("תאריך סיום", htmlAttributes: new { @class = "control-label" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Logout, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Logout, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
+            <div class="form-group">
+                @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10 row">
+                    מ - 
+                    @Html.EditorFor(model => model.Mode, new { htmlAttributes = new { @class = "form-control" } })
+                    עד - 
+                    @Html.EditorFor(model => model.Mode, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Mode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("כיתות מחשוב", "ComputerId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10"> @*TBD- multi select labs to include in report*@
+                    @Html.DropDownList("ComputerId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ComputerId, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="צור" class="btn btn-default" />
+                </div>
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Logout, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Logout, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Logout, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Mode, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Mode, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Mode, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ComputerId, "ComputerId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("ComputerId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.ComputerId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-}
-
-<div>
-    @Html.ActionLink("חזרה לרשימה", "Index")
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
 }
