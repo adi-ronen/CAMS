@@ -102,6 +102,7 @@ namespace CAMS.Controllers
         // GET: Labs/Edit/5
         public ActionResult Edit(int? id)
         {
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -112,7 +113,7 @@ namespace CAMS.Controllers
                 return HttpNotFound();
             }
             ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-            return View(lab);
+            return View(new LabDetailsViewModel(lab, this));
         }
 
         // POST: Labs/Edit/5

@@ -1,5 +1,4 @@
 ﻿@model CAMS.Models.LabDetailsViewModel
-
 @{
     ViewBag.Title = "Edit";
 }
@@ -15,25 +14,38 @@
         <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
         <hr />
         <div class="row">
-            @*//TBD- הוספה של מחשבים רואה רק את אלו שהוא מורשה אליהם לפי דומיינים*@
+            <div class="col-sm-2 key">
+                <h3>מחשבים</h3>
+                @*//TBD- הוספה של מחשבים רואה רק את אלו שהוא מורשה אליהם לפי דומיינים*@
+            </div>
             <div class="labs col-sm-10">
                 @foreach (var item in Model.Lab.Computers)
-        {
-            string top = item.LocationInLab.Split(',')[0];
-            string right = item.LocationInLab.Split(',')[1];
-            <img src="~/Images/black.png" width="70" title="@item.ComputerName" style="position:absolute;top:@top;right:@right" />
-    //TBD- כל אובייקט כזה ניתן לגרירה ואז בינדינג למיקום שלו
-}
+                {
+                    string top = item.LocationInLab.Split(',')[0];
+                    string left = item.LocationInLab.Split(',')[1];
+                    <figure class="draggable" style="position:absolute;top:@top;left:@left">
+                        <img src="~/Images/clear.png" width="70">
+                        <figcaption class="text-center">@item.ComputerName</figcaption>
+                    </figure>
+                }
             </div>
         </div>
     </div>
-    
+    <div class="form-group">
+        @*TBD-  (שמירה (עדכון של מחשבים + כיתת מחשוב*@
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="שמור" class="btn btn-default" onclick="SaveComputersLocations()" />
+        </div>
+    </div>
 
 }
-@*TBD-  (שמירה (עדכון של מחשבים + כיתת מחשוב*@
-<div>
-    @Html.ActionLink("ביטול", "Index")
+<div style="padding-right:15px;">
+    @Html.ActionLink("ביטול", "Details")
 </div>
+@section PreloadScripts{
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script src="~/Scripts/Labs.js"></script>
+}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

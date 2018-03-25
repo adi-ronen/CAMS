@@ -6,6 +6,8 @@
     <title> Computer Activity and Monitoring System (CAMS)</title>
     <link href='https://fonts.googleapis.com/css?family=Alef' rel='stylesheet'>
     @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("PreloadScripts", required: false)
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body dir="rtl" style="font-family:Alef;text-align:right">
@@ -13,12 +15,12 @@
         <div class="container">
             <img src="~/Images/logoHome.png" alt="אוניברסיטת בן גוריון">
             @*TBD -show only when logged in (else add padding)*@
-                <div class="nav navbar-nav navbar-right menubar collapse navbar-collapse">
-                    <a href="~/Activities/Create">דוחות</a>
-                    <a href="~/Labs/Index">כיתות מחשוב</a>
-                    <a href="#">התראות</a>
-                    <a href="#">הרשאות</a>
-                </div>
+            <div class="nav navbar-nav navbar-right menubar collapse navbar-collapse">
+                <a href="~/Activities/Create">דוחות</a>
+                <a href="~/Labs/Index">כיתות מחשוב</a>
+                <a href="#">התראות</a>
+                <a href="#">הרשאות</a>
+            </div>
         </div>
     </div>
     <div class="container body-content">
@@ -28,7 +30,6 @@
             <p>&copy; @DateTime.Now.Year כל הזכויות שמורות המחלקה להנדסת מערכות תוכנה ומידע - אוניברסיטת בן-גוריון בנגב </p>
         </footer>
     </div>
-    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
