@@ -1,5 +1,7 @@
 ﻿$(document).ready(function () {
-        $(".draggable").draggable();
+    $(".draggable").draggable({
+        containment: "#LabErea"
+    });
 });
 SaveComputersLocations = function () {
     $(".draggable").each(function () {

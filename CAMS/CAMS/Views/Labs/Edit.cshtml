@@ -9,28 +9,28 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    <div>
-        <h6>בניין: @Html.DisplayFor(model => model.Lab.Building)</h6>
-        <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
-        <hr />
-        <div class="row">
-            <div class="col-sm-2 key">
-                <h3>מחשבים</h3>
-                @*//TBD- הוספה של מחשבים רואה רק את אלו שהוא מורשה אליהם לפי דומיינים*@
-            </div>
-            <div class="labs col-sm-10">
-                @foreach (var item in Model.Lab.Computers)
-                {
-                    string top = item.LocationInLab.Split(',')[0];
-                    string left = item.LocationInLab.Split(',')[1];
-                    <figure class="draggable" style="position:absolute;top:@top;left:@left">
-                        <img src="~/Images/clear.png" width="70">
-                        <figcaption class="text-center">@item.ComputerName</figcaption>
-                    </figure>
-                }
-            </div>
+<div>
+    <h6>בניין:</h6> @Html.EditorFor(model => model.Lab.Building)
+    <h6>כיתה:</h6>  @Html.EditorFor(model => model.Lab.RoomNumber)
+    <hr />
+    <div class="row">
+        <div class="col-sm-2 key">
+            <h3>מחשבים</h3>
+            @*//TBD- הוספה של מחשבים רואה רק את אלו שהוא מורשה אליהם לפי דומיינים*@
+        </div>
+        <div class="labs col-sm-10" id="LabErea">
+            @foreach (var item in Model.Lab.Computers)
+            {
+                string top = item.LocationInLab.Split(',')[0];
+                string left = item.LocationInLab.Split(',')[1];
+                <figure class="draggable" style="position:absolute;top:@top;left:@left">
+                    <img src="~/Images/clear.png" width="70">
+                    <figcaption class="text-center">@item.ComputerName</figcaption>
+                </figure>
+            }
         </div>
     </div>
+</div>
     <div class="form-group">
         @*TBD-  (שמירה (עדכון של מחשבים + כיתת מחשוב*@
         <div class="col-md-offset-2 col-md-10">
