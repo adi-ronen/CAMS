@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
     $(".draggable").draggable({
-        containment: "#LabErea"
+        containment: "#LabErea",
+        grid: [20, 20]
     });
 });
 SaveComputersLocations = function () {

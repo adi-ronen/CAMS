@@ -10,8 +10,8 @@
 {
     @Html.AntiForgeryToken()
 <div>
-    <h6>בניין:</h6> @Html.EditorFor(model => model.Lab.Building)
-    <h6>כיתה:</h6>  @Html.EditorFor(model => model.Lab.RoomNumber)
+    <h6>בניין:</h6> @Html.EditorFor(model => model.Lab.Building, new { htmlAttributes = new { @class = "widthinput" } })
+    <h6>כיתה:</h6>  @Html.EditorFor(model => model.Lab.RoomNumber, new { htmlAttributes = new { @class = "widthinput" } })
     <hr />
     <div class="row">
         <div class="col-sm-2 key">

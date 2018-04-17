@@ -28,6 +28,8 @@ namespace CAMS
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
+                      "~/Content/themes/base/all.css",
+                      "~/Content/timepicker.css",
                       "~/Content/Site.css"));
         }
     }

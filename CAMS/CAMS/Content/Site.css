@@ -49,8 +49,12 @@ input {
     border: 1px solid #c6c6c6;
     border-radius: 4px;
 }
+.widthinput{
+    max-width: 100%;
+    width : 100%;
+}
 
-h2  {
+h2 {
     display: inline-block;
     border-bottom: 4px solid #0076aa;
     padding-bottom: 5px;
