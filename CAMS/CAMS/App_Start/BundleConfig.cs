@@ -30,6 +30,7 @@ namespace CAMS
                       "~/Content/bootstrap.css",
                       "~/Content/themes/base/all.css",
                       "~/Content/timepicker.css",
+                      "~/Content/jquery.contextMenu.min.css",
                       "~/Content/Site.css"));
         }
     }
