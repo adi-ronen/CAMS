@@ -10,10 +10,10 @@
 {
     @Html.AntiForgeryToken()
 <div>
-    <h6>בניין:</h6> @Html.EditorFor(model => model.Lab.Building, new { htmlAttributes = new { @class = "widthinput" } })
-    <h6>כיתה:</h6>  @Html.EditorFor(model => model.Lab.RoomNumber, new { htmlAttributes = new { @class = "widthinput" } })
+    <h6>בניין:</h6> @Html.EditorFor(model => model.Lab.Building, new { htmlAttributes = new { @class = "widthinput", id = "Building" } })
+    <h6>כיתה:</h6>  @Html.EditorFor(model => model.Lab.RoomNumber, new { htmlAttributes = new { @class = "widthinput" , id = "RoomNumber" } })
     <div style="visibility:hidden">
-        @Html.EditorFor(model => model.Lab.LabId);
+        @Html.EditorFor(model => model.Lab.LabId, new { htmlAttributes = new { @class = "widthinput", id = "LabId" } })
     </div>
     <hr />
     <div class="row">

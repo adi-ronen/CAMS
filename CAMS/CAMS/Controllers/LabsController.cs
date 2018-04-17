@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -13,6 +14,11 @@ namespace CAMS.Controllers
     public class LabsController : BaseController
 
     {
+        public int Update(Dictionary<string, string> computers,string LabId, string RoomNumber ,string Building)
+        {
+            return 0;
+        }
+
 
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -126,7 +132,6 @@ namespace CAMS.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(lab).State = EntityState.Modified;
-                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);

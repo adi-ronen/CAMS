@@ -12,10 +12,6 @@ namespace CAMS.Controllers
 {
     public class ActivitiesController : BaseController
     {
-        public int Update(Dictionary<string,string> computers)
-        {
-            return 0;
-        }
 
         // GET: Activities
         public ActionResult Index()
