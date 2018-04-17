@@ -4,32 +4,30 @@
 @{
     ViewBag.Title = "Details";
 }
-
 <h2>תפוסה נוכחית</h2>
-
 <div>
-        <h6>בניין: @Html.DisplayFor(model => model.Lab.Building)</h6>
-            <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
-            <div class="row">
-                <h6>שיעורים מתוכננים להיום:</h6>
-                @if (Model.Lab.TodaysClasses == null)
+    <h6>בניין: @Html.DisplayFor(model => model.Lab.Building)</h6>
+    <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
+    <div class="row">
+        <h6>שיעורים מתוכננים להיום:</h6>
+        @if (Model.Lab.TodaysClasses == null)
         {
             @Html.Raw("אין")
-}
-else
-{
-    List<string> TodaysClasses = Model.Lab.TodaysClasses.Split(',').ToList();
-    foreach (var item in TodaysClasses)
-    {
-        <input class="todaysclasses" type="text" value="@item" readonly="readonly">
-}
+        }
+        else
+        {
+            List<string> TodaysClasses = Model.Lab.TodaysClasses.Split(',').ToList();
+            foreach (var item in TodaysClasses)
+            {
+                <input class="todaysclasses" type="text" value="@item" readonly="readonly">
+            }
 
-}
-            </div>
-            <hr />
-            <div class="row">
-                <div class="labs col-sm-10">
-                    @foreach (var item in Model.Lab.Computers)
+        }
+    </div>
+    <hr />
+    <div class="row">
+        <div class="labs col-sm-10">
+            @foreach (var item in Model.Lab.Computers)
             {
                 string source = "";
                 switch (@Model.GetComputerState(item))
@@ -49,29 +47,29 @@ else
                         break;
                 }
                 string top = item.LocationInLab.Split(',')[0];
-                string right = item.LocationInLab.Split(',')[1];
-                <img src="~/Images/@source" width="70" title="@item.ComputerName" style="position:absolute;top:@top;right:@right" />
-    }
-                </div>
-                <div class="col-sm-2 key">
-                    <h3>מקרא</h3>
-                    <hr />
-                    <img src="~/Images/green.png" width="70" title="המחשב פנוי" />
-                    <br />
-                    <text>מחשב פנוי</text>
-                    <hr />
-                    <img src="~/Images/black.png" width="70" title="המחשב לא מגיב - מכובה/ ללא תקשורת/ תקול" />
-                    <br />
-                    <text>מחשב כבוי</text>
-                    <hr />
-                    <img src="~/Images/red.png" width="70" title="המחשב נמצא בשימוש/ בשיעור" />
-                    <br />
-                    <text>מחשב תפוס</text>
-                    <hr />
-                </div>
-            </div>
+                string left = item.LocationInLab.Split(',')[1];
+                <img src="~/Images/@source" width="70" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
+            }
         </div>
+        <div class="col-sm-2 key">
+            <h3>מקרא</h3>
+            <hr />
+            <img src="~/Images/green.png" width="70" title="המחשב פנוי" />
+            <br />
+            <text>מחשב פנוי</text>
+            <hr />
+            <img src="~/Images/black.png" width="70" title="המחשב לא מגיב - מכובה/ ללא תקשורת/ תקול" />
+            <br />
+            <text>מחשב כבוי</text>
+            <hr />
+            <img src="~/Images/red.png" width="70" title="המחשב נמצא בשימוש/ בשיעור" />
+            <br />
+            <text>מחשב תפוס</text>
+            <hr />
+        </div>
+    </div>
+</div>
 <p>
-    @*@Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId }) |*@
+    @Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId }) |
     @Html.ActionLink("חזרה לרשימה", "Index")
 </p>

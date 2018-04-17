@@ -12,7 +12,6 @@ namespace CAMS.Controllers
     public class BaseController : Controller
     {
         protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
-
         public Activity LastActivityDetails(int id)
         {
             Computer computer = db.Computers.Find(id);

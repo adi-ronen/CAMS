@@ -14,6 +14,7 @@ namespace CAMS.Controllers
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
+ 
             ViewBag.CurrentSort = sortOrder;
             ViewBag.DepSortParm = String.IsNullOrEmpty(sortOrder) ? "dep_desc" : "";
             ViewBag.BuildingSortParm = sortOrder == "Building" ? "building_desc" : "Building";

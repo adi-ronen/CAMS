@@ -17,7 +17,7 @@ namespace CAMS.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        
         public AccountController()
         {
         }
@@ -79,6 +79,7 @@ namespace CAMS.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    //TBD - add dictionart or somting to hold <lab id, users' access type>
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -86,7 +87,7 @@ namespace CAMS.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    ModelState.AddModelError("", "ניסיון כניסה לא חוקי");
                     return View(model);
             }
         }
@@ -449,7 +450,7 @@ namespace CAMS.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Labs", new { Logged = true });
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult
