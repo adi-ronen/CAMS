@@ -15,13 +15,13 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group row">
             <div>
-                @Html.Label("תאריך התחלה", htmlAttributes: new { @class = "control-label" })
+                @Html.Label("תאריך התחלה")
                 <div class="col-md-10">
                     <input type="text" class="datepicker">
                 </div>
             </div>
             <div>
-                @Html.Label("תאריך סיום", htmlAttributes: new { @class = "control-label" })
+                @Html.Label("תאריך סיום")
                 <div class="col-md-10">
                     <input type="text" class="datepicker">
                     @*@Html.ValidationMessageFor(model => model.Logout, "", new { @class = "text-danger" })*@
@@ -34,9 +34,9 @@
                 מ -
                 <input type="text" class="timepicker">
                 עד -
-                <input type="text" class="timepicker">
-                @*@Html.ValidationMessageFor(model => model.Mode, "", new { @class = "text-danger" })*@
-            </div>
+                    <input type="text" class="timepicker">
+                    @*@Html.ValidationMessageFor(model => model.Mode, "", new { @class = "text-danger" })*@
+</div>
         </div>
         <div class="form-group">
             @Html.Label("כיתות מחשוב", "ComputerId", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -58,6 +58,7 @@
 @section PreloadScripts{
     @Scripts.Render("~/bundles/jquery-ui")
     <script src="~/Scripts/jquery-TimePicker-1.0.0.js"></script>
+    <script src="~/Scripts/datepicker-he.js"></script>
     <script src="~/Scripts/Activities.js"></script>
 }
 @*TBD - LOAD JQUERY UI CSS FILE...*@

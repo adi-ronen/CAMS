@@ -26,10 +26,11 @@
             {
                 string top = item.LocationInLab.Split(',')[0];
                 string left = item.LocationInLab.Split(',')[1];
-                <figure class="draggable" style="position:absolute;top:@top;left:@left">
-                    <img src="~/Images/clear.png" width="70">
-                    <figcaption class="text-center">@item.ComputerName</figcaption>
-                </figure>
+            <figure class="draggable" style="position:absolute;top:@top;left:@left">
+                <img src="~/Images/clear.png" width="70">
+                <figcaption class="text-center">@item.ComputerName</figcaption>
+                <a style="visibility:hidden">@item.ComputerId</a>
+            </figure>
             }
         </div>
     </div>
