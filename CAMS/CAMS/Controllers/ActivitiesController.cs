@@ -12,6 +12,7 @@ namespace CAMS.Controllers
 {
     public class ActivitiesController : BaseController
     {
+
         // GET: Activities
         public ActionResult Index()
         {
