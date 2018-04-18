@@ -1,9 +1,25 @@
 ﻿$(document).ready(function () {
-        $(".draggable").draggable({
-            containment: "#LabErea",
-            grid: [20, 20]
+    $(".draggable").draggable({
+        containment: "#LabErea",
+        grid: [20, 20]
+    });
+    $(function () {
+        $.contextMenu({
+            selector: '.context-menu-one',
+            callback: function (obj) {
+                this.remove(obj);
+            },
+            items: {
+                "delete": {
+                    name: "מחק מחשב",
+                    callback: function (itemKey, opt, rootMenu, originalEvent) {
+                        opt.$trigger.remove();
+                    }
+                }
+            }
         });
     });
+ });
 SaveComputersLocations = function () {
     var coms = {};
     $(".draggable").each(function () {
@@ -23,5 +39,4 @@ SaveComputersLocations = function () {
             alert(data);
         }
     });
-
 };
