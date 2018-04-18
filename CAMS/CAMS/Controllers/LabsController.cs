@@ -179,10 +179,7 @@ namespace CAMS.Controllers
             base.Dispose(disposing);
         }
 
-        public Lab GetLab(int id)
-        {
-            return db.Labs.Find(id);
-        }
+       
 
         public void RemoveComputerFromLab(int compId, int labId)
         {

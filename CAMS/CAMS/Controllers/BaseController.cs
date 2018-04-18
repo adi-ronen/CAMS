@@ -19,6 +19,11 @@ namespace CAMS.Controllers
             return LastActivityDetails(computer);
         }
 
+        internal List<Lab> GetLabs()
+        {
+            return db.Labs.ToList();
+        }
+
         public Activity LastActivityDetails(Computer comp)
         {
             if (comp == null)
@@ -36,6 +41,10 @@ namespace CAMS.Controllers
                 //if no element was found that means the cumputer is currently in On state with no user loged in
                 return null;
             }
+        }
+        public Lab GetLab(int id)
+        {
+            return db.Labs.Find(id);
         }
         public void CreateNewActivity(Computer comp, ActivityMode mode, string userName)
         {

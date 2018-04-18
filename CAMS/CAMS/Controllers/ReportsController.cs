@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CAMS.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,7 +7,7 @@ using System.Web.Mvc;
 
 namespace CAMS.Controllers
 {
-    public class ReportsController : Controller
+    public class ReportsController : BaseController
     {
         // GET: Reports
         public ActionResult Index()
@@ -23,7 +24,7 @@ namespace CAMS.Controllers
         // GET: Reports/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new ReportViewModel(this));
         }
 
         // POST: Reports/Create
