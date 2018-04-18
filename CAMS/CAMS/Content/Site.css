@@ -117,4 +117,55 @@ table {
     display: block;
     padding-bottom: 0;
 }
+.report-deps {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+    padding-right: 0;
+    padding: 10px;
+    text-align: right;
+}
+#select-all {
+    font-size: 14px;
+    position: relative;
+    cursor: pointer;
+    color: #0076aa;
+    display: inline-block;
+    margin-left: 41px;
+}
+#unselect-all {
+    font-size: 14px;
+    position: relative;
+    cursor: pointer;
+    color: #0076aa;
+    display: inline-block;
+    margin-left: 41px;
+}
+#select-all:before {
+    content: '/';
+    display: inline-block;
+    position: absolute;
+    left: -25px;
+    top: -2px;
+    color: #222;
+}
+.dropdown_item {
+    font-family: Alef;
+}
+.left-border {
+    border-left: solid 4px #f7931d;
+}
+.columns {
+    border-left: solid 4px #f4f4f4;
+}
+.datepicker {
+    margin-right: 10px;
+    margin-left: 10px;
+}
 
+.timepicker {
+    margin-right: 10px;
+    margin-left: 10px;
+}

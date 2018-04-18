@@ -1,47 +1,65 @@
-﻿@model CAMS.Models.LabsViewModel
+﻿@model CAMS.Models.ReportViewModel
 
 @{
     ViewBag.Title = "Create";
 }
 
 <h2>דוחות</h2>  @*TBD - Validation of dates and time*@
-    <div class="form-horizontal">
-        <h4>דוח חדש</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10 row">
-                <label>מ -</label>
-                <input type="text" class="datepicker" id="fromDate">
-                <label>עד -</label>
-                <input type="text" class="datepicker" id="toDate">
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10 row">
-                <label>מ -</label>
-                <input type="text" class="timepicker" id="fromTime">
-                <label>עד -</label>
-                <input type="text" class="timepicker" id="toTime">
-            </div>
-        </div>
-        <div>
-            כיתות מחשוב
-            <select>
-                @*@foreach (var item in Model.Labs) 
-                {
-                <option>@Html.DisplayFor(modelItem => item.LabId)</option>
-                }*@
-            </select>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="צור" class="btn btn-default" onclick="CreateReport()" />
-            </div>
+<div class="form-horizontal">
+    <h4>דוח חדש</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10 row">
+            <label>מ -</label>
+            <input type="text" class="datepicker" id="fromDate">
+            <label>עד -</label>
+            <input type="text" class="datepicker" id="toDate">
         </div>
     </div>
+    <div class="form-group">
+        @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10 row">
+            <label>מ -</label>
+            <input type="text" class="timepicker" id="fromTime">
+            <label>עד -</label>
+            <input type="text" class="timepicker" id="toTime">
+        </div>
+    </div>
+    <div>
+        @Html.Label("כיתות מחשוב", htmlAttributes: new { @class = "control-label" })
+        <br>
+        <div class="row">
+            <div id="select-all" onclick="CheckboxAll(true)">בחר הכל</div>
+            <div id="unselect-all" onclick="CheckboxAll(false)">הסר הכל</div>
+        </div>
+        @foreach (var Dep in Model.GetDepartments())
+        {
+        <div class="dropdown_item accordion">
+            <h3 class="left-border">
+                <label>
+                    <input class="form-check-label" type="checkbox" id="@Dep.DepartmentId" onclick="CheckboxDep(@Dep.DepartmentId)">
+                    @Dep.DepartmentName
+                </label>
+            </h3>
+            <div class="columns">
+                @foreach (var lab in Model.GetLabsOfDepartment(Dep.DepartmentId))
+        {
+            <input class="form-check-inline @Dep.DepartmentId" type="checkbox" value="@lab.LabId" onclick="Checkbox(@Dep.DepartmentId)">@lab.Building
+            <br>
+}
+            </div>
+        </div>
+        <br>
+        }
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="צור" class="btn btn-default" onclick="CreateReport()" />
+        </div>
+    </div>
+</div>
 
 @section PreloadScripts{
     @Scripts.Render("~/bundles/jquery-ui")
