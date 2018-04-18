@@ -15,10 +15,13 @@ namespace CAMS.Models
         {
             this._lController = controller;
         }
-        public List<Lab> GetLabs()
+        public List<Lab> GetLabsOfDepartment(int DepartmentId)
         {
-           
-            return _lController.GetLabs();
+            return _lController.GetLabsOfDepartment(DepartmentId);
+        }
+        public List<Department> GetDepartments()
+        {
+            return _lController.GetDepartments();
         }
     }
 }

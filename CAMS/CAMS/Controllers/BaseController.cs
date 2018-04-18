@@ -19,9 +19,19 @@ namespace CAMS.Controllers
             return LastActivityDetails(computer);
         }
 
+        internal List<Lab> GetLabsOfDepartment(int departmentId)
+        {
+            return db.Labs.Where(lab => lab.DepartmentId == departmentId).ToList();
+        }
+
         internal List<Lab> GetLabs()
         {
             return db.Labs.ToList();
+        }
+
+        internal List<Department> GetDepartments()
+        {
+            return db.Departments.ToList();
         }
 
         public Activity LastActivityDetails(Computer comp)
