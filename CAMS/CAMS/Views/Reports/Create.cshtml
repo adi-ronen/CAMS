@@ -1,0 +1,55 @@
+﻿@model CAMS.Models.LabsViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>דוחות</h2>  @*TBD - Validation of dates and time*@
+    <div class="form-horizontal">
+        <h4>דוח חדש</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 row">
+                <label>מ -</label>
+                <input type="text" class="datepicker">
+                <label>עד -</label>
+                <input type="text" class="datepicker">
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 row">
+                <label>מ -</label>
+                <input type="text" class="timepicker">
+                <label>עד -</label>
+                <input type="text" class="timepicker">
+            </div>
+        </div>
+        <div>
+            כיתות מחשוב
+            <select>
+                @*@foreach (var item in Model.Labs) 
+                {
+                <option>@Html.DisplayFor(modelItem => item.LabId)</option>
+                }*@
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="צור" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+@section PreloadScripts{
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script src="~/Scripts/jquery-TimePicker-1.0.0.js"></script>
+    <script src="~/Scripts/datepicker-he.js"></script>
+    <script src="~/Scripts/Activities.js"></script>
+}
+@*TBD - LOAD JQUERY UI CSS FILE...*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

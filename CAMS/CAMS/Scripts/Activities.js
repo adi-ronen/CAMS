@@ -6,3 +6,4 @@
     });
     $(".timepicker").timepicker({ 'timeFormat': 'H:i', 'step': '60' });
 });
+
