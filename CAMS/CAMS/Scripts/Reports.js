@@ -1,8 +1,8 @@
 ﻿$(document).ready(function () {
     $(".datepicker").datepicker($.datepicker.regional['he']);
     $(".datepicker").datepicker({
-        changeMonth: true,
-        changeYear: true
+        "changeMonth": true,
+        "changeYear": true
     });
     //TBD - תאריך עד היום, שעות דיפולטיביות
     $(".timepicker").timepicker({ 'timeFormat': 'H:i', 'step': '60' });
@@ -21,14 +21,13 @@
         }.bind(this), 100);
     });
 });
-
 CreateReport = function () {
-    fromDate = $("#fromDate").val();
+    var fromDate = $("#fromDate").val();
     var toDate = $("#toDate").val();
     var fromTime = $("#fromTime").val();
     var ToTime = $("#ToTime").val();
     var LabsId = [];
-    labs = document.getElementsByClassName('form-check-inline')
+    var labs = document.getElementsByClassName('form-check-inline')
     for (var i = 0, n = labs.length; i < n; i++) {
         if (labs[i].checked) {
             LabsId.push(labs[i].value);
@@ -36,18 +35,27 @@ CreateReport = function () {
     }
     //TBD - CALL MODEL TO CREATE REPORT WITH THIS PARAMS
 }
-
-Checkbox = function (depId) {
-    checkboxes = document.getElementsByClassName(depId);
-    for (var i = 0, n = checkboxes.length; i < n; i++) {
-        checkboxes[i].checked = document.getElementById(depId).checked;
+CheckboxDep = function (depId) {
+    var checkboxesDeps = document.getElementsByClassName(depId);
+    for (var i = 0, n = checkboxesDeps.length; i < n; i++) {
+        checkboxesDeps[i].checked = document.getElementById(depId).checked;
     }
 }
-
 CheckboxAll = function (checked) {
-    deps = document.getElementsByClassName('form-check-label');
+    var deps = document.getElementsByClassName('form-check-label');
     for (var i = 0, n = deps.length; i < n; i++) {
         deps[i].checked = checked;
-        Checkbox(deps[i].id);
+        CheckboxDep(deps[i].id);
+    }
+}
+Checkbox = function (depId) {
+    var checkboxes = document.getElementsByClassName(depId);
+    var depCheckbox = document.getElementById(depId);
+    for (var i = 0, n = checkboxes.length; i < n; i++) {
+        if (!checkboxes[i].checked) {
+            depCheckbox.checked = false;
+            break;
+        }
+        depCheckbox.checked = true;
     }
 }

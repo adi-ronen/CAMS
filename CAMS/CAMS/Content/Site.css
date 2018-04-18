@@ -152,6 +152,20 @@ table {
     color: #222;
 }
 .dropdown_item {
-    border-left: solid 4px #f7931d;
     font-family: Alef;
+}
+.left-border {
+    border-left: solid 4px #f7931d;
+}
+.columns {
+    border-left: solid 4px #f4f4f4;
+}
+.datepicker {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.timepicker {
+    margin-right: 10px;
+    margin-left: 10px;
 }
