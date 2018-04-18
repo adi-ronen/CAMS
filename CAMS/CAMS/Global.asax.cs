@@ -28,7 +28,8 @@ namespace CAMS
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            activitiesModel = new ActivitiesModel(new ActivitiesController());
+            CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
+            activitiesModel = new ActivitiesModel(new ActivitiesController(db));
             RegisterCacheEntry();
             checkSchedual();
             checkComputersActivity();

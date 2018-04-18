@@ -13,6 +13,8 @@ namespace CAMS.Controllers
     public class ActivitiesController : BaseController
     {
 
+        public ActivitiesController(CAMS_DatabaseEntities _db) : base(_db) { }
+
         // GET: Activities
         public ActionResult Index()
         {

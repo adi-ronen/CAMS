@@ -13,6 +13,7 @@ namespace CAMS.Controllers
 {
     public class ComputersController : BaseController
     {
+        public ComputersController(CAMS_DatabaseEntities _db) : base(_db) { }
 
         // GET: Computers
         public ActionResult Index()
@@ -36,7 +37,7 @@ namespace CAMS.Controllers
 
             return View(computer);
         }
-        
+
 
 
 
@@ -65,7 +66,7 @@ namespace CAMS.Controllers
             return View(computer);
         }
 
-        
+
 
         // GET: Computers/Edit/5
         public ActionResult Edit(int? id)
