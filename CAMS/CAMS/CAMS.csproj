@@ -320,7 +320,7 @@
       <DependentUpon>CAMS_DatabaseModel.edmx</DependentUpon>
       <LastGenOutput>CAMS_DatabaseModel.cs</LastGenOutput>
     </Content>
-    <Content Include="Scripts\Activities.js" />
+    <Content Include="Scripts\Reports.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />

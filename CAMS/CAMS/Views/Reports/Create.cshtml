@@ -13,18 +13,18 @@
             @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 row">
                 <label>מ -</label>
-                <input type="text" class="datepicker">
+                <input type="text" class="datepicker" id="fromDate">
                 <label>עד -</label>
-                <input type="text" class="datepicker">
+                <input type="text" class="datepicker" id="toDate">
             </div>
         </div>
         <div class="form-group">
             @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 row">
                 <label>מ -</label>
-                <input type="text" class="timepicker">
+                <input type="text" class="timepicker" id="fromTime">
                 <label>עד -</label>
-                <input type="text" class="timepicker">
+                <input type="text" class="timepicker" id="toTime">
             </div>
         </div>
         <div>
@@ -38,7 +38,7 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="צור" class="btn btn-default" />
+                <input type="submit" value="צור" class="btn btn-default" onclick="CreateReport()" />
             </div>
         </div>
     </div>
@@ -47,7 +47,7 @@
     @Scripts.Render("~/bundles/jquery-ui")
     <script src="~/Scripts/jquery-TimePicker-1.0.0.js"></script>
     <script src="~/Scripts/datepicker-he.js"></script>
-    <script src="~/Scripts/Activities.js"></script>
+    <script src="~/Scripts/Reports.js"></script>
 }
 @*TBD - LOAD JQUERY UI CSS FILE...*@
 @section Scripts {
