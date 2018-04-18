@@ -28,8 +28,7 @@ namespace CAMS
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
-            activitiesModel = new ActivitiesModel(new ActivitiesController(db));
+            activitiesModel = new ActivitiesModel(new ActivitiesController());
             RegisterCacheEntry();
             checkSchedual();
             checkComputersActivity();
@@ -104,7 +103,7 @@ namespace CAMS
         private void HitPage(string url)
         {
             WebClient client = new WebClient();
-            client.DownloadData(url);
+           // client.DownloadData(url);
         }
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {

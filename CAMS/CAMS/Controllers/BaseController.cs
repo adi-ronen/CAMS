@@ -11,13 +11,7 @@ namespace CAMS.Controllers
 {
     public class BaseController : Controller
     {
-        protected CAMS_DatabaseEntities db;
-
-
-        public BaseController(CAMS_DatabaseEntities _db)
-        {
-            db = _db;
-        }
+        protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         public Activity LastActivityDetails(int id)
         {

@@ -13,8 +13,6 @@ namespace CAMS.Controllers
 {
     public class ComputersController : BaseController
     {
-        public ComputersController(CAMS_DatabaseEntities _db) : base(_db) { }
-
         // GET: Computers
         public ActionResult Index()
         {

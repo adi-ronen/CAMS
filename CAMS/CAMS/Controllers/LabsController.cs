@@ -15,7 +15,6 @@ namespace CAMS.Controllers
     public class LabsController : BaseController
 
     {
-        public LabsController(CAMS_DatabaseEntities _db) : base(_db) { }
 
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -60,6 +59,8 @@ namespace CAMS.Controllers
             //return View(Labs.ToPagedList(pageNumber, pageSize));
             return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
         }
+
+        
 
 
         // GET: Labs/Details/5

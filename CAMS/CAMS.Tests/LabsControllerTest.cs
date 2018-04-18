@@ -10,13 +10,12 @@ namespace CAMS.Tests
     public class LabsControllerTest
     {
 
-        protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
 
         [TestMethod]
         public void TestLabCreateDelete()
         {
-            var controller = new LabsController(db);
+            var controller = new LabsController();
             Lab lab = new Lab();
             lab.LabId = 1000;
             lab.DepartmentId = 0;
@@ -39,8 +38,8 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestDelete()
         {
-            var controller = new LabsController(db);
-            var compC = new ComputersController(db);
+            var controller = new LabsController();
+            var compC = new ComputersController();
 
             int id = 1000;
             if (controller.GetLab(id) != null)
@@ -71,8 +70,8 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestLabAddRemoveComputers()
         {
-            var controller = new LabsController(db);
-            var compC = new ComputersController(db);
+            var controller = new LabsController();
+            var compC = new ComputersController();
 
             int labid = 1000;
             Lab lab = controller.GetLab(labid);
