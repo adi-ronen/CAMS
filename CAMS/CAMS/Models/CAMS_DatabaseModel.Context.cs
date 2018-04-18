@@ -32,5 +32,6 @@ namespace CAMS.Models
         public virtual DbSet<Lab> Labs { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserDepartment> UserDepartments { get; set; }
+        public virtual DbSet<database_firewall_rules> database_firewall_rules { get; set; }
     }
 }

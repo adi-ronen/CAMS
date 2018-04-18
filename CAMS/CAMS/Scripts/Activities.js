@@ -1,13 +1,8 @@
 ﻿$(document).ready(function () {
-    $(function () {
-        $(".datepicker").datepicker();
-        $('.timepicker').timePicker({
-            timeFormat: 'hh:mm',
-            interval: 60,
-            defaultTime: '11',
-            dynamic: false,
-            dropdown: true,
-            scrollbar: true
-        });
+    $(".datepicker").datepicker($.datepicker.regional['he']);
+    $(".datepicker").datepicker({
+        changeMonth: true,
+        changeYear: true
     });
+    $(".timepicker").timepicker({ 'timeFormat': 'H:i', 'step': '60' });
 });

@@ -6,6 +6,8 @@ using System.Net;
 using System.Web.Mvc;
 using CAMS.Models;
 using PagedList;
+using System.Collections.Generic;
+
 
 namespace CAMS.Controllers
 {
@@ -13,6 +15,7 @@ namespace CAMS.Controllers
     public class LabsController : BaseController
 
     {
+        public LabsController(CAMS_DatabaseEntities _db) : base(_db) { }
 
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -30,7 +33,7 @@ namespace CAMS.Controllers
             }
             ViewBag.CurrentFilter = searchString;
             var Labs = from l in db.Labs
-                           select l;
+                       select l;
             if (!String.IsNullOrEmpty(searchString))
             {
                 Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
@@ -55,9 +58,9 @@ namespace CAMS.Controllers
             int pageSize = 8;
             int pageNumber = (page ?? 1);
             //return View(Labs.ToPagedList(pageNumber, pageSize));
-            return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize),this));
+            return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
         }
-        
+
 
         // GET: Labs/Details/5
         public ActionResult Details(int? id)
@@ -71,7 +74,7 @@ namespace CAMS.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new LabDetailsViewModel(lab,this));
+            return View(new LabDetailsViewModel(lab, this));
         }
 
         // GET: Labs/Create
@@ -121,10 +124,11 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "LabId,TodaysClasses,Building,RoomNumber,DepartmentId")] Lab lab)
+        public ActionResult Edit([Bind(Include = "LabId,TodaysClasses,Building,RoomNumber,DepartmentId,Computers")] Lab lab)
         {
             if (ModelState.IsValid)
             {
+                lab.RoomNumber = lab.RoomNumber.Trim();
                 db.Entry(lab).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -154,6 +158,11 @@ namespace CAMS.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Lab lab = db.Labs.Find(id);
+            while (lab.Computers.Count>0)
+            {
+                RemoveComputerFromLab(lab.Computers.First().ComputerId, lab.LabId);
+            }
+
             db.Labs.Remove(lab);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -168,6 +177,92 @@ namespace CAMS.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public Lab GetLab(int id)
+        {
+            return db.Labs.Find(id);
+        }
+
+        public void RemoveComputerFromLab(int compId, int labId)
+        {
+            Computer comp = db.Computers.Find(compId);
+            //computer not in lab- nothing to update
+            if (comp.CurrentLab != labId)
+                return;
+            ComputerLab cL = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e=>e.LabId.Equals(labId)).Last();
+            if (cL == null)
+                throw new Exception("no record of computer in lab");
+            cL.Exit= DateTime.Now;
+            //lab.RoomNumber = lab.RoomNumber.Trim();
+            comp.CurrentLab = null;
+            //Lab lab = comp.Lab;
+            //lab.Computers.Remove(comp);
+            //comp.Lab = null;
+
+            //lab.Computers.Remove(comp);
+            //comp.CurrentLab = null;
+            //db.Entry(cL).State = EntityState.Modified;
+            //db.Entry(comp).State = EntityState.Modified;
+            //db.Entry(lab).State = EntityState.Modified;
+            db.Computers.Attach(comp);
+            db.ComputerLabs.Attach(cL);
+            db.SaveChanges();
+
+
+        }
+        public void AddComputerToLab(int compId, int labId)
+        {
+            Computer comp = db.Computers.Find(compId);
+            //already in lab- nothing to update
+            if (comp.CurrentLab == labId)
+                return;
+            ComputerLab cL = new ComputerLab();
+            cL.ComputerId = compId;
+            cL.LabId = labId;
+            cL.Entrance = DateTime.Now;
+            cL.Exit = null;
+            comp.CurrentLab = labId;
+            db.ComputerLabs.Add(cL);
+
+            db.SaveChanges();
+
+        }
+
+
+
+
+        public void SaveLabEdit(List<Computer> comps, Lab lab)
+        {
+            using (var tr = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    //computers in the lab that was removed (not in the current computer list)
+                    foreach (var item in lab.Computers.Except(comps))
+                    {
+                        RemoveComputerFromLab(item.ComputerId, lab.LabId);
+                    }
+                    //computers added to the lab (not in the lab computer list)
+                    foreach (var item in comps.Except(lab.Computers))
+                    {
+                        AddComputerToLab(item.ComputerId, lab.LabId);
+                    }
+
+                    //computers to update
+                    foreach (var item in comps.Intersect(lab.Computers))
+                    {
+                        db.Entry(item).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                    tr.Commit();
+                }
+                catch (Exception)
+                {
+                    tr.Rollback();
+                }
+            }
+        }
+
 
 
     }

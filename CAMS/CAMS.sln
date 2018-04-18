@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAMS", "CAMS\CAMS.csproj", "{71EAADAD-8AAF-4F8D-ABC3-38E74EC938AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAMS.Tests", "CAMS.Tests\CAMS.Tests.csproj", "{23A7A958-9A7D-47F8-9097-D74ECCA14E9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{71EAADAD-8AAF-4F8D-ABC3-38E74EC938AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71EAADAD-8AAF-4F8D-ABC3-38E74EC938AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71EAADAD-8AAF-4F8D-ABC3-38E74EC938AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23A7A958-9A7D-47F8-9097-D74ECCA14E9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23A7A958-9A7D-47F8-9097-D74ECCA14E9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23A7A958-9A7D-47F8-9097-D74ECCA14E9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23A7A958-9A7D-47F8-9097-D74ECCA14E9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2260FE34-1C04-49A0-BCA3-D685FE03F358}
 	EndGlobalSection
 EndGlobal

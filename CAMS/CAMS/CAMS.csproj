@@ -20,12 +20,9 @@
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44336</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -225,6 +222,9 @@
     <Compile Include="Models\ComputerLab.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\database_firewall_rules.cs">
+      <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Department.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
@@ -408,6 +408,7 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
+    <Content Include="Scripts\datepicker-he.js" />
     <Content Include="Scripts\esm\popper-utils.js" />
     <Content Include="Scripts\esm\popper-utils.min.js" />
     <Content Include="Scripts\esm\popper.js" />

@@ -11,7 +11,14 @@ namespace CAMS.Controllers
 {
     public class BaseController : Controller
     {
-        protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
+        protected CAMS_DatabaseEntities db;
+
+
+        public BaseController(CAMS_DatabaseEntities _db)
+        {
+            db = _db;
+        }
+
         public Activity LastActivityDetails(int id)
         {
             Computer computer = db.Computers.Find(id);
@@ -57,6 +64,11 @@ namespace CAMS.Controllers
             db.Entry(act).State = EntityState.Modified; //same as above
             db.SaveChanges();
 
+        }
+
+        public Computer GetComputer(int id)
+        {
+            return db.Computers.Find(id);
         }
 
     }

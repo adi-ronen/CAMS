@@ -11,6 +11,7 @@ namespace CAMS.Controllers
     [RequireHttps]
     public class HomeController : BaseController
     {
+        public HomeController(CAMS_DatabaseEntities _db) : base(_db) { }
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
