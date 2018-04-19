@@ -84,5 +84,74 @@ namespace CAMS.Controllers
             return db.Computers.Find(id);
         }
 
+
+        //-----------------------------------------------------------------
+        //for tests only
+        public void testAddLab(int id)
+        {
+            Lab lab = new Lab();
+            lab.LabId = id;
+
+            db.Labs.Add(lab);
+            db.SaveChanges();
+        }
+        public void testAddComp(int id)
+        {
+            Computer comp = new Computer();
+            comp.ComputerId = id;
+
+            db.Computers.Add(comp);
+            db.SaveChanges();
+        }
+        public void testAddCompLab(int compId,int labId,DateTime enter,DateTime? exit)
+        {
+            ComputerLab cL = new ComputerLab();
+            cL.ComputerId = compId;
+            cL.LabId = labId;
+            cL.Entrance = enter;
+            cL.Exit = exit;
+
+            db.ComputerLabs.Add(cL);
+            db.SaveChanges();
+        }
+        public void testAddActivity(int compId,DateTime login,DateTime logout,ActivityMode Mode)
+        {
+            Activity act = new Activity();
+            act.ComputerId = compId;
+            act.Login = login;
+            act.Logout = logout;
+            act.Mode = Mode.ToString();
+
+            db.Activities.Add(act);
+            db.SaveChanges();
+        }
+        public void testDeleteLab(int id)
+        {
+            Lab lab = db.Labs.Find(id);
+            while( lab.ComputerLabs.Count>0)
+            {
+                db.ComputerLabs.Remove(lab.ComputerLabs.First());
+            }
+            db.Labs.Remove(lab);
+            db.SaveChanges();
+        }
+        public void testDeleteComp(int id)
+        {
+            Computer comp = db.Computers.Find(id);
+            while (comp.ComputerLabs.Count > 0)
+            {
+                db.ComputerLabs.Remove(comp.ComputerLabs.First());
+            }
+            while (comp.Activities.Count > 0)
+            {
+                db.Activities.Remove(comp.Activities.First());
+            }
+            db.Computers.Remove(comp);
+            db.SaveChanges();
+        }
+
+
+
+
     }
 }
