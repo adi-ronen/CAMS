@@ -26,8 +26,10 @@ namespace CAMS.Models
         }
 
 
+
+
         //TBD- class
-        public List<LabReport> CreateLabsReport(List<int> labsIds,DateTime startDate,DateTime endDate,DateTime startHour, DateTime endHour)
+        public List<LabReport> CreateLabReport(DateTime startDate,DateTime endDate,DateTime startHour, DateTime endHour, List<int> labsIds)
         {
             List<LabReport> reports = new List<LabReport>();
 
@@ -42,9 +44,15 @@ namespace CAMS.Models
             return reports;
         }
 
-        private LabReport CreateLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, int id)
+        public LabReport CreateLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, int id)
         {
             Lab lab = _lController.GetLab(id);
+            return CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            
+        }
+
+        public LabReport CreateLabReport (DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, Lab lab)
+        {
             LabReport labReport = new LabReport(lab);
 
             TimeSpan labTotalActiveTime = TimeSpan.Zero;
@@ -53,7 +61,7 @@ namespace CAMS.Models
             List<ComputerLab> cL = lab.ComputerLabs.Where(e => (!((e.Entrance > endDate) || (e.Exit < startDate)))).ToList();
             foreach (var item in cL)
             {
-                
+
 
                 ComputerReport cR = CreateComputerInLabReport(startDate, endDate, startHour, endHour, item);
 
@@ -79,10 +87,10 @@ namespace CAMS.Models
 
             DateTime newStartDate = new DateTime(Math.Max(compEnterence.Ticks, startDate.Ticks));
             DateTime newEndDate = new DateTime(Math.Min(compExit.Ticks, endDate.Ticks));
-            List<Activity> compAct = comp.Computer.Activities.Where(e => (e.Mode.Equals(ActivityMode.User.ToString())) ||
-                //  e.Mode.Equals(ActivityMode.Class.ToString())) &&
-                (e.Login >= newStartDate && e.Logout <= newEndDate) && //activities in the report time range
-                !(e.Login.Hour > endHour.Hour || (e.Logout.HasValue && e.Logout.Value.Hour < startHour.Hour))).ToList();
+            List<Activity> compAct = comp.Computer.Activities.Where(e => (e.Mode.Equals(ActivityMode.User.ToString())) 
+                //  || e.Mode.Equals(ActivityMode.Class.ToString())) 
+                && (e.Login >= newStartDate && e.Logout <= newEndDate) && //activities in the report time range
+                !((e.Login.Hour > endHour.Hour) || (e.Logout.HasValue && e.Logout.Value.Hour < startHour.Hour))).ToList();
             foreach (var act in compAct)
             {
 
@@ -94,13 +102,47 @@ namespace CAMS.Models
 
             }
             // number of hours the computer was in the lab (during the report duration)
-            double computerInLabTime = (newEndDate - newStartDate).TotalDays * (endHour - startHour).TotalHours;
+            double computerInLabTime = CalculateHoursInReportForComputer(newStartDate, newEndDate, startHour, endHour);
+          //               = (newEndDate - newStartDate).TotalDays * (endHour - startHour).TotalHours;
             ComputerReport cR = new ComputerReport(comp.Computer, computerTotalActiveTime, computerInLabTime);
             return cR;
         }
 
+        private double CalculateHoursInReportForComputer(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour)
+        {
+            DateTime day = startDate.Date;
+            DateTime reportStart = day.AddHours(startHour.Hour);
+            DateTime reportEnd = day.AddHours(endHour.Hour);
+
+            //report starts and ends in the same day
+            if (startDate.Date == endDate.Date)
+            {
+                TimeSpan timeSpan = PeriodIntersectorSpan(startDate, reportStart, endDate, reportEnd);
+                return timeSpan.Hours;
+
+            }
+            else
+            {
+                //hours in report in the first day
+                DateTime startDayEnd = day.AddDays(1);
+                TimeSpan timeSpanFirstDay = PeriodIntersectorSpan(startDate, reportStart, startDayEnd, reportEnd);
+                //hours in report in the last day
+                DateTime lastDay = endDate.Date;
+                DateTime lastReportStart = lastDay.AddHours(startHour.Hour);
+                DateTime lastReportEnd = lastDay.AddHours(endHour.Hour);
+                TimeSpan timeSpanLastDay = PeriodIntersectorSpan(lastDay, lastReportStart, endDate, lastReportEnd);
+                //number of days between
+                double days = (lastDay - day.AddDays(1)).TotalDays;
+                return (days * (endHour - startHour).TotalHours) + timeSpanFirstDay.Add(timeSpanLastDay).TotalHours;
+            }
+
+        }
+
         private TimeSpan PeriodIntersectorSpan(DateTime start1,DateTime start2,DateTime end1,DateTime end2)
         {
+            if(Math.Min(end1.Ticks, end2.Ticks)<Math.Max(start1.Ticks, start2.Ticks)){
+                return TimeSpan.Zero;
+            }
             return (new DateTime(Math.Min(end1.Ticks, end2.Ticks)) - new DateTime(Math.Max(start1.Ticks, start2.Ticks)));
 
         }
