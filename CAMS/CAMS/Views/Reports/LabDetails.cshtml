@@ -1,0 +1,37 @@
+﻿@model IEnumerable<CAMS.Models.ComputerReport>
+
+@{
+    ViewBag.Title = "LabDetails";
+}
+
+<h2>Details</h2>
+
+<div>
+    <table class="table">
+        <tr>
+            <td>שם עמדות</td>
+            <td>אחוז שימוש ממוצע</td>
+            <td>אחוז שימוש ממוצע כולל שיבוץ חדרים</td>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Computer.ComputerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AverageUsage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ScheduleAverageUsage)
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+<p>
+    @Html.ActionLink("צור דוח חדש", "Create")
+</p>
+

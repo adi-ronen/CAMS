@@ -1,42 +1,53 @@
-﻿@model CAMS.Models.ReportViewModel
+﻿@model IEnumerable<CAMS.Models.LabReport>
 
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>דוח פעילות מחשבים</h2>
 
 <div>
-    <h4>Activity</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
+    @*TBD- add the report delatils (dates, time.....)*@
+    <table class="table">
+        <tr>
+            <td>מחלקה</td>
+            <td>בניין</td>
+            <td>כיתה</td>
+            <td>מספר עמדות</td>
+            <td>אחוז שימוש ממוצע</td>
+            <td>אחוז שימוש ממוצע כולל שיבוץ חדרים</td>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lab.Building)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lab.RoomNumber)
+            </td>
+            <td>
+                @item.Lab.Computers.Count
+            </td>
+            <td>
+                @item.AverageUsage
+            </td>
+            <td>
+                @item.ScheduleAverageUsage
+            </td>
+            <td>
+                @Html.ActionLink("פירוט עמדות", "LabDetails", item.ComputersReport)
+            </td>
 
-        <dd>
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
+        </tr>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Logout)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Logout)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Computer.MAC)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Computer.MAC)
-        </dd>
-
-    </dl>
+    </table>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    @Html.ActionLink("חזרה לרשימה", "Index")
+    @Html.ActionLink("צור דוח חדש", "Create")
 </p>

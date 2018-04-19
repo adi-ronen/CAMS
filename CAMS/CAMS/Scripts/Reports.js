@@ -47,7 +47,7 @@ CreateReport = function () {
             startDate: fromDate, endDate: toDate, startHour: fromTime, endHour: ToTime, labsIds: LabsId, weekends: weekends, allDay: allDay
         },
         success: function (data) {
-            alert(data);
+            $("#html").html(data);
         }
     });
     //TBD - CALL MODEL TO CREATE REPORT WITH THIS PARAMS
