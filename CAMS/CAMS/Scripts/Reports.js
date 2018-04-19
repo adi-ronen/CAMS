@@ -1,12 +1,13 @@
 ﻿$(document).ready(function () {
     $(".datepicker").datepicker($.datepicker.regional['he']);
     $(".datepicker").datepicker({
-        "changeMonth": true,
-        "changeYear": true
+        changeMonth: true,
+        changeYear: true,
+        maxDate: '0'
     });
     //TBD - תאריך עד היום, שעות דיפולטיביות
-    $(".timepicker").timepicker({ 'timeFormat': 'H:i', 'step': '60' });
-
+    $("#fromTime").timepicker({ 'timeFormat': 'H:i', 'step': '60'});
+    $("#toTime").timepicker({ 'timeFormat': 'H:i', 'step': '60'});
     $(".accordion")
         .accordion({
             collapsible: true,
