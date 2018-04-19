@@ -26,7 +26,10 @@ namespace CAMS.Controllers
         {
             return View(new ReportViewModel(this));
         }
-
+        public ActionResult CreateReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, List<int> labsIds, bool weekends, bool allDay)
+        {
+            return View(new ReportViewModel(this));
+        }
         // POST: Reports/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)

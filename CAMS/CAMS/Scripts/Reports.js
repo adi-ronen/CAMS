@@ -1,11 +1,15 @@
 ﻿$(document).ready(function () {
     $(".datepicker").datepicker($.datepicker.regional['he']);
-    $(".datepicker").datepicker({
+    $("#fromDate").datepicker('option',{
         changeMonth: true,
         changeYear: true,
-        maxDate: '0'
+        maxDate: 0
     });
-    //TBD - תאריך עד היום, שעות דיפולטיביות
+    $("#toDate").datepicker('option',{
+        changeMonth: true,
+        changeYear: true,
+        maxDate: 0,
+    });
     $("#fromTime").timepicker({ 'timeFormat': 'H:i', 'step': '60'});
     $("#toTime").timepicker({ 'timeFormat': 'H:i', 'step': '60'});
     $(".accordion")
@@ -26,7 +30,7 @@ CreateReport = function () {
     var fromDate = $("#fromDate").val();
     var toDate = $("#toDate").val();
     var fromTime = $("#fromTime").val();
-    var ToTime = $("#ToTime").val();
+    var ToTime = $("#toTime").val();
     var LabsId = [];
     var labs = document.getElementsByClassName('form-check-inline')
     for (var i = 0, n = labs.length; i < n; i++) {
@@ -34,6 +38,18 @@ CreateReport = function () {
             LabsId.push(labs[i].value);
         }
     }
+    var weekends = !$("#excludeWeekends").checked;
+    var allDay = document.getElementById("allDay").checked;
+    $.ajax({
+        url: "/Reports/CreateReport",
+        type: 'post',
+        data: {
+            startDate: fromDate, endDate: toDate, startHour: fromTime, endHour: ToTime, labsIds: LabsId, weekends: weekends, allDay: allDay
+        },
+        success: function (data) {
+            alert(data);
+        }
+    });
     //TBD - CALL MODEL TO CREATE REPORT WITH THIS PARAMS
 }
 CheckboxDep = function (depId) {
@@ -59,4 +75,17 @@ Checkbox = function (depId) {
         }
         depCheckbox.checked = true;
     }
+}
+AllDay = function () {
+    if (document.getElementById("allDay").checked) {
+        $("#fromTime").value = '00:00';
+        $("#fromTime").attr('disabled', 'disabled');
+        $("#toTime").value = '23:59';
+        $("#toTime").attr('disabled', 'disabled');
+    }
+    else {
+        $("#fromTime").removeAttr('disabled');
+        $("#toTime").removeAttr('disabled');
+    }
+    
 }

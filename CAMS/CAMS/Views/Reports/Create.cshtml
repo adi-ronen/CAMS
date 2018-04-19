@@ -13,9 +13,10 @@
         @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10 row">
             <label>מ -</label>
-            <input type="text" class="datepicker" id="fromDate">
+            <input type="text" class="datepicker" id="fromDate" readonly="readonly">
             <label>עד -</label>
-            <input type="text" class="datepicker" id="toDate">
+            <input type="text" class="datepicker" id="toDate" readonly="readonly">
+            <input type="checkbox" id="excludeWeekends" class="checkbox-margin" /> <label>לא כולל סופי שבוע</label>
         </div>
     </div>
     <div class="form-group">
@@ -25,6 +26,7 @@
             <input type="text" class="timepicker" id="fromTime" value="09:00">
             <label>עד -</label>
             <input type="text" class="timepicker" id="toTime" value="21:00">
+            <input type="checkbox" class="checkbox-margin" id="allDay" onclick="AllDay()"/> <label>כל היום</label>
         </div>
     </div>
     <div>
@@ -38,10 +40,8 @@
         {
         <div class="dropdown_item accordion">
             <h3 class="left-border">
-                <label>
-                    <input class="form-check-label" type="checkbox" id="@Dep.DepartmentId" onclick="CheckboxDep(@Dep.DepartmentId)">
-                    @Dep.DepartmentName
-                </label>
+                <input class="form-check-label" type="checkbox" id="@Dep.DepartmentId" onclick="CheckboxDep(@Dep.DepartmentId)">
+                <label>@Dep.DepartmentName</label>
             </h3>
             <div class="columns">
                 @foreach (var lab in Model.GetLabsOfDepartment(Dep.DepartmentId))
