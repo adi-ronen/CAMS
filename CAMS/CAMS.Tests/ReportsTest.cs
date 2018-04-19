@@ -14,22 +14,181 @@ namespace CAMS.Tests
         [TestInitialize]
         public void Initialize()
         {
-            //controller.testAddLab(1000);
+           
 
-            //controller.testAddLab(1001);
-            //controller.testAddComp(1000);
-            //controller.testAddCompLab(1000, 1001, DateTime.Now.AddDays(-10), null);
-            //controller.testAddActivity(1000, DateTime.Now.AddDays(-20), DateTime.Now.AddDays(-20).AddHours(3),Constant.ActivityMode.User);
-            //controller.testAddActivity(1000, DateTime.Now.AddDays(-5), DateTime.Now.AddDays(-5).AddHours(3), Constant.ActivityMode.Off);
+        }
+        [TestMethod]
+        public void TestReportWithoutWeekends()
+        {
+            Lab lab = new Lab();
+            lab.LabId = 3000;
+            ComputerLab cl = new ComputerLab();
+            cl.Computer = new Computer();
+            cl.Computer.ComputerId = 3000;
+            cl.Lab = lab;
+            cl.Entrance = new DateTime(2018, 4, 15);
+            cl.Exit = new DateTime(2018, 5, 15);
+            lab.ComputerLabs.Add(cl);
+            cl.Computer.ComputerLabs.Add(cl);
 
-            //controller.testAddLab(2000);
-            //controller.testAddComp(2000);
-            //controller.testAddCompLab(2000, 2000, DateTime.Now.AddDays(-20), DateTime.Now.AddDays(-10));
-            //controller.testAddActivity(2000, DateTime.Now.AddDays(-18).AddHours(-10), DateTime.Now.AddDays(-18).AddHours(-8), Constant.ActivityMode.User); //2 hours
+            Activity act1 = new Activity();
+            act1.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act1);
+            act1.Login = new DateTime(2018, 4, 16, 10, 0, 0);
+            act1.Logout = new DateTime(2018, 4, 16, 12, 0, 0);
+            act1.Mode = Constant.ActivityMode.User.ToString();
 
+            ReportViewModel model = new ReportViewModel(controller);
+            List<int> list = new List<int>();
+            DateTime startDate = new DateTime(2018, 4, 16);
+            DateTime endDate = new DateTime(2018, 4, 17);
+            DateTime startHour = new DateTime();
+            TimeSpan ts = new TimeSpan(9, 00, 0);
+            startHour = startHour.Date + ts;
+
+            DateTime endHour = new DateTime();
+            ts = new TimeSpan(19, 00, 0);
+            endHour = endHour.Date + ts;
+
+
+            //
+            string msg = "one 2 hour activity";
+            LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            //
+            msg = "one 2 hour activity no weekends";
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, false);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+
+           
+            
+            // two activities (16/4)10-12, (20/4)13-15
+            Activity act2 = new Activity();
+            act2.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act2);
+            act2.Login = new DateTime(2018, 4, 20, 13, 0, 0);
+            act2.Logout = new DateTime(2018, 4, 20, 15, 0, 0);
+            act2.Mode = Constant.ActivityMode.User.ToString();
+
+            //
+            msg = "activity in weekend-report include weekend";
+            startDate = new DateTime(2018, 4, 20);
+            endDate = new DateTime(2018, 4, 21);
+            startHour = new DateTime().Date + new TimeSpan(08, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(18, 00, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            //
+            msg = "activity in weekend-day report disclude weekend";
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, false);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(0, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(0, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(0, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(0, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            
+            //
+            msg = "activity in weekend-week report include weekend";
+            startDate = new DateTime(2018, 4, 12);
+            endDate = new DateTime(2018, 4, 21);
+            startHour = new DateTime().Date + new TimeSpan(08, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(18, 00, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(4, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(60, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(((double)4/60)*100, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(((double)4 / 60) * 100, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            //
+            msg = "activity in weekend-week report disclude weekend";
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, false);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(50, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(4, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(4, lr.AverageUsage, msg + "- avarageUsage of lab ");
 
 
         }
+
+        [TestMethod]
+        public void TestColculateBusinessDaysFunc()
+        {
+            ReportViewModel model = new ReportViewModel(controller);
+            DateTime start = new DateTime(2018, 04, 19);
+            DateTime end = new DateTime(2018, 04, 26);
+            Assert.AreEqual(6, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 04, 20);
+            end = new DateTime(2018, 04, 25);
+            Assert.AreEqual(4, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 04, 21);
+            end = new DateTime(2018, 04, 25);
+            Assert.AreEqual(4, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 03, 1);
+            end = new DateTime(2018, 03, 31);
+            Assert.AreEqual(21, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 2, 1);
+            end = new DateTime(2018, 2, 28);
+            Assert.AreEqual(20, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 1, 1);
+            end = new DateTime(2018, 1, 31);
+            Assert.AreEqual(23, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 1, 6);
+            end = new DateTime(2018, 1,6);
+            Assert.AreEqual(0, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 1, 6);
+            end = new DateTime(2018, 1, 13);
+            Assert.AreEqual(5, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 1, 5);
+            end = new DateTime(2018, 1, 6);
+            Assert.AreEqual(0, model.ColculateBusinessDays(end, start));
+            start = new DateTime(2018, 1, 17);
+            end = new DateTime(2018, 1, 31);
+            Assert.AreEqual(11, model.ColculateBusinessDays(end, start));
+        }
+
 
         [TestMethod]
         public void TestComputerEnterAndExitDuringReport()
@@ -61,7 +220,7 @@ namespace CAMS.Tests
 
             //
             string msg = "computer enter and exit the lab during the report";
-            LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -82,7 +241,7 @@ namespace CAMS.Tests
 
             //
             msg = "computer enter and exit the lab during the report and have one activity";
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -134,7 +293,7 @@ namespace CAMS.Tests
 
             //one 2 hour activity out of 12 hours 
             string msg = "one 2 hour activity";
-            LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour,lab);
+            LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour,lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -150,7 +309,7 @@ namespace CAMS.Tests
             msg = "one hour of the activity should be included in the report out of 2 hours";
             startHour = new DateTime().Date + new TimeSpan(11,0,0);
             endHour = new DateTime().Date + new TimeSpan(13, 0, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -166,7 +325,7 @@ namespace CAMS.Tests
             msg = "one hour of the activity should be included in the report out of 2 hours";
             startHour = new DateTime().Date + new TimeSpan(9, 0, 0);
             endHour = new DateTime().Date + new TimeSpan(11, 0, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -182,7 +341,7 @@ namespace CAMS.Tests
             msg = "one hour of the activity should be included in the report out of 1 hours";
             startHour = new DateTime().Date + new TimeSpan(10, 30, 0);
             endHour = new DateTime().Date + new TimeSpan(11, 30, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -198,7 +357,7 @@ namespace CAMS.Tests
             msg = "no computer activity should be included in the report out of 2 hours";
             startHour = new DateTime().Date + new TimeSpan(13, 00, 0);
             endHour = new DateTime().Date + new TimeSpan(15, 00, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -223,7 +382,7 @@ namespace CAMS.Tests
             msg = "no computer activity should be included in the report out of 1 hours";
             startHour = new DateTime().Date + new TimeSpan(12, 00, 0);
             endHour = new DateTime().Date + new TimeSpan(13, 00, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -239,7 +398,7 @@ namespace CAMS.Tests
             msg = "two activities of total 4 hours should be included in the report out of 10 hours";
             startHour = new DateTime().Date + new TimeSpan(8, 00, 0);
             endHour = new DateTime().Date + new TimeSpan(18, 00, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -255,7 +414,7 @@ namespace CAMS.Tests
             msg = "two activities of total 2 hours should be included in the report out of 3 hours";
             startHour = new DateTime().Date + new TimeSpan(11, 00, 0);
             endHour = new DateTime().Date + new TimeSpan(14, 00, 0);
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -274,7 +433,7 @@ namespace CAMS.Tests
             startDate = new DateTime(2010, 2, 17);
             endDate = new DateTime(2010, 2, 19);
 
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -293,7 +452,7 @@ namespace CAMS.Tests
             startDate = new DateTime(2010, 3, 15);
             endDate = new DateTime(2010, 3, 16);
 
-            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab,true);
 
             Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
             foreach (var item in lr.ComputersReport)
@@ -327,7 +486,7 @@ namespace CAMS.Tests
             list.Add(1001);
             //report duration befor computer exsist in lab
             string msg = "report duration befor computer exsist in lab";
-            List<LabReport>  lrl = model.CreateLabReport(startDate, endDate, startHour, endDate,list);
+            List<LabReport>  lrl = model.CreateLabReport(startDate, endDate, startHour, endDate,list,true);
             Assert.AreEqual(1, lrl.Count, "should be one report: "+msg);
             foreach (var lr in lrl)
             {
@@ -339,7 +498,7 @@ namespace CAMS.Tests
             msg = "report duration after computer exsist in lab";
             startDate = DateTime.Now.AddDays(5);
             endDate = DateTime.Now.AddDays(10);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(1, lrl.Count, "should be one report: " +msg);
             foreach (var lr in lrl)
             {
@@ -351,7 +510,7 @@ namespace CAMS.Tests
             msg = "report duration with one computer - no user activities(only off)  ";
             startDate = DateTime.Now.AddDays(-10);
             endDate = DateTime.Now;
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(1, lrl.Count, "should be one report: "+msg);
             foreach (var lr in lrl)
             {
@@ -363,7 +522,7 @@ namespace CAMS.Tests
             msg = "report duration with computer with no activities in this time";
             startDate = DateTime.Now.AddDays(-1);
             endDate = DateTime.Now;
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(1, lrl.Count, "should be one report: " + msg);
             foreach (var lr in lrl)
             {
@@ -375,7 +534,7 @@ namespace CAMS.Tests
             msg = "report duration with computer not in the lab (but have activity in that time)";
             startDate = DateTime.Now.AddDays(-25);
             endDate = DateTime.Now.AddDays(-15);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(1, lrl.Count, "should be one report: " + msg);
             foreach (var lr in lrl)
             {
@@ -403,12 +562,12 @@ namespace CAMS.Tests
             endHour = endHour.Date + ts;
 
             //no lab
-            List<LabReport> lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            List<LabReport> lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(0, lrl.Count,"no labs to report was inserted");
             
             //lab with no computers
             list.Add(1000);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(1, lrl.Count,"should be one report");
             foreach (var lr in lrl)
             {
@@ -420,7 +579,7 @@ namespace CAMS.Tests
 
             // lab with no computers in the report duration
             list.Add(1001);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list);
+            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
             Assert.AreEqual(1, lrl.Count, "should be one report");
             foreach (var lr in lrl)
             {
@@ -433,10 +592,6 @@ namespace CAMS.Tests
         [TestCleanup]
         public void ClassCleanup()
         {
-           // controller.testDeleteLab(1000);
-
-            //controller.testDeleteLab(1001);
-            //controller.testDeleteComp(1000);
 
         }
 

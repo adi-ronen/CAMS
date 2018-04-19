@@ -9,6 +9,13 @@ namespace CAMS.Controllers
 {
     public class ReportsController : BaseController
     {
+        ReportViewModel model;
+
+        public ReportsController()
+        {
+            model = new ReportViewModel(this);
+        }
+
         // GET: Reports
         public ActionResult Index()
         {
@@ -24,11 +31,18 @@ namespace CAMS.Controllers
         // GET: Reports/Create
         public ActionResult Create()
         {
-            return View(new ReportViewModel(this));
+            return View(model);
         }
-        public ActionResult CreateReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, List<int> labsIds, bool weekends, bool allDay)
+        public ActionResult CreateReport(DateTime startDate, DateTime? endDate, DateTime? startHour, DateTime endHour, List<int> labsIds, bool weekends, bool allDay)
         {
-            return View(new ReportViewModel(this));
+            if (allDay)
+            {
+                startDate = new DateTime();
+                endDate = new DateTime().AddTicks(-1);
+            }
+            List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds,weekends);
+
+            return View(reports);
         }
         // POST: Reports/Create
         [HttpPost]
@@ -89,5 +103,6 @@ namespace CAMS.Controllers
                 return View();
             }
         }
+        
     }
 }
