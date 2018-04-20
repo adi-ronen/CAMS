@@ -38,7 +38,7 @@ namespace CAMS.Tests
             act1.Logout = new DateTime(2018, 4, 16, 12, 0, 0);
             act1.Mode = Constant.ActivityMode.User.ToString();
 
-            ReportViewModel model = new ReportViewModel(controller);
+            ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = new DateTime(2018, 4, 16);
             DateTime endDate = new DateTime(2018, 4, 17);
@@ -156,7 +156,7 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestColculateBusinessDaysFunc()
         {
-            ReportViewModel model = new ReportViewModel(controller);
+            ReportModel model = new ReportModel(controller);
             DateTime start = new DateTime(2018, 04, 19);
             DateTime end = new DateTime(2018, 04, 26);
             Assert.AreEqual(6, model.ColculateBusinessDays(end, start));
@@ -206,7 +206,7 @@ namespace CAMS.Tests
             cl.Computer.ComputerLabs.Add(cl);
 
 
-            ReportViewModel model = new ReportViewModel(controller);
+            ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = new DateTime(2010, 10, 9);
             DateTime endDate = new DateTime(2010, 10, 16);
@@ -278,7 +278,7 @@ namespace CAMS.Tests
             act1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
             act1.Mode = Constant.ActivityMode.User.ToString();
 
-            ReportViewModel model = new ReportViewModel(controller);
+            ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = new DateTime(2010, 2, 16);
             DateTime endDate = new DateTime(2010, 2, 17);
@@ -470,7 +470,7 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestReportsWithNoActtivities()
         {
-            ReportViewModel model = new ReportViewModel(controller);
+            ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = DateTime.Now.AddDays(-5);
             DateTime endDate = DateTime.Now;
@@ -549,7 +549,7 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestReportsWithNoComputers()
         {
-            ReportViewModel model = new ReportViewModel(controller);
+            ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = DateTime.Now.AddDays(-20);
             DateTime endDate = DateTime.Now.AddDays(-15);

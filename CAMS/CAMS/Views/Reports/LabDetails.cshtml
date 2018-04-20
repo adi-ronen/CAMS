@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CAMS.Models.ComputerReport>
+﻿@model CAMS.Models.LabReport
 
 @{
     ViewBag.Title = "LabDetails";
@@ -14,7 +14,7 @@
             <td>אחוז שימוש ממוצע כולל שיבוץ חדרים</td>
             <th></th>
         </tr>
-        @foreach (var item in Model)
+        @foreach (var item in Model.ComputersReport)
         {
             <tr>
                 <td>
@@ -34,4 +34,13 @@
 <p>
     @Html.ActionLink("צור דוח חדש", "Create")
 </p>
-
+@section PreloadScripts{
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script src="~/Scripts/jquery-TimePicker-1.0.0.js"></script>
+    <script src="~/Scripts/datepicker-he.js"></script>
+    <script src="~/Scripts/Reports.js"></script>
+}
+@*TBD - LOAD JQUERY UI CSS FILE...*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

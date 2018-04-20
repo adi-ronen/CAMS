@@ -87,5 +87,8 @@ AllDay = function () {
         $("#fromTime").removeAttr('disabled');
         $("#toTime").removeAttr('disabled');
     }
-    
+}
+LabDetails = function (labId) {
+    var labDetailsDiv = document.getElementById(labId);
+    labDetailsDiv.removeAttribute('hidden');
 }

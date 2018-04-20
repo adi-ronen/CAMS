@@ -7,12 +7,12 @@ using static CAMS.Constant;
 
 namespace CAMS.Models
 {
-    public class ReportViewModel
+    public class ReportModel
     {
         private ReportsController _lController;
 
 
-        public ReportViewModel(ReportsController controller)
+        public ReportModel(ReportsController controller)
         {
             this._lController = controller;
         }
@@ -89,7 +89,7 @@ namespace CAMS.Models
 
             DateTime newStartDate = new DateTime(Math.Max(compEnterence.Ticks, startDate.Ticks));
             DateTime newEndDate = new DateTime(Math.Min(compExit.Ticks, endDate.Ticks));
-            List<Activity> compAct = comp.Computer.Activities.Where(e => (e.Mode.Equals(ActivityMode.User.ToString())) 
+            List<Activity> compAct = comp.Computer.Activities.Where(e => (e.Mode.Trim().Equals(ActivityMode.User.ToString())) 
                 //  || e.Mode.Equals(ActivityMode.Class.ToString())) 
                 && (e.Login >= newStartDate && e.Logout <= newEndDate) && //activities in the report time range
                 !((e.Login.Hour > endHour.Hour) || (e.Logout.HasValue && e.Logout.Value.Hour < startHour.Hour))).ToList();

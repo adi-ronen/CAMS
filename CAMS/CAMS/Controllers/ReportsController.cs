@@ -9,11 +9,11 @@ namespace CAMS.Controllers
 {
     public class ReportsController : BaseController
     {
-        ReportViewModel model;
+        ReportModel model;
 
         public ReportsController()
         {
-            model = new ReportViewModel(this);
+            model = new ReportModel(this);
         }
 
         // GET: Reports
@@ -42,8 +42,16 @@ namespace CAMS.Controllers
             }
             List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds,weekends);
 
-            return View(reports);
+            return View("Details", new LabsReportViewModel(reports,this));
         }
+
+        public ActionResult DisplayLabReportDetails(LabReport report)
+        {
+
+            return View("LabDetails", report);
+        }
+
+
         // POST: Reports/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)
