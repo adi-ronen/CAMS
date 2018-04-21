@@ -75,7 +75,7 @@ namespace CAMS.Models
             Activity currentAct = _lController.LastActivityDetails(comp.ComputerId);
             if (currentAct == null)
                 return ActivityMode.On;
-            else if (currentAct.Mode.Trim(' ').Equals(ActivityMode.Off.ToString()))
+            else if (currentAct.Mode.Equals(ActivityMode.Off))
                 return ActivityMode.Off;
             else
                 return ActivityMode.User;

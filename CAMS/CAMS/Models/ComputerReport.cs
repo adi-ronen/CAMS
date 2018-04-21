@@ -44,7 +44,7 @@ namespace CAMS.Models
             return computerTotaHours;
         }
 
-        internal TimeSpan GetComputerTotalActiveTimeWithClasses()
+        public TimeSpan GetComputerTotalActiveTimeWithClasses()
         {
             return computerTotalActiveTimeWithClasses;
         }

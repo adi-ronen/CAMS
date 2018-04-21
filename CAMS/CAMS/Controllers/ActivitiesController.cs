@@ -143,7 +143,7 @@ namespace CAMS.Controllers
             Activity act = new Activity();
             if (userName != null)
                 act.UserName = userName;
-            act.Mode = mode.ToString();
+            act.Mode = (byte)mode;
             act.Login = DateTime.Now;
             act.Weekend = IsWeekend(act.Login.DayOfWeek);
             act.ComputerId = comp.ComputerId;

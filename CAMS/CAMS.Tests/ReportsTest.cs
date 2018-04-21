@@ -37,7 +37,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2018, 4, 16, 10, 0, 0);
             act1.Logout = new DateTime(2018, 4, 16, 12, 0, 0);
-            act1.Mode = Constant.ActivityMode.User.ToString();
+            act1.Mode = (byte)Constant.ActivityMode.User;
 
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
@@ -87,7 +87,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2018, 4, 20, 13, 0, 0);
             act2.Logout = new DateTime(2018, 4, 20, 15, 0, 0);
-            act2.Mode = Constant.ActivityMode.User.ToString();
+            act2.Mode = (byte)Constant.ActivityMode.User;
             act2.Weekend = true;
 
             //
@@ -239,7 +239,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 10, 10, 10, 0, 0);
             act1.Logout = new DateTime(2010, 10, 10, 19, 0, 0);
-            act1.Mode = Constant.ActivityMode.User.ToString();
+            act1.Mode = (byte)Constant.ActivityMode.User;
 
             //
             msg = "computer enter and exit the lab during the report and have one activity";
@@ -278,7 +278,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 2, 16, 10, 0, 0);
             act1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
-            act1.Mode = Constant.ActivityMode.User.ToString();
+            act1.Mode = (byte)Constant.ActivityMode.User;
 
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
@@ -293,7 +293,7 @@ namespace CAMS.Tests
             endHour = endHour.Date + ts;
 
 
-            //one 2 hour activity out of 12 hours 
+            //2h out of 12h 
             string msg = "one 2 hour activity";
             LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour,lab,true);
 
@@ -378,7 +378,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2010, 2, 16, 13, 0, 0);
             act2.Logout = new DateTime(2010, 2, 16, 15, 0, 0);
-            act2.Mode = Constant.ActivityMode.User.ToString();
+            act2.Mode = (byte)Constant.ActivityMode.User;
 
             //
             msg = "no computer activity should be included in the report out of 1 hours";
@@ -468,6 +468,333 @@ namespace CAMS.Tests
 
         }
 
+        [TestMethod]
+        public void TestReportsWithOneComputer_includeClasses()
+        {
+
+            Lab lab = new Lab();
+            lab.LabId = 3000;
+            ComputerLab cl = new ComputerLab();
+            cl.Computer = new Computer();
+            cl.Computer.ComputerId = 3000;
+            cl.Lab = lab;
+            cl.Entrance = new DateTime(2010, 2, 15);
+            cl.Exit = new DateTime(2010, 3, 15, 10, 0, 0);
+            lab.ComputerLabs.Add(cl);
+            cl.Computer.ComputerLabs.Add(cl);
+
+            Activity act1 = new Activity();
+            act1.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act1);
+            act1.Login = new DateTime(2010, 2, 16, 10, 0, 0);
+            act1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
+            act1.Mode = (byte)Constant.ActivityMode.User;
+
+            Activity cact1 = new Activity();
+            cact1.Computer = cl.Computer;
+            cl.Computer.Activities.Add(cact1);
+            cact1.Login = new DateTime(2010, 2, 16, 10, 0, 0);
+            cact1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
+            cact1.Mode = (byte)Constant.ActivityMode.Class;
+
+
+            ReportModel model = new ReportModel(controller);
+            List<int> list = new List<int>();
+            DateTime startDate = new DateTime(2010, 2, 16);
+            DateTime endDate = new DateTime(2010, 2, 17);
+            DateTime startHour = new DateTime();
+            TimeSpan ts = new TimeSpan(9, 00, 0);
+            startHour = startHour.Date + ts;
+
+            DateTime endHour = new DateTime();
+            ts = new TimeSpan(19, 00, 0);
+            endHour = endHour.Date + ts;
+
+
+            //
+            string msg = "2h user activity, 2h user activity - union 2h";
+            LabReport lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(2, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total activity time (with classes)");
+
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+
+            cact1.Login = new DateTime(2010, 2, 16, 9, 0, 0);
+            cact1.Logout = new DateTime(2010, 2, 16, 11, 0, 0);
+            //
+            msg = "2h user activity, 2h user activity- union 3h";
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(3, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total activity time (with classes)");
+
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(30, item.ScheduleAverageUsage, msg + "- avarageUsage of comp ");
+
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(30, lr.ScheduleAverageUsage, msg + "- avarageUsage of lab ");
+
+            cact1.Login = new DateTime(2010, 2, 16, 9, 0, 0);
+            cact1.Logout = new DateTime(2010, 2, 16, 14, 0, 0);
+            //
+            msg = "2h user activity, 5h user activity- union 5h";
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(5, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total activity time (with classes)");
+
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(50, item.ScheduleAverageUsage, msg + "- avarageUsage of comp ");
+
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(50, lr.ScheduleAverageUsage, msg + "- avarageUsage of lab ");
+
+            cact1.Login = new DateTime(2010, 2, 16, 13, 0, 0);
+            cact1.Logout = new DateTime(2010, 2, 16, 15, 0, 0);
+            //
+            msg = "2h user activity, 2h user activity- union 4h";
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(4, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total activity time (with classes)");
+
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(20, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(40, item.ScheduleAverageUsage, msg + "- avarageUsage of comp ");
+
+            }
+            Assert.AreEqual(20, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(40, lr.ScheduleAverageUsage, msg + "- avarageUsage of lab ");
+
+            //
+            Activity cact2 = new Activity();
+            cact2.Computer = cl.Computer;
+            cl.Computer.Activities.Add(cact2);
+            cact2.Login = new DateTime(2010, 2, 16, 10, 30, 0);
+            cact2.Logout = new DateTime(2010, 2, 16, 12, 30, 0);
+            cact2.Mode = (byte)Constant.ActivityMode.Class;
+
+
+            msg = "1h out of 2h, 1.5h union with class";
+            startHour = new DateTime().Date + new TimeSpan(11, 0, 0);
+            endHour = new DateTime().Date + new TimeSpan(13, 0, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(1, item.GetComputerTotalActiveTime().TotalHours, msg + ": computer total activity time ");
+                Assert.AreEqual(1.5, item.GetComputerTotalActiveTimeWithClasses().TotalHours, msg + ": computer total class activity time ");
+                Assert.AreEqual(2, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(50, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(75, item.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of comp ");
+
+            }
+            Assert.AreEqual(50, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(75, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+
+            //
+
+            msg = "1h out of 2h, class union-1h";
+            startHour = new DateTime().Date + new TimeSpan(9, 0, 0);
+            endHour = new DateTime().Date + new TimeSpan(11, 0, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(1, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(1, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total class activity time ");
+                Assert.AreEqual(2, item.GetComputerTotalTime(), msg + ": computer total time");
+
+
+                Assert.AreEqual(50, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(50, item.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of comp ");
+
+            }
+            Assert.AreEqual(50, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(50, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+
+            //
+            msg = "no user activity out of 2h, class union- 2h";
+            startHour = new DateTime().Date + new TimeSpan(13, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(15, 00, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(0, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(2, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total class activity time ");
+                Assert.AreEqual(2, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(0, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(100, item.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of comp ");
+
+            }
+            Assert.AreEqual(0, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(100, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+
+            cact2.Login = new DateTime(2010, 2, 16, 10, 30, 0);
+            cact2.Logout = new DateTime(2010, 2, 16, 11, 30, 0);
+
+            Activity cact3 = new Activity();
+            cact3.Computer = cl.Computer;
+            cl.Computer.Activities.Add(cact3);
+            cact3.Login = new DateTime(2010, 2, 16, 11, 30, 0);
+            cact3.Logout = new DateTime(2010, 2, 16, 12, 30, 0);
+            cact3.Mode = (byte)Constant.ActivityMode.Class;
+
+            // two activities 10-12,13-15
+            Activity act2 = new Activity();
+            act2.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act2);
+            act2.Login = new DateTime(2010, 2, 16, 13, 0, 0);
+            act2.Logout = new DateTime(2010, 2, 16, 15, 0, 0);
+            act2.Mode = (byte)Constant.ActivityMode.User;
+
+            //
+            msg = "0h out of 1h, class union- 0.5h";
+            startHour = new DateTime().Date + new TimeSpan(12, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(13, 00, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(0, item.GetComputerTotalActiveTime().TotalHours, msg + ": computer total activity time ");
+                Assert.AreEqual(0.5, item.GetComputerTotalActiveTimeWithClasses().TotalHours, msg + ": computer total class activity time ");
+
+                Assert.AreEqual(1, item.GetComputerTotalTime(), msg + ": computer total time");
+            }
+            Assert.AreEqual(0, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(50, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+            Activity act3 = new Activity();
+            act3.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act3);
+            act3.Login = new DateTime(2010, 2, 16, 8, 0, 0);
+            act3.Logout = new DateTime(2010, 2, 16, 9, 0, 0);
+            act3.Mode = (byte)Constant.ActivityMode.User;
+            Activity act4 = new Activity();
+            act3.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act4);
+            act4.Login = new DateTime(2010, 2, 16, 9, 30, 0);
+            act4.Logout = new DateTime(2010, 2, 16, 10, 0, 0);
+            act4.Mode = (byte)Constant.ActivityMode.User;
+            Activity cact4 = new Activity();
+            act3.Computer = cl.Computer;
+            cl.Computer.Activities.Add(cact4);
+            cact4.Login = new DateTime(2010, 2, 16, 8, 30, 0);
+            cact4.Logout = new DateTime(2010, 2, 16, 9, 30, 0);
+            cact4.Mode = (byte)Constant.ActivityMode.Class;
+            cact1.Login = new DateTime(2010, 2, 16, 14, 0, 0);
+            cact1.Logout = new DateTime(2010, 2, 16,16, 0, 0);
+            //
+            msg = "5.5h out of 10h, class union-7.5h";
+            startHour = new DateTime().Date + new TimeSpan(8, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(18, 00, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(5.5, item.GetComputerTotalActiveTime().TotalHours, msg + ": computer total activity time ");
+                Assert.AreEqual(7.5, item.GetComputerTotalActiveTimeWithClasses().TotalHours, msg + ": computer total class activity time ");
+
+                Assert.AreEqual(10, item.GetComputerTotalTime(), msg + ": computer total time");
+            }
+            Assert.AreEqual((int)55, (int)lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(75, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+            //
+            msg = "2h out of 3h, class union-2.5h";
+            startHour = new DateTime().Date + new TimeSpan(11, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(14, 00, 0);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(2.5, item.GetComputerTotalActiveTimeWithClasses().TotalHours, msg + ": computer total class activity time ");
+
+                Assert.AreEqual(3, item.GetComputerTotalTime(), msg + ": computer total time");
+            }
+            Assert.AreEqual(((double)2 / 3) * 100, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(((double)2.5 / 3) * 100, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+            //
+            msg = "no activities should be included in the report out of 20 hours";
+            startHour = new DateTime().Date + new TimeSpan(8, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(18, 00, 0);
+            startDate = new DateTime(2010, 2, 17);
+            endDate = new DateTime(2010, 2, 19);
+
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(0, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(0, item.GetComputerTotalActiveTimeWithClasses().Hours, msg + ": computer total class activity time ");
+
+                Assert.AreEqual(20, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(0, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(0, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(0, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+
+            //
+            msg = "no activities computer exit the lab during the report";
+            startHour = new DateTime().Date + new TimeSpan(8, 00, 0);
+            endHour = new DateTime().Date + new TimeSpan(12, 00, 0);
+            startDate = new DateTime(2010, 3, 15);
+            endDate = new DateTime(2010, 3, 16);
+
+            lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            foreach (var item in lr.ComputersReport)
+            {
+                Assert.AreEqual(0, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
+                Assert.AreEqual(2, item.GetComputerTotalTime(), msg + ": computer total time");
+
+                Assert.AreEqual(0, item.AverageUsage, msg + "- avarageUsage of comp ");
+            }
+            Assert.AreEqual(0, lr.AverageUsage, msg + "- avarageUsage of lab ");
+
+        }
+
 
         [TestMethod]
         public void TestReportsWithNoActtivities()
@@ -520,7 +847,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 4, 11, 10, 0, 0);
             act1.Logout = new DateTime(2010, 4, 11, 12, 0, 0);
-            act1.Mode = Constant.ActivityMode.Off.ToString();
+            act1.Mode = (byte)Constant.ActivityMode.Off;
 
             msg = "report duration with one computer - no user activities(only off)  ";
             startDate = new DateTime(2010, 4, 11);
@@ -547,7 +874,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2010, 3, 11, 10, 0, 0);
             act2.Logout = new DateTime(2010, 3, 11, 12, 0, 0);
-            act2.Mode = Constant.ActivityMode.User.ToString();
+            act2.Mode = (byte)Constant.ActivityMode.User;
             //report duration with computer not in the lab (but have activity in that time)
             msg = "report duration with computer not in the lab (but have activity in that time)";
             startDate = new DateTime(2010, 3, 11);

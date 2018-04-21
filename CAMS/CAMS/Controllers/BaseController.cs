@@ -100,7 +100,7 @@ namespace CAMS.Controllers
             act.ComputerId = compId;
             act.Login = login;
             act.Logout = logout;
-            act.Mode = Mode.ToString();
+            act.Mode = (byte)Mode;
 
             db.Activities.Add(act);
             db.SaveChanges();

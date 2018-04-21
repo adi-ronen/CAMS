@@ -28,7 +28,6 @@ namespace CAMS.Models
 
 
 
-        //TBD- class
         public List<LabReport> CreateLabReport(DateTime startDate,DateTime endDate,DateTime startHour, DateTime endHour, List<int> labsIds,bool weekends)
         {
             List<LabReport> reports = new List<LabReport>();
@@ -92,16 +91,16 @@ namespace CAMS.Models
             if (!weekends)
             {
                 compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
-                && (e.Mode.Trim().Equals(ActivityMode.User.ToString())|| e.Mode.Trim().Equals(ActivityMode.Class.ToString())) // user or class activity
+                && (e.Mode.Equals((byte)ActivityMode.User)|| e.Mode.Equals((byte)ActivityMode.Class)) // user or class activity
                 && !(e.Weekend) 
-                && !((e.Login.Hour > endHour.Hour) || (e.Logout.HasValue && e.Logout.Value.Hour < startHour.Hour))).ToList(); //hour range
+                && !((e.Login.TimeOfDay.TotalHours >= endHour.TimeOfDay.TotalHours) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay.TotalHours <= startHour.TimeOfDay.TotalHours))).ToList(); //hour range
 
             }
             else
             {
                 compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
-                && (e.Mode.Trim().Equals(ActivityMode.User.ToString()) || e.Mode.Trim().Equals(ActivityMode.Class.ToString())) // user or class activity
-                && !((e.Login.Hour > endHour.Hour) || (e.Logout.HasValue && e.Logout.Value.Hour < startHour.Hour))).ToList(); //hour range
+                && (e.Mode.Equals((byte)ActivityMode.User) || e.Mode.Equals((byte)ActivityMode.Class)) // user or class activity
+                && !((e.Login.TimeOfDay.TotalHours >= endHour.TimeOfDay.TotalHours) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay.TotalHours <= startHour.TimeOfDay.TotalHours))).ToList(); //hour range
             }
 
             compAct = compAct.OrderBy(e => e.Login).ToList();
@@ -114,11 +113,11 @@ namespace CAMS.Models
                 DateTime endOfActivity = DateTime.Now;
                 if (act.Logout.HasValue) endOfActivity = act.Logout.Value;
 
-                DateTime startOfTimeReport = new DateTime(Math.Max(act.Login.Ticks, act.Login.Date.AddHours(startHour.Hour).Ticks));
-                DateTime enfOfTimeReport = new DateTime(Math.Min(endOfActivity.Ticks,endOfActivity.Date.AddHours(endHour.Hour).Ticks));
+                DateTime startOfTimeReport = new DateTime(Math.Max(act.Login.Ticks, act.Login.Date.AddHours(startHour.TimeOfDay.TotalHours).Ticks));
+                DateTime enfOfTimeReport = new DateTime(Math.Min(endOfActivity.Ticks,endOfActivity.Date.AddHours(endHour.TimeOfDay.TotalHours).Ticks));
 
                 //if its user activity add it the activity-time-no-classes
-                if (act.Mode.Trim().Equals(ActivityMode.User.ToString()))
+                if (act.Mode.Equals((byte)ActivityMode.User))
                 {
                     TimeSpan timeToAdd = enfOfTimeReport - startOfTimeReport;
                     computerTotalActiveTime = computerTotalActiveTime.Add(timeToAdd);
@@ -134,40 +133,7 @@ namespace CAMS.Models
                     computerTotalActiveTimeWithClasses = computerTotalActiveTimeWithClasses.Add(timeToAdd);
                     timePointWithClasses = enfOfTimeReport;
                 }
-
                 
-
-
-                ////if the time-point is after the end of the activity- we already counted that time in active-time-incuding-classes
-                //bool unincludedActiveTime = !act.Logout.HasValue || act.Logout.Value > timePoint;
-                //bool isClassActivity = act.Mode.Trim().Equals(ActivityMode.Class);
-                ////if it is a class activity and we already included its activity time
-                //if (isClassActivity && !unincludedActiveTime)
-                //    continue;
-                ////if user activity include it in the active-time-not-including-classes 
-                //if (!isClassActivity)
-                //{
-                //    TimeSpan timeToAdd = ActivityTimeInReport(startHour, endHour, act);
-                //    computerTotalActiveTime = computerTotalActiveTime.Add(timeToAdd);
-                //    //if its not yet included in the active-time-incuding-classes and same timespan
-                //    if (unincludedActiveTime && timePoint < act.Login)
-                //    {
-                //        computerTotalActiveTimeWithClasses = computerTotalActiveTimeWithClasses.Add(timeToAdd);
-                //        if (act.Logout.HasValue) timePoint = act.Logout.Value;
-                //        else timePoint = endDate;
-                //        continue;
-                //    }
-
-                //}
-                ////if its not yet included in the active-time-incuding-classes
-                //if (unincludedActiveTime)
-                //{
-                    
-                //    TimeSpan timeToAdd = ActivityTimeInReport(startHour, endHour, timePoint,act.Logout);
-                //    computerTotalActiveTimeWithClasses = computerTotalActiveTimeWithClasses.Add(timeToAdd);
-                //    if (act.Logout.HasValue) timePoint = act.Logout.Value;
-                //    else timePoint = endDate;
-                //}
 
             }
             
@@ -178,29 +144,14 @@ namespace CAMS.Models
             return cR;
         }
 
-        //private TimeSpan ActivityTimeInReport(DateTime startHour, DateTime endHour, DateTime startPoint, DateTime? end)
-        //{
-        //    DateTime endPoint = DateTime.Now;
-        //    if (end.HasValue)
-        //        endPoint = end.Value;
-        //    DateTime copyDate = startPoint.Date;
-        //    DateTime start2 = copyDate.AddHours(startHour.Hour);
-        //    DateTime end2 = copyDate.AddHours(endHour.Hour);
-
-        //    return PeriodIntersectorSpan(startPoint, start2, endPoint, end2);
-        //}
-
-        //private TimeSpan ActivityTimeInReport(DateTime startHour, DateTime endHour, Activity act)
-        //{
-        //    return ActivityTimeInReport(startHour, endHour, act.Login, act.Logout);
-        //}
+       
 
         private double CalculateHoursInReportForComputer(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, bool weekends)
         {
             DateTime firstDay = startDate.Date;
             DateTime lastDay = endDate.Date;
-            DateTime reportStart = firstDay.AddHours(startHour.Hour);
-            DateTime reportEnd = firstDay.AddHours(endHour.Hour);
+            DateTime reportStart = firstDay.AddHours(startHour.TimeOfDay.TotalHours);
+            DateTime reportEnd = firstDay.AddHours(endHour.TimeOfDay.TotalHours);
 
             //report starts and ends in the same day
             if (startDate.Date == endDate.Date)
@@ -208,7 +159,7 @@ namespace CAMS.Models
                 if (!weekends && (startDate.DayOfWeek == DayOfWeek.Friday || startDate.DayOfWeek == DayOfWeek.Saturday))
                     return 0;
                 TimeSpan timeSpan = PeriodIntersectorSpan(startDate, reportStart, endDate, reportEnd);
-                return timeSpan.Hours;
+                return timeSpan.TotalHours;
 
             }
             else
@@ -224,8 +175,8 @@ namespace CAMS.Models
                 {
                     //hours in report in the last day
 
-                    DateTime lastReportStart = lastDay.AddHours(startHour.Hour);
-                    DateTime lastReportEnd = lastDay.AddHours(endHour.Hour);
+                    DateTime lastReportStart = lastDay.AddHours(startHour.TimeOfDay.TotalHours);
+                    DateTime lastReportEnd = lastDay.AddHours(endHour.TimeOfDay.TotalHours);
                     timeSpanLastDay = PeriodIntersectorSpan(lastDay, lastReportStart, endDate, lastReportEnd);
                 }
                 //number of days between

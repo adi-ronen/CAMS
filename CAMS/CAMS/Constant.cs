@@ -7,7 +7,7 @@ namespace CAMS
 {
     public class Constant
     {
-        public enum ActivityMode { Class, Off ,User ,On };
+        public enum ActivityMode : byte { User,Class, Off ,On };
 
 
     }

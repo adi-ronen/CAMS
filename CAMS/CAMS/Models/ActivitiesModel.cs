@@ -45,7 +45,7 @@ namespace CAMS.Models
                 Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
                 
                 // if the last activity is user activity from the day before- split to two activities for each day
-                if(lastAct!=null && lastAct.Mode.Equals(ActivityMode.User.ToString()) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
+                if(lastAct!=null && lastAct.Mode.Equals(ActivityMode.User) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
                 {
                     lastAct = _aController.SplitActivity(lastAct);
                 }
@@ -88,7 +88,7 @@ namespace CAMS.Models
                         //create off activity
                         AddNewActivity(comp, ActivityMode.Off, null);
                     }
-                    else if (lastAct.Mode != ActivityMode.Off.ToString())
+                    else if (lastAct.Mode != (byte)ActivityMode.Off)
                     {
                         //close current activity and create new off activity
                         CloseActivity(lastAct);
