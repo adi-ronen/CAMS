@@ -43,6 +43,12 @@ namespace CAMS.Models
             {
                 //check for the last activity of the computer
                 Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
+                
+                // if the last activity is user activity from the day before- split to two activities for each day
+                if(lastAct!=null && lastAct.Mode.Equals(ActivityMode.User.ToString()) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
+                {
+                    lastAct = _aController.SplitActivity(lastAct);
+                }
 
                 string logedOn = IsComputerLogedOn(comp.ComputerName);
                 // TBD- change the ugly T: isComputerLogedOn should return a boolean (in the func use trim)
@@ -123,13 +129,13 @@ namespace CAMS.Models
         private string GetUserLogOn(string compNames)
         {
             String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + ").UserName";
-            String ans = runScript(script);
+            String ans = RunScript(script);
             return ans;
         }
         private string IsComputerLogedOn(String compName)
         {
             String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName + " -Quiet)";
-            return runScript(script);
+            return RunScript(script);
         }
 
 
@@ -147,7 +153,7 @@ namespace CAMS.Models
 
 
 
-        private string runScript(string scriptText)
+        private string RunScript(string scriptText)
         {
             // create Powershell runspace 
             Runspace runspace = RunspaceFactory.CreateRunspace();

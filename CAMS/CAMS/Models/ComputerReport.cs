@@ -17,17 +17,20 @@ namespace CAMS.Models
         {
             get
             {
-                return 0;
+                if (computerTotaHours == 0) return 0;
+                return (computerTotalActiveTimeWithClasses.TotalHours / computerTotaHours) * 100;
             }
         }
         private TimeSpan computerTotalActiveTime;
+        private TimeSpan computerTotalActiveTimeWithClasses;
         private double computerTotaHours;
 
 
-        public ComputerReport(Computer computer, TimeSpan _computerTotalActiveTime, double _computerTotaHours)
+        public ComputerReport(Computer computer, TimeSpan _computerTotalActiveTime, TimeSpan _computerTotalActiveTimeClasses, double _computerTotaHours)
         {
             Computer = computer;
             computerTotalActiveTime = _computerTotalActiveTime;
+            computerTotalActiveTimeWithClasses = _computerTotalActiveTimeClasses;
             computerTotaHours = _computerTotaHours;
         }
 
@@ -41,7 +44,9 @@ namespace CAMS.Models
             return computerTotaHours;
         }
 
-        
-
+        internal TimeSpan GetComputerTotalActiveTimeWithClasses()
+        {
+            return computerTotalActiveTimeWithClasses;
+        }
     }
 }

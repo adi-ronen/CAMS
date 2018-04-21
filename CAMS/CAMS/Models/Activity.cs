@@ -19,6 +19,7 @@ namespace CAMS.Models
         public Nullable<System.DateTime> Logout { get; set; }
         public string Mode { get; set; }
         public int ComputerId { get; set; }
+        public bool Weekend { get; set; }
     
         public virtual Computer Computer { get; set; }
     }

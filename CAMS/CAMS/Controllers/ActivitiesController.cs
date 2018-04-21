@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using CAMS.Models;
+using static CAMS.Constant;
 
 namespace CAMS.Controllers
 {
@@ -134,6 +135,53 @@ namespace CAMS.Controllers
             lab.TodaysClasses = classes;
             db.Entry(lab).State = EntityState.Modified;
             db.SaveChanges();
+        }
+        
+
+        public void CreateNewActivity(Computer comp, ActivityMode mode, string userName)
+        {
+            Activity act = new Activity();
+            if (userName != null)
+                act.UserName = userName;
+            act.Mode = mode.ToString();
+            act.Login = DateTime.Now;
+            act.Weekend = IsWeekend(act.Login.DayOfWeek);
+            act.ComputerId = comp.ComputerId;
+            act.Computer = comp;
+            db.Activities.Add(act);
+            comp.Activities.Add(act);
+            db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
+            db.SaveChanges();
+        }
+
+        private bool IsWeekend(DayOfWeek dayOfWeek)
+        {
+            return (dayOfWeek.Equals(DayOfWeek.Friday) || dayOfWeek.Equals(DayOfWeek.Saturday));
+
+        }
+
+       
+        public void CloseActivity(Activity act)
+        {
+            act.Logout = DateTime.Now;
+            db.Entry(act).State = EntityState.Modified; //same as above
+            db.SaveChanges();
+
+        }
+
+        public Activity SplitActivity(Activity act)
+        {
+            act.Logout = DateTime.Now.Date.AddTicks(-1);
+            Activity newAct = new Activity();
+            newAct.Login = DateTime.Now.Date;
+            newAct.Weekend = IsWeekend(newAct.Login.DayOfWeek);
+            newAct.ComputerId = act.ComputerId;
+            newAct.Mode = act.Mode;
+            if (act.UserName != null)
+                act.UserName = act.UserName;
+            db.Activities.Add(newAct);
+            db.SaveChanges();
+            return newAct;
         }
 
         internal List<Lab> GetAllLabs()

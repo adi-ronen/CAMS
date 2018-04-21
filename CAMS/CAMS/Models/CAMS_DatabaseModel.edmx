@@ -16,6 +16,7 @@
           <Property Name="Logout" Type="datetime" />
           <Property Name="Mode" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="ComputerId" Type="int" Nullable="false" />
+          <Property Name="Weekend" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Computer">
           <Key>
@@ -240,6 +241,7 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="Mode" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
           <Property Name="ComputerId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Computer" Relationship="Self.FK_Activity_ToComputer" FromRole="Activity" ToRole="Computer" />
+          <Property Name="Weekend" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Computer">
           <Key>
@@ -459,6 +461,7 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <EntitySetMapping Name="Activities">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.Activity">
               <MappingFragment StoreEntitySet="Activity">
+                <ScalarProperty Name="Weekend" ColumnName="Weekend" />
                 <ScalarProperty Name="Login" ColumnName="Login" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Logout" ColumnName="Logout" />

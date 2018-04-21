@@ -13,12 +13,7 @@ namespace CAMS.Controllers
     {
         protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
-        public Activity LastActivityDetails(int id)
-        {
-            Computer computer = db.Computers.Find(id);
-            return LastActivityDetails(computer);
-        }
-
+       
         internal List<Lab> GetLabsOfDepartment(int departmentId)
         {
             return db.Labs.Where(lab => lab.DepartmentId == departmentId).ToList();
@@ -34,6 +29,22 @@ namespace CAMS.Controllers
             return db.Departments.ToList();
         }
 
+      
+        public Lab GetLab(int id)
+        {
+            return db.Labs.Find(id);
+        }
+     
+
+        public Computer GetComputer(int id)
+        {
+            return db.Computers.Find(id);
+        }
+        public Activity LastActivityDetails(int id)
+        {
+            Computer computer = db.Computers.Find(id);
+            return LastActivityDetails(computer);
+        }
         public Activity LastActivityDetails(Computer comp)
         {
             if (comp == null)
@@ -51,37 +62,6 @@ namespace CAMS.Controllers
                 //if no element was found that means the cumputer is currently in On state with no user loged in
                 return null;
             }
-        }
-        public Lab GetLab(int id)
-        {
-            return db.Labs.Find(id);
-        }
-        public void CreateNewActivity(Computer comp, ActivityMode mode, string userName)
-        {
-            Activity act = new Activity();
-            if (userName != null)
-                act.UserName = userName;
-            act.Mode = mode.ToString();
-            act.Login = DateTime.Now;
-            act.ComputerId = comp.ComputerId;
-            act.Computer = comp;
-            db.Activities.Add(act);
-            comp.Activities.Add(act);
-            db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
-            db.SaveChanges();
-        }
-
-        public void CloseActivity(Activity act)
-        {
-            act.Logout = DateTime.Now;
-            db.Entry(act).State = EntityState.Modified; //same as above
-            db.SaveChanges();
-
-        }
-
-        public Computer GetComputer(int id)
-        {
-            return db.Computers.Find(id);
         }
 
 

@@ -10,6 +10,7 @@ namespace CAMS.Tests
     public class ReportsTest
     {
         ReportsController controller = new ReportsController();
+        
 
         [TestInitialize]
         public void Initialize()
@@ -87,6 +88,7 @@ namespace CAMS.Tests
             act2.Login = new DateTime(2018, 4, 20, 13, 0, 0);
             act2.Logout = new DateTime(2018, 4, 20, 15, 0, 0);
             act2.Mode = Constant.ActivityMode.User.ToString();
+            act2.Weekend = true;
 
             //
             msg = "activity in weekend-report include weekend";
@@ -152,7 +154,7 @@ namespace CAMS.Tests
 
 
         }
-
+        
         [TestMethod]
         public void TestColculateBusinessDaysFunc()
         {
@@ -470,10 +472,21 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestReportsWithNoActtivities()
         {
+
+            Lab lab = new Lab();
+            lab.LabId = 3000;
+            ComputerLab cl = new ComputerLab();
+            cl.Computer = new Computer();
+            cl.Computer.ComputerId = 3000;
+            cl.Lab = lab;
+            cl.Entrance = new DateTime(2010, 4, 10, 10, 0, 0);
+            cl.Exit = new DateTime(2010, 4, 15, 12, 0, 0);
+            lab.ComputerLabs.Add(cl);
+            cl.Computer.ComputerLabs.Add(cl);
+
             ReportModel model = new ReportModel(controller);
-            List<int> list = new List<int>();
-            DateTime startDate = DateTime.Now.AddDays(-5);
-            DateTime endDate = DateTime.Now;
+            DateTime startDate = new DateTime(2010, 4, 5);
+            DateTime endDate = new DateTime(2010, 4, 10);
             DateTime startHour = new DateTime();
             TimeSpan ts = new TimeSpan(9, 00, 0);
             startHour = startHour.Date + ts;
@@ -482,65 +495,68 @@ namespace CAMS.Tests
             ts = new TimeSpan(19, 00, 0);
             endHour = endHour.Date + ts;
 
-            
-            list.Add(1001);
+            LabReport lr;
             //report duration befor computer exsist in lab
             string msg = "report duration befor computer exsist in lab";
-            List<LabReport>  lrl = model.CreateLabReport(startDate, endDate, startHour, endDate,list,true);
-            Assert.AreEqual(1, lrl.Count, "should be one report: "+msg);
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: "+msg);
-                Assert.AreEqual(0, lr.AverageUsage, "no usage expected: "+msg);
-            }
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
+
+            Assert.AreEqual(0, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
+
 
             //report duration after computer exsist in lab
             msg = "report duration after computer exsist in lab";
-            startDate = DateTime.Now.AddDays(5);
-            endDate = DateTime.Now.AddDays(10);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(1, lrl.Count, "should be one report: " +msg);
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: "+msg);
-                Assert.AreEqual(0, lr.AverageUsage, "no usage expected: "+msg);
-            }
+            startDate = new DateTime(2010, 4, 16);
+            endDate = new DateTime(2010, 4, 20);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
 
-            //report duration with one computer - no user activities(only off)  
+            Assert.AreEqual(0, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
+
+            //report duration with one computer - no user activities(only off) 
+            Activity act1 = new Activity();
+            act1.ComputerId = cl.ComputerId;
+            act1.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act1);
+            act1.Login = new DateTime(2010, 4, 11, 10, 0, 0);
+            act1.Logout = new DateTime(2010, 4, 11, 12, 0, 0);
+            act1.Mode = Constant.ActivityMode.Off.ToString();
+
             msg = "report duration with one computer - no user activities(only off)  ";
-            startDate = DateTime.Now.AddDays(-10);
-            endDate = DateTime.Now;
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(1, lrl.Count, "should be one report: "+msg);
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: "+msg);
-                Assert.AreEqual(0, lr.AverageUsage, "no usage expected: "+msg);
-            }
+            startDate = new DateTime(2010, 4, 11);
+            endDate = new DateTime(2010, 4, 12);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
+
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
 
             //report duration with computer with no activities in this time
             msg = "report duration with computer with no activities in this time";
-            startDate = DateTime.Now.AddDays(-1);
-            endDate = DateTime.Now;
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(1, lrl.Count, "should be one report: " + msg);
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
-                Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
-            }
+            startDate = new DateTime(2010, 4, 13);
+            endDate = new DateTime(2010, 4, 14);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
 
+            Assert.AreEqual(1, lr.ComputersReport.Count, "one computer report expected: " + msg);
+            Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
+
+
+
+            Activity act2 = new Activity();
+            act2.ComputerId = cl.ComputerId;
+            act2.Computer = cl.Computer;
+            cl.Computer.Activities.Add(act2);
+            act2.Login = new DateTime(2010, 3, 11, 10, 0, 0);
+            act2.Logout = new DateTime(2010, 3, 11, 12, 0, 0);
+            act2.Mode = Constant.ActivityMode.User.ToString();
             //report duration with computer not in the lab (but have activity in that time)
             msg = "report duration with computer not in the lab (but have activity in that time)";
-            startDate = DateTime.Now.AddDays(-25);
-            endDate = DateTime.Now.AddDays(-15);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(1, lrl.Count, "should be one report: " + msg);
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(0, lr.ComputersReport.Count, "no computer report expected: " + msg);
-                Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
-            }
+            startDate = new DateTime(2010, 3, 11);
+            endDate = new DateTime(2010, 3, 12);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
+
+            Assert.AreEqual(0, lr.ComputersReport.Count, "no computer report expected: " + msg);
+            Assert.AreEqual(0, lr.AverageUsage, "no usage expected: " + msg);
+
 
 
         }
@@ -549,10 +565,15 @@ namespace CAMS.Tests
         [TestMethod]
         public void TestReportsWithNoComputers()
         {
+
+            Lab lab = new Lab();
+            lab.LabId = 3000;
+
+
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
-            DateTime startDate = DateTime.Now.AddDays(-20);
-            DateTime endDate = DateTime.Now.AddDays(-15);
+            DateTime startDate = new DateTime(2010, 5, 10);
+            DateTime endDate = new DateTime(2010, 5, 20);
             DateTime startHour = new DateTime();
             TimeSpan ts = new TimeSpan(9, 00, 0);
             startHour = startHour.Date + ts;
@@ -561,31 +582,27 @@ namespace CAMS.Tests
             ts = new TimeSpan(19, 00, 0);
             endHour = endHour.Date + ts;
 
-            //no lab
-            List<LabReport> lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(0, lrl.Count,"no labs to report was inserted");
-            
+            LabReport lr;
             //lab with no computers
-            list.Add(1000);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(1, lrl.Count,"should be one report");
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(0, lr.ComputersReport.Count, "no computers report expected");
-                Assert.AreEqual(0, lr.AverageUsage, "no usage- 0 expected");
-            }
-            list.Remove(1000);
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
+            Assert.AreEqual(0, lr.ComputersReport.Count, "no computers report expected");
+            Assert.AreEqual(0, lr.AverageUsage, "no usage- 0 expected");
+
+
+            ComputerLab cl = new ComputerLab();
+            cl.Computer = new Computer();
+            cl.Computer.ComputerId = 3000;
+            cl.Lab = lab;
+            cl.Entrance = new DateTime(2010, 4, 10, 10, 0, 0);
+            cl.Exit = new DateTime(2010, 4, 15, 12, 0, 0);
+            lab.ComputerLabs.Add(cl);
+            cl.Computer.ComputerLabs.Add(cl);
 
 
             // lab with no computers in the report duration
-            list.Add(1001);
-            lrl = model.CreateLabReport(startDate, endDate, startHour, endDate, list,true);
-            Assert.AreEqual(1, lrl.Count, "should be one report");
-            foreach (var lr in lrl)
-            {
-                Assert.AreEqual(0, lr.ComputersReport.Count, "no computers report expected");
-                Assert.AreEqual(0, lr.AverageUsage, "no usage- 0 expected");
-            }
+            lr = model.CreateLabReport(startDate, endDate, startHour, endDate, lab, true);
+            Assert.AreEqual(0, lr.ComputersReport.Count, "no computers report expected");
+            Assert.AreEqual(0, lr.AverageUsage, "no usage- 0 expected");
 
 
         }
