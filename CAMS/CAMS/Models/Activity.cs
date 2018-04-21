@@ -17,8 +17,9 @@ namespace CAMS.Models
         public System.DateTime Login { get; set; }
         public string UserName { get; set; }
         public Nullable<System.DateTime> Logout { get; set; }
-        public string Mode { get; set; }
+        public byte Mode { get; set; }
         public int ComputerId { get; set; }
+        public bool Weekend { get; set; }
     
         public virtual Computer Computer { get; set; }
     }

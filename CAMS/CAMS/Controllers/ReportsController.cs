@@ -37,8 +37,8 @@ namespace CAMS.Controllers
         {
             if (allDay)
             {
-                startDate = new DateTime();
-                endDate = new DateTime().AddTicks(-1);
+                startHour = new DateTime();
+                endHour = new DateTime().AddDays(1).AddTicks(-1);
             }
             List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds,weekends);
 

@@ -6,6 +6,8 @@ namespace CAMS.Models
     public class LabReport
     {
         private TimeSpan labTotalActiveTime;
+        private TimeSpan labTotalActiveTimeWithClasses;
+
         private double labTotalHours;
 
         public Lab Lab;
@@ -23,7 +25,9 @@ namespace CAMS.Models
         {
             get
             {
-                return 0;
+                if (labTotalHours == 0) return 0;
+
+                return (labTotalActiveTimeWithClasses.TotalHours / labTotalHours) * 100;
             }
         }
 
@@ -39,6 +43,10 @@ namespace CAMS.Models
         public void AddToLabTotalActivityTime(TimeSpan time)
         {
             labTotalActiveTime = labTotalActiveTime.Add(time);
+        }
+        public void AddToLabTotalActivityTimeWithClasses(TimeSpan time)
+        {
+            labTotalActiveTimeWithClasses = labTotalActiveTimeWithClasses.Add(time);
         }
         public void AddToLabTotalHours(double hours)
         {
