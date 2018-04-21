@@ -47,7 +47,6 @@ namespace CAMS.Controllers
 
         public ActionResult DisplayLabReportDetails(LabReport report)
         {
-
             return View("LabDetails", report);
         }
 
@@ -58,9 +57,22 @@ namespace CAMS.Controllers
         {
             try
             {
-                // TODO: Add insert logic here
+                DateTime startDate = Convert.ToDateTime(Request.Form["fromDate"]);
+                DateTime? endDate = Convert.ToDateTime(Request.Form["toDate"]);
+                DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
+                DateTime endHour = Convert.ToDateTime(Request.Form["ToTime"]);
+                string labsIds1 = Request.Form["LabsId"];
+                List<int> labsIds = new List<int>();
+                bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]); 
+                bool allDay = Convert.ToBoolean(Request.Form["allDay"]);
+                if (allDay)
+                {
+                    startDate = new DateTime();
+                    endDate = new DateTime().AddTicks(-1);
+                }
+                List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new LabsReportViewModel(reports, this));
             }
             catch
             {

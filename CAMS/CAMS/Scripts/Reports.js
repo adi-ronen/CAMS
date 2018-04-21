@@ -27,10 +27,10 @@
     });
 });
 CreateReport = function () {
-    var fromDate = $("#fromDate").val();
-    var toDate = $("#toDate").val();
-    var fromTime = $("#fromTime").val();
-    var ToTime = $("#toTime").val();
+    //var fromDate = $("#fromDate").val();
+    //var toDate = $("#toDate").val();
+    //var fromTime = $("#fromTime").val();
+    //var ToTime = $("#toTime").val();
     var LabsId = [];
     var labs = document.getElementsByClassName('form-check-inline')
     for (var i = 0, n = labs.length; i < n; i++) {
@@ -38,18 +38,19 @@ CreateReport = function () {
             LabsId.push(labs[i].value);
         }
     }
-    var weekends = !$("#excludeWeekends").checked;
-    var allDay = document.getElementById("allDay").checked;
-    $.ajax({
-        url: "/Reports/CreateReport",
-        type: 'post',
-        data: {
-            startDate: fromDate, endDate: toDate, startHour: fromTime, endHour: ToTime, labsIds: LabsId, weekends: weekends, allDay: allDay
-        },
-        success: function (data) {
-            $("#html").html(data);
-        }
-    });
+    document.getElementsByName("LabsIds").value = LabsId.toString();
+    document.getElementsByName("includeWeekends").value = !$("#excludeWeekends").checked;
+    document.getElementsByName("allDay").value = document.getElementById("allDay").checked;
+    //$.ajax({
+    //    url: "/Reports/CreateReport",
+    //    type: 'post',
+    //    data: {
+    //        startDate: fromDate, endDate: toDate, startHour: fromTime, endHour: ToTime, labsIds: LabsId, weekends: weekends, allDay: allDay
+    //    },
+    //    success: function (data) {
+    //        $("#html").html(data);
+    //    }
+    //});
     //TBD - CALL MODEL TO CREATE REPORT WITH THIS PARAMS
 }
 CheckboxDep = function (depId) {

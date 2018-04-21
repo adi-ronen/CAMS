@@ -5,63 +5,69 @@
 }
 
 <h2>דוחות</h2>  @*TBD - Validation of dates and time*@
+@using (Html.BeginForm())
+{
 
-@Html.AntiForgeryToken()
-<div class="form-horizontal">
-    <h4>דוח חדש</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10 row">
-            <label>מ -</label>
-            <input type="text" class="datepicker" id="fromDate" readonly="readonly">
-            <label>עד -</label>
-            <input type="text" class="datepicker" id="toDate" readonly="readonly">
-            <input type="checkbox" id="excludeWeekends" class="checkbox-margin" /> <label>לא כולל סופי שבוע</label>
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10 row">
-            <label>מ -</label>
-            <input type="text" class="timepicker" id="fromTime" value="09:00">
-            <label>עד -</label>
-            <input type="text" class="timepicker" id="toTime" value="21:00">
-            <input type="checkbox" class="checkbox-margin" id="allDay" onclick="AllDay()" /> <label>כל היום</label>
-        </div>
-    </div>
-    <div>
-        @Html.Label("כיתות מחשוב", htmlAttributes: new { @class = "control-label" })
-        <br>
-        <div class="row">
-            <div id="select-all" onclick="CheckboxAll(true)">בחר הכל</div>
-            <div id="unselect-all" onclick="CheckboxAll(false)">הסר הכל</div>
-        </div>
-        @foreach (var Dep in Model.GetDepartments())
-        {
-            <div class="dropdown_item accordion">
-                <h3 class="left-border">
-                    <input class="form-check-label" type="checkbox" id="@Dep.DepartmentId" onclick="CheckboxDep(@Dep.DepartmentId)">
-                    <label>@Dep.DepartmentName</label>
-                </h3>
-                <div class="columns">
-                    @foreach (var lab in Model.GetLabsOfDepartment(Dep.DepartmentId))
-                    {
-                        <input class="form-check-inline @Dep.DepartmentId" type="checkbox" value="@lab.LabId" onclick="Checkbox(@Dep.DepartmentId)">@lab.Building
-                        <br>
-                    }
-                </div>
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <h4>דוח חדש</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 row">
+                <label>מ -</label>
+                <input type="text" class="datepicker" id="fromDate" name="fromDate" readonly="readonly">
+                <label>עד -</label>
+                <input type="text" class="datepicker" id="toDate" name="toDate" readonly="readonly">
+                <input type="checkbox" id="excludeWeekends" class="checkbox-margin" /> <label>לא כולל סופי שבוע</label>
+                <input type="hidden" name="includeWeekends" />
             </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 row">
+                <label>מ -</label>
+                <input type="text" class="timepicker" id="fromTime" name="fromTime" value="09:00">
+                <label>עד -</label>
+                <input type="text" class="timepicker" id="toTime" name="toTime" value="21:00">
+                <input type="checkbox" class="checkbox-margin" id="allDay" onclick="AllDay()" /> <label>כל היום</label>
+                <input type="hidden" name="allDay" />
+            </div>
+        </div>
+        <div>
+            @Html.Label("כיתות מחשוב", htmlAttributes: new { @class = "control-label" })
             <br>
-        }
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="צור" class="btn btn-default" onclick="CreateReport()" />
+            <div class="row">
+                <div id="select-all" onclick="CheckboxAll(true)">בחר הכל</div>
+                <div id="unselect-all" onclick="CheckboxAll(false)">הסר הכל</div>
+            </div>
+            @foreach (var Dep in Model.GetDepartments())
+            {
+                <div class="dropdown_item accordion">
+                    <h3 class="left-border">
+                        <input class="form-check-label" type="checkbox" id="@Dep.DepartmentId" onclick="CheckboxDep(@Dep.DepartmentId)">
+                        <label>@Dep.DepartmentName</label>
+                    </h3>
+                    <div class="columns">
+                        @foreach (var lab in Model.GetLabsOfDepartment(Dep.DepartmentId))
+                        {
+                            <input class="form-check-inline @Dep.DepartmentId" type="checkbox" value="@lab.LabId" onclick="Checkbox(@Dep.DepartmentId)">@lab.Building
+                            <br>
+                        }
+                    </div>
+                </div>
+                <br>
+            }
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="צור" class="btn btn-default" onclick="CreateReport()"/>
+                <input type="hidden" name="LabsIds"/>
+            </div>
         </div>
     </div>
-</div>
+}
 @section PreloadScripts{
     @Scripts.Render("~/bundles/jquery-ui")
     <script src="~/Scripts/jquery-TimePicker-1.0.0.js"></script>

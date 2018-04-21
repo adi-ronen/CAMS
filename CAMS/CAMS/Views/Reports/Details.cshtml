@@ -5,7 +5,7 @@
 }
 <h2>דוח פעילות מחשבים</h2>
 
-<div>
+<div id="LabReportDiv">
     @*TBD- add the report delatils (dates, time.....)*@
     <table class="table table-bordered table-condensed text-right">
         <tr>
@@ -18,32 +18,31 @@
             <th></th>
         </tr>
         @foreach (var item in Model.Reports)
-        {
-            <tr class="accordion">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lab.Building)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lab.RoomNumber)
-                </td>
-                <td>
-                    @item.Lab.Computers.Count
-                </td>
-                <td>
-                    @item.AverageUsage
-                </td>
-                <td>
-                    @item.ScheduleAverageUsage
-                </td>
-                <td>
-                    <a href="">פירוט עמדות</a>
-                </td>
-            </tr>
-        }
-
+    {
+        <tr class="accordion">
+            <td>
+                @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lab.Building)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lab.RoomNumber)
+            </td>
+            <td>
+                @item.Lab.Computers.Count
+            </td>
+            <td>
+                @item.AverageUsage
+            </td>
+            <td>
+                @item.ScheduleAverageUsage
+            </td>
+            <td>
+                <a href="">פירוט עמדות</a>
+            </td>
+        </tr>
+}
     </table>
 </div>
 <p>
