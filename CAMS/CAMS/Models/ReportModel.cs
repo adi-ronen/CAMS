@@ -93,14 +93,14 @@ namespace CAMS.Models
                 compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
                 && (e.Mode.Equals((byte)ActivityMode.User)|| e.Mode.Equals((byte)ActivityMode.Class)) // user or class activity
                 && !(e.Weekend) 
-                && !((e.Login.TimeOfDay.TotalHours >= endHour.TimeOfDay.TotalHours) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay.TotalHours <= startHour.TimeOfDay.TotalHours))).ToList(); //hour range
+                && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range
 
             }
             else
             {
                 compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
                 && (e.Mode.Equals((byte)ActivityMode.User) || e.Mode.Equals((byte)ActivityMode.Class)) // user or class activity
-                && !((e.Login.TimeOfDay.TotalHours >= endHour.TimeOfDay.TotalHours) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay.TotalHours <= startHour.TimeOfDay.TotalHours))).ToList(); //hour range
+                && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range
             }
 
             compAct = compAct.OrderBy(e => e.Login).ToList();
@@ -113,8 +113,8 @@ namespace CAMS.Models
                 DateTime endOfActivity = DateTime.Now;
                 if (act.Logout.HasValue) endOfActivity = act.Logout.Value;
 
-                DateTime startOfTimeReport = new DateTime(Math.Max(act.Login.Ticks, act.Login.Date.AddHours(startHour.TimeOfDay.TotalHours).Ticks));
-                DateTime enfOfTimeReport = new DateTime(Math.Min(endOfActivity.Ticks,endOfActivity.Date.AddHours(endHour.TimeOfDay.TotalHours).Ticks));
+                DateTime startOfTimeReport = new DateTime(Math.Max(act.Login.Ticks, act.Login.Date.Add(startHour.TimeOfDay).Ticks));
+                DateTime enfOfTimeReport = new DateTime(Math.Min(endOfActivity.Ticks,endOfActivity.Date.Add(endHour.TimeOfDay).Ticks));
 
                 //if its user activity add it the activity-time-no-classes
                 if (act.Mode.Equals((byte)ActivityMode.User))
@@ -150,8 +150,8 @@ namespace CAMS.Models
         {
             DateTime firstDay = startDate.Date;
             DateTime lastDay = endDate.Date;
-            DateTime reportStart = firstDay.AddHours(startHour.TimeOfDay.TotalHours);
-            DateTime reportEnd = firstDay.AddHours(endHour.TimeOfDay.TotalHours);
+            DateTime reportStart = firstDay.Add(startHour.TimeOfDay);
+            DateTime reportEnd = firstDay.Add(endHour.TimeOfDay);
 
             //report starts and ends in the same day
             if (startDate.Date == endDate.Date)
@@ -175,8 +175,8 @@ namespace CAMS.Models
                 {
                     //hours in report in the last day
 
-                    DateTime lastReportStart = lastDay.AddHours(startHour.TimeOfDay.TotalHours);
-                    DateTime lastReportEnd = lastDay.AddHours(endHour.TimeOfDay.TotalHours);
+                    DateTime lastReportStart = lastDay.Add(startHour.TimeOfDay);
+                    DateTime lastReportEnd = lastDay.Add(endHour.TimeOfDay);
                     timeSpanLastDay = PeriodIntersectorSpan(lastDay, lastReportStart, endDate, lastReportEnd);
                 }
                 //number of days between
