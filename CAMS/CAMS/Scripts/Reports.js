@@ -38,7 +38,9 @@ CreateReport = function () {
             LabsId.push(labs[i].value);
         }
     }
-    document.getElementsByName("LabsIds").value = LabsId.toString();
+    var stringLabsIds = LabsId.toString();
+    document.getElementsByName("LabsIds").value = stringLabsIds;
+    var labsis = document.getElementsByName("LabsIds").value;
     document.getElementsByName("includeWeekends").value = !$("#excludeWeekends").checked;
     document.getElementsByName("allDay").value = document.getElementById("allDay").checked;
     //$.ajax({

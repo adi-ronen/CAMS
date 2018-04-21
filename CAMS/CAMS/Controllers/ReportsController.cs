@@ -61,7 +61,7 @@ namespace CAMS.Controllers
                 DateTime? endDate = Convert.ToDateTime(Request.Form["toDate"]);
                 DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
                 DateTime endHour = Convert.ToDateTime(Request.Form["ToTime"]);
-                string labsIds1 = Request.Form["LabsId"];
+                string labsIds1 = Request.Form["LabsIds"];
                 List<int> labsIds = new List<int>();
                 bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]); 
                 bool allDay = Convert.ToBoolean(Request.Form["allDay"]);
