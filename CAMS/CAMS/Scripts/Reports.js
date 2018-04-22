@@ -84,3 +84,7 @@ DisplayLabReportDetails = function (labId) {
     $("#LabReportDiv").attr('hidden', 'hidden');
     $("#" + labId).removeAttr('hidden');
 }
+DisplayLabReport = function (labId) {
+    $("#LabReportDiv").removeAttr('hidden');
+    $("#" + labId).attr('hidden', 'hidden');
+}
