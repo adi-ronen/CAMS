@@ -18,36 +18,68 @@
             <th></th>
         </tr>
         @foreach (var item in Model.Reports)
-    {
-        <tr class="accordion">
-            <td>
-                @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lab.Building)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lab.RoomNumber)
-            </td>
-            <td>
-                @item.Lab.Computers.Count
-            </td>
-            <td>
-                @item.AverageUsage
-            </td>
-            <td>
-                @item.ScheduleAverageUsage
-            </td>
-            <td>
-                <a href="">פירוט עמדות</a>
-            </td>
-        </tr>
-}
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lab.Building)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lab.RoomNumber)
+                </td>
+                <td>
+                    @item.Lab.Computers.Count
+                </td>
+                <td>
+                    @item.AverageUsage
+                </td>
+                <td>
+                    @item.ScheduleAverageUsage
+                </td>
+                <td>
+                    <button onclick="DisplayLabReportDetails(@item.Lab.LabId)">פירוט עמדות</button>
+                </td>
+            </tr>
+        }
     </table>
 </div>
 <p>
     @Html.ActionLink("צור דוח חדש", "Create")
 </p>
+@foreach (var item in Model.Reports)
+{
+<div id="@item.Lab.LabId" hidden>
+    <table class="table">
+        <tr>
+            <td>שם עמדות</td>
+            <td>אחוז שימוש ממוצע</td>
+            <td>אחוז שימוש ממוצע כולל שיבוץ חדרים</td>
+            <th></th>
+        </tr>
+        @foreach (var computer in item.ComputersReport)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => computer.Computer.ComputerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => computer.AverageUsage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => computer.ScheduleAverageUsage)
+                </td>
+            </tr>
+        }
+
+    </table>
+    <p>
+        @Html.ActionLink("חזור לדוח", "Create")
+    </p>
+</div>
+}
+
 @section PreloadScripts{
     @Scripts.Render("~/bundles/jquery-ui")
     <script src="~/Scripts/jquery-TimePicker-1.0.0.js"></script>

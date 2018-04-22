@@ -17,22 +17,22 @@
             @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 row">
                 <label>מ -</label>
-                <input type="text" class="datepicker" id="fromDate" name="fromDate" readonly="readonly">
+                <input type="datetime" class="datepicker" id="fromDate" name="fromDate" readonly="readonly">
                 <label>עד -</label>
-                <input type="text" class="datepicker" id="toDate" name="toDate" readonly="readonly">
+                <input type="datetime" class="datepicker" id="toDate" name="toDate" readonly="readonly">
                 <input type="checkbox" id="excludeWeekends" class="checkbox-margin" /> <label>לא כולל סופי שבוע</label>
-                <input type="hidden" name="includeWeekends" />
+                <input type="hidden" name="includeWeekends" id="includeWeekends"/>
             </div>
         </div>
         <div class="form-group">
             @Html.Label("טווח שעות", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 row">
                 <label>מ -</label>
-                <input type="text" class="timepicker" id="fromTime" name="fromTime" value="09:00">
+                <input type="datetime" class="timepicker" id="fromTime" name="fromTime" value="09:00">
                 <label>עד -</label>
-                <input type="text" class="timepicker" id="toTime" name="toTime" value="21:00">
+                <input type="datetime" class="timepicker" id="toTime" name="toTime" value="21:00">
                 <input type="checkbox" class="checkbox-margin" id="allDay" onclick="AllDay()" /> <label>כל היום</label>
-                <input type="hidden" name="allDay" />
+                <input type="hidden" name="includeAllDay" id="includeAllDay"/>
             </div>
         </div>
         <div>
@@ -57,13 +57,12 @@
                         }
                     </div>
                 </div>
-                <br>
             }
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="צור" class="btn btn-default" onclick="CreateReport()"/>
-                <input type="hidden" name="LabsIds"/>
+                <input type="hidden" name="LabsIds" id="LabsIds"/>
             </div>
         </div>
     </div>

@@ -61,22 +61,21 @@ namespace CAMS.Controllers
                 DateTime? endDate = Convert.ToDateTime(Request.Form["toDate"]);
                 DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
                 DateTime endHour = Convert.ToDateTime(Request.Form["ToTime"]);
-                string labsIds1 = Request.Form["LabsIds"];
-                List<int> labsIds = new List<int>();
+                List<int> labsIds =  Request.Form["LabsIds"].Split(',').Select(int.Parse).ToList();
                 bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]); 
-                bool allDay = Convert.ToBoolean(Request.Form["allDay"]);
-                if (allDay)
+                bool includeAllDay = Convert.ToBoolean(Request.Form["includeAllDay"]);
+                if (includeAllDay)
                 {
                     startDate = new DateTime();
                     endDate = new DateTime().AddTicks(-1);
                 }
                 List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
 
-                return RedirectToAction("Details", new LabsReportViewModel(reports, this));
+                return View("Details", new LabsReportViewModel(reports, this));
             }
             catch
             {
-                return View();
+                return View(new ReportModel(this));
             }
         }
 
