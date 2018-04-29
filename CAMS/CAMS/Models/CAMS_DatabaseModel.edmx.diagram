@@ -5,12 +5,12 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="58f02290500e42e0922c58e2b12b2cf2" Name="Diagram1" ZoomLevel="86">
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Activity" Width="1.5" PointX="2" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Computer" Width="1.5" PointX="2" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.ComputerLab" Width="1.5" PointX="4.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Activity" Width="1.5" PointX="2" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Computer" Width="1.5" PointX="2.125" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.ComputerLab" Width="1.5" PointX="4.25" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="CAMS_DatabaseModel.Department" Width="1.5" PointX="6.125" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Lab" Width="1.5" PointX="4.125" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.User" Width="1.5" PointX="6.125" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Lab" Width="1.5" PointX="4.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.User" Width="1.5" PointX="6.125" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="CAMS_DatabaseModel.UserDepartment" Width="1.5" PointX="8.125" PointY="2.875" IsExpanded="true" />
         <AssociationConnector Association="CAMS_DatabaseModel.FK_Activity_ToComputer" ManuallyRouted="false" />
         <AssociationConnector Association="CAMS_DatabaseModel.FK_Computer_Lab" ManuallyRouted="false" />

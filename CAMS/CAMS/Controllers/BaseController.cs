@@ -13,7 +13,10 @@ namespace CAMS.Controllers
     {
         protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
-       
+        internal List<string> GetBuildings()
+        {
+            return db.Labs.Select(x => x.Building).ToList();
+        }
         internal List<Lab> GetLabsOfDepartment(int departmentId)
         {
             return db.Labs.Where(lab => lab.DepartmentId == departmentId).ToList();

@@ -13,6 +13,11 @@
         <h4>דוח חדש</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div>
+            <label>סוג דוח</label>
+            <br/>
+            <input type="checkbox" name="AverageUsage" /><label>ממוצע שעות פעילות</label>
+        </div>
         <div class="form-group">
             @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 row">
@@ -52,7 +57,7 @@
                     <div class="columns">
                         @foreach (var lab in Model.GetLabsOfDepartment(Dep.DepartmentId))
                         {
-                            <input class="form-check-inline @Dep.DepartmentId" type="checkbox" value="@lab.LabId" onclick="Checkbox(@Dep.DepartmentId)">@lab.Building
+                            <input class="form-check-inline @Dep.DepartmentId" type="checkbox" value="@lab.LabId" onclick="Checkbox(@Dep.DepartmentId)"><lable>@lab.Building  כיתה  @lab.RoomNumber</lable>
                             <br>
                         }
                     </div>

@@ -7,43 +7,30 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("משתמש חדש", "~/Views/Users/Create")
 </p>
 <table class="table">
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.MailNotifications)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DisconnectedPeriod)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NotActivePeriod)
-        </th>
+        <th>אימייל</th>
+        <th>מחלקה</th>
+        <th>סוג הרשאה</th>
         <th></th>
     </tr>
 
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Email)
+            @Html.DisplayFor(modelItem => item.Email) @*TBD - Group by Email*@
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.MailNotifications)
+            @Html.DisplayFor(modelItem => item.UserDepartments.First().Department.DepartmentName) @*TBD - for all departments*@
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.DisconnectedPeriod)
+            @Html.DisplayFor(modelItem => item.UserDepartments.First().AccessType)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.NotActivePeriod)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.UserId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.UserId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.UserId })
+            @Html.ActionLink("ערוך", "~/Views/Users/Edit", new { id=item.UserId }) |
+            @Html.ActionLink("מחק", "~/Views/Users/Delete", new { id=item.UserId })
         </td>
     </tr>
 }
