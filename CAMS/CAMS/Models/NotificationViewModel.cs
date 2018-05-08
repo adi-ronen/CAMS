@@ -80,13 +80,21 @@ namespace CAMS.Models
     {
         public Notification(Computer comp, Constant.NotificationType type,int days)
         {
-            Computer = comp;
+            DepartmentName = comp.Lab.Department.DepartmentName ;
+            Building = comp.Lab.Building;
+            RoomNumber = comp.Lab.RoomNumber;
+            ComputerName = comp.ComputerName;
+            LabId = comp.Lab.LabId;
             NotificationType = type;
             Days = days;
         }
 
-        public Computer Computer;
         public Constant.NotificationType NotificationType;
         public int Days;
+        public string DepartmentName;
+        public string Building;
+        public string RoomNumber;
+        public string ComputerName;
+        public int LabId;
     }
 }
