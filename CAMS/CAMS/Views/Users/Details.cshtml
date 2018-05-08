@@ -11,40 +11,25 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.DisplayName("דוא''ל")
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.Email)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.MailNotifications)
-        </dt>
-
+        <dt>מחלקות </dt>
+            @foreach (var item in Model.UserDepartments)
+        {
         <dd>
-            @Html.DisplayFor(model => model.MailNotifications)
+            @Html.Display(item.Department.DepartmentName)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.DisconnectedPeriod)
-        </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.DisconnectedPeriod)
+            @Html.Display(item.AccessType)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.NotActivePeriod)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.NotActivePeriod)
-        </dd>
-
-    </dl>
+         }          
+        </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.UserId }) |
+    @Html.ActionLink("ערוך משתמש", "Edit", new { id = Model.UserId }) |
     @Html.ActionLink("חזרה לרשימה", "Index")
 </p>
