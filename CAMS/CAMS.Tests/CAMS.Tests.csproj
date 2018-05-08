@@ -73,6 +73,7 @@
     <Compile Include="LabsControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportsTest.cs" />
+    <Compile Include="NotificationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
