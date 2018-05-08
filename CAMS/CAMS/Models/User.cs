@@ -22,9 +22,9 @@ namespace CAMS.Models
     
         public int UserId { get; set; }
         public string Email { get; set; }
-        public Nullable<bool> MailNotifications { get; set; }
         public Nullable<int> DisconnectedPeriod { get; set; }
         public Nullable<int> NotActivePeriod { get; set; }
+        public byte NotificationFrequency { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserDepartment> UserDepartments { get; set; }

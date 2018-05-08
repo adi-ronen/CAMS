@@ -9,6 +9,7 @@ namespace CAMS.Tests
     [TestClass]
     public class ReportsTest
     {
+
         ReportsController controller = new ReportsController();
         
 

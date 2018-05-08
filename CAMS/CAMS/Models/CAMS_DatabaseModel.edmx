@@ -63,9 +63,9 @@
           </Key>
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" />
-          <Property Name="MailNotifications" Type="bit" />
           <Property Name="DisconnectedPeriod" Type="int" />
           <Property Name="NotActivePeriod" Type="int" />
+          <Property Name="NotificationFrequency" Type="tinyint" Nullable="false" />
         </EntityType>
         <EntityType Name="UserDepartments">
           <Key>
@@ -298,10 +298,10 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           </Key>
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MailNotifications" Type="Boolean" />
           <Property Name="DisconnectedPeriod" Type="Int32" />
           <Property Name="NotActivePeriod" Type="Int32" />
           <NavigationProperty Name="UserDepartments" Relationship="Self.FK_UserDepartments_User" FromRole="User" ToRole="UserDepartments" />
+          <Property Name="NotificationFrequency" Type="Byte" Nullable="false" />
         </EntityType>
         <EntityType Name="UserDepartment">
           <Key>
@@ -514,9 +514,9 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="NotificationFrequency" ColumnName="NotificationFrequency" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="MailNotifications" ColumnName="MailNotifications" />
                 <ScalarProperty Name="DisconnectedPeriod" ColumnName="DisconnectedPeriod" />
                 <ScalarProperty Name="NotActivePeriod" ColumnName="NotActivePeriod" />
               </MappingFragment>

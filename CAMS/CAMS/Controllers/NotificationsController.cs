@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CAMS.Models;
 
 namespace CAMS.Controllers
 {
+
+
     public class NotificationsController : Controller
     {
+
+        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
+
         // GET: Notifications
         public ActionResult Index()
         {
-            return View();
+            User user = db.Users.Find(id);
+
+            return View(new NotificationViewModel(user, this));
         }
 
         // GET: Notifications/Details/5
@@ -41,6 +49,8 @@ namespace CAMS.Controllers
                 return View();
             }
         }
+
+       
 
         // GET: Notifications/Edit/5
         public ActionResult Edit(int id)
