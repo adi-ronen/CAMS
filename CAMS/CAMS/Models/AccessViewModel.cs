@@ -12,9 +12,10 @@ namespace CAMS.Models
         {
             get
             {
-                return GetAccesses();
+                List<UserAccess> acc = GetAccesses();
+                if (_byDepartment) return acc;
+                else return acc.OrderBy(e => e.User.UserId).ToList();
             }
-
         }
 
         public List<Department> Departments
@@ -29,27 +30,32 @@ namespace CAMS.Models
 
         private UsersController _usersController;
         private User _user;
+        private bool _byDepartment;
 
-        public AccessViewModel(User user, UsersController controller)
+        public AccessViewModel(User user, UsersController controller, bool byDepartment)
         {
             _usersController = controller;
             _user = user;
+            _byDepartment = byDepartment;
         }
 
         private List<UserAccess> GetAccesses()
         {
             List<UserAccess> accesses = new List<UserAccess>();
-            //return access only for departments with full access
-
-            foreach (var userDep in _user.UserDepartments.Where(e => e.AccessType == AccessType.Full))
+            //return access only for the departments that the user have full access to
+            foreach (var dep in Departments)
             {
-                if (userDep.UserId != _user.UserId)
+                foreach (var userDep in dep.UserDepartments)
                 {
-                    accesses.Add(new UserAccess(userDep.User, userDep.Department, userDep.AccessType));
+                    if (userDep.UserId != _user.UserId)
+                    {
+                        accesses.Add(new UserAccess(userDep.User, userDep.Department, userDep.AccessType));
+                    }
                 }
-            }
 
+            }
             return accesses;
+
         }
         private List<Department> GetDepartments()
         {

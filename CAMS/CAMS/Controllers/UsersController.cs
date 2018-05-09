@@ -15,10 +15,14 @@ namespace CAMS.Controllers
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         // GET: Users
-        public ActionResult Index()
+        public ActionResult Index(bool? byDepartment)
         {
+            if (byDepartment.HasValue)
+                ViewBag.byDepartment = byDepartment.Value;
+            else
+                ViewBag.byDepartment = false;
             User user = db.Users.Find(0);
-            return View(new AccessViewModel(user,this));
+            return View(new AccessViewModel(user,this, ViewBag.byDepartment));
         }
 
         // GET: Users/Details/5
