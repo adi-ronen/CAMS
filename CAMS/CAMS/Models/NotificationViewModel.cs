@@ -11,35 +11,45 @@ namespace CAMS.Models
 
         public User User;
         private NotificationsController _lController;
-        public List<Notification> Notifications;
-
-        
+        public List<Notification> Notifications
+        {
+            get
+            {
+                return GetNotifications();
+            }
+           
+        }
 
         public NotificationViewModel(User user, NotificationsController controller)
         {
             this.User = user;
             this._lController = controller;
-            Notifications = new List<Notification>();
+            
+
+        }
+        private List<Notification> GetNotifications()
+        {
+            List<Notification> notifications = new List<Notification>();
             foreach (var department in User.UserDepartments)
             {
                 foreach (var lab in department.Department.Labs)
                 {
                     foreach (var comp in lab.Computers)
                     {
-                        
+
                         //check for disconected notification
                         if (User.DisconnectedPeriod != null)
                         {
                             int days = User.DisconnectedPeriod.Value;
                             DateTime disconectedFrom = DateTime.Now.Date.AddDays(-days);
 
-                            List<Activity> offAct=comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.Off && e.Login<=disconectedFrom).ToList();
-                            if (offAct.Count>0)
+                            List<Activity> offAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.Off && e.Login <= disconectedFrom).ToList();
+                            if (offAct.Count > 0)
                             {
                                 //for how long the computer is disconnected
                                 days = (int)(DateTime.Now.Date - offAct[0].Login.Date).TotalDays;
-                                Notification ntf = new Notification(comp,Constant.NotificationType.Disconnected,days);
-                                Notifications.Add(ntf);
+                                Notification ntf = new Notification(comp, Constant.NotificationType.Disconnected, days);
+                                notifications.Add(ntf);
                                 continue;
                             }
                         }
@@ -48,7 +58,7 @@ namespace CAMS.Models
                         {
                             List<Activity> userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.User).ToList();
                             //if there is no user connected rigth now
-                            if (userAct.Count==0)
+                            if (userAct.Count == 0)
                             {
                                 //find the last time user loged out
                                 DateTime? lastLogout = comp.Activities.Where(e => e.Mode == (byte)Constant.ActivityMode.User).Max(e => e.Logout);
@@ -63,7 +73,7 @@ namespace CAMS.Models
                                         if (days >= User.NotActivePeriod.Value)
                                         {
                                             Notification ntf = new Notification(comp, Constant.NotificationType.NotUsed, days);
-                                            Notifications.Add(ntf);
+                                            notifications.Add(ntf);
 
                                         }
                                     }
@@ -76,7 +86,7 @@ namespace CAMS.Models
                                     if (days >= User.NotActivePeriod.Value)
                                     {
                                         Notification ntf = new Notification(comp, Constant.NotificationType.NotUsed, days);
-                                        Notifications.Add(ntf);
+                                        notifications.Add(ntf);
 
                                     }
                                 }
@@ -88,6 +98,7 @@ namespace CAMS.Models
                     }
                 }
             }
+            return notifications;
 
         }
     }

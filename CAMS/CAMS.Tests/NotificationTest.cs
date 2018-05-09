@@ -34,12 +34,10 @@ namespace CAMS.Tests
             comp.Activities.Add(act1);
             act1.Computer = comp;
 
-            vm = new NotificationViewModel(user, new NotificationsController());
             Assert.AreEqual(0, vm.Notifications.Count, "computer disconnected only 1 day");
 
             act1.Login = DateTime.Now.Date.AddDays(-3);
             act1.Logout = DateTime.Now.Date;
-            vm = new NotificationViewModel(user, new NotificationsController());
             Assert.AreEqual(0, vm.Notifications.Count, "computer is connected");
 
             user.NotActivePeriod = 2;
@@ -48,7 +46,6 @@ namespace CAMS.Tests
             act2.Login = DateTime.Now.Date.AddDays(-1);
             comp.Activities.Add(act2);
             act2.Computer = comp;
-             vm = new NotificationViewModel(user, new NotificationsController());
 
             Assert.AreEqual(0, vm.Notifications.Count, "last user activity day ago");
 
@@ -73,12 +70,13 @@ namespace CAMS.Tests
             ud.Department = dep;
             ud.User = user;
             user.UserDepartments.Add(ud);
+            NotificationViewModel vm = new NotificationViewModel(user, new NotificationsController());
+
             Activity act1 = new Activity();
             act1.Mode = (byte)Constant.ActivityMode.Off;
             act1.Login = DateTime.Now.Date.AddDays(-3);
             comp.Activities.Add(act1);
             act1.Computer = comp;
-            NotificationViewModel vm = new NotificationViewModel(user, new NotificationsController());
 
             Assert.AreEqual(1, vm.Notifications.Count, "computer disconnected 3 days");
             Assert.AreEqual(Constant.NotificationType.Disconnected, vm.Notifications[0].NotificationType, "notification type should be discconnected");
@@ -86,7 +84,6 @@ namespace CAMS.Tests
 
             act1.Login = DateTime.Now.Date.AddDays(-3);
             act1.Logout = DateTime.Now.Date;
-            vm = new NotificationViewModel(user, new NotificationsController());
 
             Assert.AreEqual(0, vm.Notifications.Count, "computer is connected");
            
@@ -129,7 +126,6 @@ namespace CAMS.Tests
 
             act1.Login = DateTime.Now.Date.AddDays(-3);
             act1.Logout = DateTime.Now.Date;
-            vm = new NotificationViewModel(user, new NotificationsController());
 
             Assert.AreEqual(1, vm.Notifications.Count, "computer is connected but no user activities");
             Assert.AreEqual(Constant.NotificationType.NotUsed, vm.Notifications[0].NotificationType, "notification type should be unused");
@@ -142,16 +138,13 @@ namespace CAMS.Tests
             act2.Login = DateTime.Now.Date.AddDays(-3);
             comp.Activities.Add(act2);
             act2.Computer = comp;
-            vm = new NotificationViewModel(user, new NotificationsController());
             Assert.AreEqual(0, vm.Notifications.Count, "user loged on");
 
             act2.Logout = DateTime.Now.Date.AddDays(-1);
-            vm = new NotificationViewModel(user, new NotificationsController());
             Assert.AreEqual(0, vm.Notifications.Count, "no user activity for only 1 day");
 
             act2.Login = DateTime.Now.Date.AddDays(-6);
             act2.Logout = DateTime.Now.Date.AddDays(-5);
-            vm = new NotificationViewModel(user, new NotificationsController());
             Assert.AreEqual(1, vm.Notifications.Count, "no user activity for 3 days");
             Assert.AreEqual(Constant.NotificationType.NotUsed, vm.Notifications[0].NotificationType, "notification type should be unused");
             Assert.AreEqual(5, vm.Notifications[0].Days, "wrong nomber of disconnected days");
