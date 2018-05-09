@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -55,7 +56,7 @@ namespace CAMS.Controllers
         // GET: Notifications/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(db.Users.Find(id));
         }
 
         // POST: Notifications/Edit/5
@@ -64,13 +65,17 @@ namespace CAMS.Controllers
         {
             try
             {
-                // TODO: Add update logic here
-
+                User user = db.Users.Find(id);
+                user.DisconnectedPeriod = Convert.ToInt32(Request["DisconnectedPeriod"].ToString());
+                user.NotActivePeriod = Convert.ToInt32(Request["NotActivePeriod"].ToString());
+                user.NotificationFrequency = Convert.ToByte(Request["NotificationFrequency"].ToString());
+                db.Entry(user).State = EntityState.Modified;
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return View(db.Users.Find(id));
             }
         }
 
