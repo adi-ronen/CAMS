@@ -11,6 +11,7 @@
 </p>
 <table class="table">
     <tr>
+        <th>שם משתמש</th>
         <th>אימייל</th>
         <th>מחלקה</th>
         <th>סוג הרשאה</th>
@@ -19,6 +20,9 @@
 
 @foreach (var item in Model) {
     <tr>
+        <td>
+
+        </td>
         <td>
             @Html.DisplayFor(modelItem => item.Email) @*TBD - Group by Email*@
         </td>
