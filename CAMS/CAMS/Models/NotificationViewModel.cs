@@ -33,11 +33,11 @@ namespace CAMS.Models
                             int days = User.DisconnectedPeriod.Value;
                             DateTime disconectedFrom = DateTime.Now.Date.AddDays(-days);
 
-                            Activity offAct=comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.Off && e.Login<disconectedFrom).First();
-                            if (offAct != null)
+                            List<Activity> offAct=comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.Off && e.Login<=disconectedFrom).ToList();
+                            if (offAct.Count>0)
                             {
                                 //for how long the computer is disconnected
-                                days = (int)(DateTime.Now.Date - offAct.Login.Date).TotalDays;
+                                days = (int)(DateTime.Now.Date - offAct[0].Login.Date).TotalDays;
                                 Notification ntf = new Notification(comp,Constant.NotificationType.Disconnected,days);
                                 Notifications.Add(ntf);
                                 continue;
@@ -46,18 +46,34 @@ namespace CAMS.Models
                         //check for unused notification
                         if (User.NotActivePeriod != null)
                         {
-                            Activity userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.User).First();
+                            List<Activity> userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.User).ToList();
                             //if there is no user connected rigth now
-                            if (userAct == null)
+                            if (userAct.Count==0)
                             {
                                 //find the last time user loged out
                                 DateTime? lastLogout = comp.Activities.Where(e => e.Mode == (byte)Constant.ActivityMode.User).Max(e => e.Logout);
-                                if (!lastLogout.HasValue)
+                                if (lastLogout == null)
+                                {
+                                    ComputerLab cl = comp.ComputerLabs.Where(e => e.LabId == lab.LabId && !e.Exit.HasValue).ToList().First();
+                                    if (cl != null)
+                                    {
+                                        //time from computer enterance to lab
+                                        int days = (int)(DateTime.Now.Date - cl.Entrance.Date).TotalDays;
+                                        //if the days passed from the computer enterance bigger than the given days- make notification 
+                                        if (days >= User.NotActivePeriod.Value)
+                                        {
+                                            Notification ntf = new Notification(comp, Constant.NotificationType.NotUsed, days);
+                                            Notifications.Add(ntf);
+
+                                        }
+                                    }
+                                }
+                                else if (lastLogout.HasValue)
                                 {
                                     //time from last logout
                                     int days = (int)(DateTime.Now.Date - lastLogout.Value.Date).TotalDays;
                                     //if the days passed from the last user activity bigger than the given days- make notification 
-                                    if (days >= User.DisconnectedPeriod.Value)
+                                    if (days >= User.NotActivePeriod.Value)
                                     {
                                         Notification ntf = new Notification(comp, Constant.NotificationType.NotUsed, days);
                                         Notifications.Add(ntf);
