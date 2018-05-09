@@ -17,6 +17,15 @@ namespace CAMS.Models
 
         }
 
+        public List<Department> Departments
+        {
+            get
+            {
+                return GetDepartments();
+            }
+        }
+
+
 
         private UsersController _usersController;
         private User _user;
@@ -34,11 +43,21 @@ namespace CAMS.Models
             {
                 if (userDep.UserId != _user.UserId)
                 {
-                    accesses.Add(new UserAccess(userDep.User, userDep.Department, 0));
+                    accesses.Add(new UserAccess(userDep.User, userDep.Department, userDep.AccessType));
                 }
             }
 
-            throw new NotImplementedException();
+            return accesses;
+        }
+        private List<Department> GetDepartments()
+        {
+            List<Department> dep = new List<Department>();
+            foreach (var userDep in _user.UserDepartments)
+            {
+                if (userDep.AccessType == AccessType.Full)
+                    dep.Add(userDep.Department);
+            }
+            return dep;
         }
     }
 
