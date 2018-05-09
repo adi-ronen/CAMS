@@ -22,10 +22,10 @@ namespace CAMS.Models
         }
     
         public int LabId { get; set; }
+        public string TodaysClasses { get; set; }
         public string Building { get; set; }
         public string RoomNumber { get; set; }
         public int DepartmentId { get; set; }
-        public string TodaysClasses { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Computer> Computers { get; set; }

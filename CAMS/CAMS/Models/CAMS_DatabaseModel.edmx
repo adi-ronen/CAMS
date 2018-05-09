@@ -74,7 +74,7 @@
           </Key>
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="DepartmentId" Type="int" Nullable="false" />
-          <Property Name="AccessType" Type="nchar" MaxLength="10" />
+          <Property Name="AccessType" Type="tinyint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -229,6 +229,61 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="CAMS_DatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="CAMS_DatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Activities" EntityType="CAMS_DatabaseModel.Activity" />
+          <EntitySet Name="Computers" EntityType="CAMS_DatabaseModel.Computer" />
+          <EntitySet Name="ComputerLabs" EntityType="CAMS_DatabaseModel.ComputerLab" />
+          <EntitySet Name="Departments" EntityType="CAMS_DatabaseModel.Department" />
+          <EntitySet Name="Labs" EntityType="CAMS_DatabaseModel.Lab" />
+          <EntitySet Name="Users" EntityType="CAMS_DatabaseModel.User" />
+          <EntitySet Name="UserDepartments" EntityType="CAMS_DatabaseModel.UserDepartment" />
+          <EntitySet Name="database_firewall_rules" EntityType="CAMS_DatabaseModel.database_firewall_rules" />
+          <AssociationSet Name="FK_Activity_ToComputer" Association="CAMS_DatabaseModel.FK_Activity_ToComputer">
+            <End Role="Computer" EntitySet="Computers" />
+            <End Role="Activity" EntitySet="Activities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Computer_Lab" Association="CAMS_DatabaseModel.FK_Computer_Lab">
+            <End Role="Lab" EntitySet="Labs" />
+            <End Role="Computer" EntitySet="Computers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComputerLabs_Computer" Association="CAMS_DatabaseModel.FK_ComputerLabs_Computer">
+            <End Role="Computer" EntitySet="Computers" />
+            <End Role="ComputerLab" EntitySet="ComputerLabs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComputerLabs_Lab" Association="CAMS_DatabaseModel.FK_ComputerLabs_Lab">
+            <End Role="Lab" EntitySet="Labs" />
+            <End Role="ComputerLab" EntitySet="ComputerLabs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Lab_Department" Association="CAMS_DatabaseModel.FK_Lab_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="Lab" EntitySet="Labs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserDepartments_Department" Association="CAMS_DatabaseModel.FK_UserDepartments_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="UserDepartment" EntitySet="UserDepartments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserDepartments_User" Association="CAMS_DatabaseModel.FK_UserDepartments_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserDepartment" EntitySet="UserDepartments" />
+          </AssociationSet>
+        </EntityContainer>
+        <EnumType Name="AccessType" UnderlyingType="Byte">
+          <Member Name="Full" Value="0" />
+          <Member Name="Limited" Value="1" />
+          <Member Name="View" Value="2" />
+        </EnumType>
+        <EnumType Name="NotificationFrequency" UnderlyingType="Byte">
+          <Member Name="None" Value="0" />
+          <Member Name="Daily" Value="1" />
+          <Member Name="Weekly" Value="2" />
+          <Member Name="Monthly" Value="3" />
+        </EnumType>
+        <EnumType Name="ActivityType" UnderlyingType="Byte">
+          <Member Name="User" Value="0" />
+          <Member Name="Class" Value="1" />
+          <Member Name="Off" Value="2" />
+          <Member Name="On" Value="3" />
+        </EnumType>
         <EntityType Name="Activity">
           <Key>
             <PropertyRef Name="Login" />
@@ -238,10 +293,10 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="Login" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Logout" Type="DateTime" Precision="3" />
-          <Property Name="Mode" Type="Byte" Nullable="false" />
+          <Property Name="Mode" Type="CAMS_DatabaseModel.ActivityType" Nullable="false" />
           <Property Name="ComputerId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Computer" Relationship="Self.FK_Activity_ToComputer" FromRole="Activity" ToRole="Computer" />
           <Property Name="Weekend" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Computer" Relationship="CAMS_DatabaseModel.FK_Activity_ToComputer" FromRole="Activity" ToRole="Computer" />
         </EntityType>
         <EntityType Name="Computer">
           <Key>
@@ -251,10 +306,10 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="MAC" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="ComputerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CurrentLab" Type="Int32" />
-          <Property Name="LocationInLab" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
-          <NavigationProperty Name="Activities" Relationship="Self.FK_Activity_ToComputer" FromRole="Computer" ToRole="Activity" />
-          <NavigationProperty Name="Lab" Relationship="Self.FK_Computer_Lab" FromRole="Computer" ToRole="Lab" />
-          <NavigationProperty Name="ComputerLabs" Relationship="Self.FK_ComputerLabs_Computer" FromRole="Computer" ToRole="ComputerLabs" />
+          <Property Name="LocationInLab" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Activities" Relationship="CAMS_DatabaseModel.FK_Activity_ToComputer" FromRole="Computer" ToRole="Activity" />
+          <NavigationProperty Name="Lab" Relationship="CAMS_DatabaseModel.FK_Computer_Lab" FromRole="Computer" ToRole="Lab" />
+          <NavigationProperty Name="ComputerLabs" Relationship="CAMS_DatabaseModel.FK_ComputerLabs_Computer" FromRole="Computer" ToRole="ComputerLab" />
         </EntityType>
         <EntityType Name="ComputerLab">
           <Key>
@@ -266,8 +321,8 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="ComputerId" Type="Int32" Nullable="false" />
           <Property Name="Entrance" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Exit" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Computer" Relationship="Self.FK_ComputerLabs_Computer" FromRole="ComputerLabs" ToRole="Computer" />
-          <NavigationProperty Name="Lab" Relationship="Self.FK_ComputerLabs_Lab" FromRole="ComputerLabs" ToRole="Lab" />
+          <NavigationProperty Name="Computer" Relationship="CAMS_DatabaseModel.FK_ComputerLabs_Computer" FromRole="ComputerLab" ToRole="Computer" />
+          <NavigationProperty Name="Lab" Relationship="CAMS_DatabaseModel.FK_ComputerLabs_Lab" FromRole="ComputerLab" ToRole="Lab" />
         </EntityType>
         <EntityType Name="Department">
           <Key>
@@ -276,21 +331,21 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="DepartmentId" Type="Int32" Nullable="false" />
           <Property Name="DepartmentName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Domain" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Labs" Relationship="Self.FK_Lab_Department" FromRole="Department" ToRole="Lab" />
-          <NavigationProperty Name="UserDepartments" Relationship="Self.FK_UserDepartments_Department" FromRole="Department" ToRole="UserDepartments" />
+          <NavigationProperty Name="Labs" Relationship="CAMS_DatabaseModel.FK_Lab_Department" FromRole="Department" ToRole="Lab" />
+          <NavigationProperty Name="UserDepartments" Relationship="CAMS_DatabaseModel.FK_UserDepartments_Department" FromRole="Department" ToRole="UserDepartment" />
         </EntityType>
         <EntityType Name="Lab">
           <Key>
             <PropertyRef Name="LabId" />
           </Key>
           <Property Name="LabId" Type="Int32" Nullable="false" />
+          <Property Name="TodaysClasses" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Building" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="RoomNumber" Type="String" MaxLength="15" FixedLength="true" Unicode="false" />
           <Property Name="DepartmentId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Computers" Relationship="Self.FK_Computer_Lab" FromRole="Lab" ToRole="Computer" />
-          <NavigationProperty Name="ComputerLabs" Relationship="Self.FK_ComputerLabs_Lab" FromRole="Lab" ToRole="ComputerLabs" />
-          <NavigationProperty Name="Department" Relationship="Self.FK_Lab_Department" FromRole="Lab" ToRole="Department" />
-          <Property Name="TodaysClasses" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Computers" Relationship="CAMS_DatabaseModel.FK_Computer_Lab" FromRole="Lab" ToRole="Computer" />
+          <NavigationProperty Name="ComputerLabs" Relationship="CAMS_DatabaseModel.FK_ComputerLabs_Lab" FromRole="Lab" ToRole="ComputerLab" />
+          <NavigationProperty Name="Department" Relationship="CAMS_DatabaseModel.FK_Lab_Department" FromRole="Lab" ToRole="Department" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -300,8 +355,8 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="DisconnectedPeriod" Type="Int32" />
           <Property Name="NotActivePeriod" Type="Int32" />
-          <NavigationProperty Name="UserDepartments" Relationship="Self.FK_UserDepartments_User" FromRole="User" ToRole="UserDepartments" />
-          <Property Name="NotificationFrequency" Type="Byte" Nullable="false" />
+          <Property Name="NotificationFrequency" Type="CAMS_DatabaseModel.NotificationFrequency" Nullable="false" />
+          <NavigationProperty Name="UserDepartments" Relationship="CAMS_DatabaseModel.FK_UserDepartments_User" FromRole="User" ToRole="UserDepartment" />
         </EntityType>
         <EntityType Name="UserDepartment">
           <Key>
@@ -310,132 +365,10 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           </Key>
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="DepartmentId" Type="Int32" Nullable="false" />
-          <Property Name="AccessType" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Department" Relationship="Self.FK_UserDepartments_Department" FromRole="UserDepartments" ToRole="Department" />
-          <NavigationProperty Name="User" Relationship="Self.FK_UserDepartments_User" FromRole="UserDepartments" ToRole="User" />
+          <Property Name="AccessType" Type="CAMS_DatabaseModel.AccessType" Nullable="false" />
+          <NavigationProperty Name="Department" Relationship="CAMS_DatabaseModel.FK_UserDepartments_Department" FromRole="UserDepartment" ToRole="Department" />
+          <NavigationProperty Name="User" Relationship="CAMS_DatabaseModel.FK_UserDepartments_User" FromRole="UserDepartment" ToRole="User" />
         </EntityType>
-        <Association Name="FK_Activity_ToComputer">
-          <End Role="Computer" Type="Self.Computer" Multiplicity="1" />
-          <End Role="Activity" Type="Self.Activity" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Computer">
-              <PropertyRef Name="ComputerId" />
-            </Principal>
-            <Dependent Role="Activity">
-              <PropertyRef Name="ComputerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Computer_Lab">
-          <End Role="Lab" Type="Self.Lab" Multiplicity="0..1" />
-          <End Role="Computer" Type="Self.Computer" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lab">
-              <PropertyRef Name="LabId" />
-            </Principal>
-            <Dependent Role="Computer">
-              <PropertyRef Name="CurrentLab" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ComputerLabs_Computer">
-          <End Role="Computer" Type="Self.Computer" Multiplicity="1" />
-          <End Role="ComputerLabs" Type="Self.ComputerLab" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Computer">
-              <PropertyRef Name="ComputerId" />
-            </Principal>
-            <Dependent Role="ComputerLabs">
-              <PropertyRef Name="ComputerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ComputerLabs_Lab">
-          <End Role="Lab" Type="Self.Lab" Multiplicity="1" />
-          <End Role="ComputerLabs" Type="Self.ComputerLab" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lab">
-              <PropertyRef Name="LabId" />
-            </Principal>
-            <Dependent Role="ComputerLabs">
-              <PropertyRef Name="LabId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Lab_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="1" />
-          <End Role="Lab" Type="Self.Lab" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Department">
-              <PropertyRef Name="DepartmentId" />
-            </Principal>
-            <Dependent Role="Lab">
-              <PropertyRef Name="DepartmentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserDepartments_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="1" />
-          <End Role="UserDepartments" Type="Self.UserDepartment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Department">
-              <PropertyRef Name="DepartmentId" />
-            </Principal>
-            <Dependent Role="UserDepartments">
-              <PropertyRef Name="DepartmentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserDepartments_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="UserDepartments" Type="Self.UserDepartment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="UserDepartments">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityContainer Name="CAMS_DatabaseEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Activities" EntityType="Self.Activity" />
-          <EntitySet Name="Computers" EntityType="Self.Computer" />
-          <EntitySet Name="ComputerLabs" EntityType="Self.ComputerLab" />
-          <EntitySet Name="Departments" EntityType="Self.Department" />
-          <EntitySet Name="Labs" EntityType="Self.Lab" />
-          <EntitySet Name="Users" EntityType="Self.User" />
-          <EntitySet Name="UserDepartments" EntityType="Self.UserDepartment" />
-          <AssociationSet Name="FK_Activity_ToComputer" Association="Self.FK_Activity_ToComputer">
-            <End Role="Computer" EntitySet="Computers" />
-            <End Role="Activity" EntitySet="Activities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Computer_Lab" Association="Self.FK_Computer_Lab">
-            <End Role="Lab" EntitySet="Labs" />
-            <End Role="Computer" EntitySet="Computers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ComputerLabs_Computer" Association="Self.FK_ComputerLabs_Computer">
-            <End Role="Computer" EntitySet="Computers" />
-            <End Role="ComputerLabs" EntitySet="ComputerLabs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ComputerLabs_Lab" Association="Self.FK_ComputerLabs_Lab">
-            <End Role="Lab" EntitySet="Labs" />
-            <End Role="ComputerLabs" EntitySet="ComputerLabs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Lab_Department" Association="Self.FK_Lab_Department">
-            <End Role="Department" EntitySet="Departments" />
-            <End Role="Lab" EntitySet="Labs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserDepartments_Department" Association="Self.FK_UserDepartments_Department">
-            <End Role="Department" EntitySet="Departments" />
-            <End Role="UserDepartments" EntitySet="UserDepartments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserDepartments_User" Association="Self.FK_UserDepartments_User">
-            <End Role="User" EntitySet="Users" />
-            <End Role="UserDepartments" EntitySet="UserDepartments" />
-          </AssociationSet>
-          <EntitySet Name="database_firewall_rules" EntityType="CAMS_DatabaseModel.database_firewall_rules" />
-        </EntityContainer>
         <EntityType Name="database_firewall_rules">
           <Key>
             <PropertyRef Name="id" />
@@ -452,62 +385,146 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
           <Property Name="create_date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="modify_date" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
-      </Schema>
+        <Association Name="FK_Activity_ToComputer">
+          <End Type="CAMS_DatabaseModel.Computer" Role="Computer" Multiplicity="1" />
+          <End Type="CAMS_DatabaseModel.Activity" Role="Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computer">
+              <PropertyRef Name="ComputerId" />
+            </Principal>
+            <Dependent Role="Activity">
+              <PropertyRef Name="ComputerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Computer_Lab">
+          <End Type="CAMS_DatabaseModel.Lab" Role="Lab" Multiplicity="0..1" />
+          <End Type="CAMS_DatabaseModel.Computer" Role="Computer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lab">
+              <PropertyRef Name="LabId" />
+            </Principal>
+            <Dependent Role="Computer">
+              <PropertyRef Name="CurrentLab" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComputerLabs_Computer">
+          <End Type="CAMS_DatabaseModel.Computer" Role="Computer" Multiplicity="1" />
+          <End Type="CAMS_DatabaseModel.ComputerLab" Role="ComputerLab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computer">
+              <PropertyRef Name="ComputerId" />
+            </Principal>
+            <Dependent Role="ComputerLab">
+              <PropertyRef Name="ComputerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComputerLabs_Lab">
+          <End Type="CAMS_DatabaseModel.Lab" Role="Lab" Multiplicity="1" />
+          <End Type="CAMS_DatabaseModel.ComputerLab" Role="ComputerLab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lab">
+              <PropertyRef Name="LabId" />
+            </Principal>
+            <Dependent Role="ComputerLab">
+              <PropertyRef Name="LabId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Lab_Department">
+          <End Type="CAMS_DatabaseModel.Department" Role="Department" Multiplicity="1" />
+          <End Type="CAMS_DatabaseModel.Lab" Role="Lab" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="Lab">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserDepartments_Department">
+          <End Type="CAMS_DatabaseModel.Department" Role="Department" Multiplicity="1" />
+          <End Type="CAMS_DatabaseModel.UserDepartment" Role="UserDepartment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="UserDepartment">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserDepartments_User">
+          <End Type="CAMS_DatabaseModel.User" Role="User" Multiplicity="1" />
+          <End Type="CAMS_DatabaseModel.UserDepartment" Role="UserDepartment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserDepartment">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="CAMS_DatabaseModelStoreContainer" CdmEntityContainer="CAMS_DatabaseEntities">
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="CAMS_DatabaseModelStoreContainer" CdmEntityContainer="CAMS_DatabaseEntities">
           <EntitySetMapping Name="Activities">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.Activity">
               <MappingFragment StoreEntitySet="Activity">
-                <ScalarProperty Name="Weekend" ColumnName="Weekend" />
-                <ScalarProperty Name="Login" ColumnName="Login" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Logout" ColumnName="Logout" />
                 <ScalarProperty Name="Mode" ColumnName="Mode" />
+                <ScalarProperty Name="Weekend" ColumnName="Weekend" />
                 <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
+                <ScalarProperty Name="Logout" ColumnName="Logout" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Login" ColumnName="Login" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Computers">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.Computer">
               <MappingFragment StoreEntitySet="Computer">
-                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
-                <ScalarProperty Name="MAC" ColumnName="MAC" />
-                <ScalarProperty Name="ComputerName" ColumnName="ComputerName" />
-                <ScalarProperty Name="CurrentLab" ColumnName="CurrentLab" />
                 <ScalarProperty Name="LocationInLab" ColumnName="LocationInLab" />
+                <ScalarProperty Name="CurrentLab" ColumnName="CurrentLab" />
+                <ScalarProperty Name="ComputerName" ColumnName="ComputerName" />
+                <ScalarProperty Name="MAC" ColumnName="MAC" />
+                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ComputerLabs">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.ComputerLab">
               <MappingFragment StoreEntitySet="ComputerLabs">
-                <ScalarProperty Name="LabId" ColumnName="LabId" />
-                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
-                <ScalarProperty Name="Entrance" ColumnName="Entrance" />
                 <ScalarProperty Name="Exit" ColumnName="Exit" />
+                <ScalarProperty Name="Entrance" ColumnName="Entrance" />
+                <ScalarProperty Name="ComputerId" ColumnName="ComputerId" />
+                <ScalarProperty Name="LabId" ColumnName="LabId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Departments">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.Department">
               <MappingFragment StoreEntitySet="Department">
-                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
-                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
                 <ScalarProperty Name="Domain" ColumnName="Domain" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Labs">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.Lab">
               <MappingFragment StoreEntitySet="Lab">
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
+                <ScalarProperty Name="Building" ColumnName="Building" />
                 <ScalarProperty Name="TodaysClasses" ColumnName="TodaysClasses" />
                 <ScalarProperty Name="LabId" ColumnName="LabId" />
-                <ScalarProperty Name="Building" ColumnName="Building" />
-                <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
-                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -515,19 +532,19 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.User">
               <MappingFragment StoreEntitySet="User">
                 <ScalarProperty Name="NotificationFrequency" ColumnName="NotificationFrequency" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="DisconnectedPeriod" ColumnName="DisconnectedPeriod" />
                 <ScalarProperty Name="NotActivePeriod" ColumnName="NotActivePeriod" />
+                <ScalarProperty Name="DisconnectedPeriod" ColumnName="DisconnectedPeriod" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserDepartments">
             <EntityTypeMapping TypeName="CAMS_DatabaseModel.UserDepartment">
               <MappingFragment StoreEntitySet="UserDepartments">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
                 <ScalarProperty Name="AccessType" ColumnName="AccessType" />
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -544,8 +561,7 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
             </EntityTypeMapping>
           </EntitySetMapping>
         </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -559,7 +575,7 @@ warning 6002: The table/view 'CAMS_Database.sys.database_firewall_rules' does no
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

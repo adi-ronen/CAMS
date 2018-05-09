@@ -209,9 +209,16 @@
     <Compile Include="Logon.aspx.designer.cs">
       <DependentUpon>Logon.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Models\AccessType.cs">
+      <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccessViewModel.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ActivitiesModel.cs" />
     <Compile Include="Models\Activity.cs">
+      <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ActivityType.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CAMS_DatabaseModel.Context.cs">
@@ -251,6 +258,9 @@
     <Compile Include="Models\LabsViewModel.cs" />
     <Compile Include="Models\LdapAuthentication.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\NotificationFrequency.cs">
+      <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\NotificationViewModel.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\User.cs">
@@ -332,6 +342,7 @@
       <DependentUpon>CAMS_DatabaseModel.edmx</DependentUpon>
       <LastGenOutput>CAMS_DatabaseModel.Context.cs</LastGenOutput>
     </Content>
+    <Content Include="Models\CAMS_DatabaseModel.edmx.sql" />
     <Content Include="Models\CAMS_DatabaseModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>CAMS_DatabaseModel.edmx</DependentUpon>

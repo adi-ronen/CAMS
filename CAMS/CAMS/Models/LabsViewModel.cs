@@ -76,15 +76,13 @@ namespace CAMS.Models
         }
 
 
-        public ActivityMode GetComputerState(Computer comp)
+        public ActivityType GetComputerState(Computer comp)
         {
             Activity currentAct = _lController.LastActivityDetails(comp.ComputerId);
             if (currentAct == null)
-                return ActivityMode.On;
-            else if (currentAct.Mode.Equals(ActivityMode.Off))
-                return ActivityMode.Off;
+                return ActivityType.On;
             else
-                return ActivityMode.User;
+                return currentAct.Mode;
 
         }
 

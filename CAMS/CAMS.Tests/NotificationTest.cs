@@ -29,7 +29,7 @@ namespace CAMS.Tests
             ud.User = user;
             user.UserDepartments.Add(ud);
             Activity act1 = new Activity();
-            act1.Mode = (byte)Constant.ActivityMode.Off;
+            act1.Mode = ActivityType.Off;
             act1.Login = DateTime.Now.Date.AddDays(-1);
             comp.Activities.Add(act1);
             act1.Computer = comp;
@@ -42,7 +42,7 @@ namespace CAMS.Tests
 
             user.NotActivePeriod = 2;
             Activity act2 = new Activity();
-            act2.Mode = (byte)Constant.ActivityMode.User;
+            act2.Mode = ActivityType.User;
             act2.Login = DateTime.Now.Date.AddDays(-1);
             comp.Activities.Add(act2);
             act2.Computer = comp;
@@ -73,7 +73,7 @@ namespace CAMS.Tests
             NotificationViewModel vm = new NotificationViewModel(user, new NotificationsController());
 
             Activity act1 = new Activity();
-            act1.Mode = (byte)Constant.ActivityMode.Off;
+            act1.Mode = ActivityType.Off;
             act1.Login = DateTime.Now.Date.AddDays(-3);
             comp.Activities.Add(act1);
             act1.Computer = comp;
@@ -114,7 +114,7 @@ namespace CAMS.Tests
             ud.User = user;
             user.UserDepartments.Add(ud);
             Activity act1 = new Activity();
-            act1.Mode = (byte)Constant.ActivityMode.Off;
+            act1.Mode = ActivityType.Off;
             act1.Login = DateTime.Now.Date.AddDays(-3);
             comp.Activities.Add(act1);
             act1.Computer = comp;
@@ -134,7 +134,7 @@ namespace CAMS.Tests
 
 
             Activity act2 = new Activity();
-            act2.Mode = (byte)Constant.ActivityMode.User;
+            act2.Mode = ActivityType.User;
             act2.Login = DateTime.Now.Date.AddDays(-3);
             comp.Activities.Add(act2);
             act2.Computer = comp;

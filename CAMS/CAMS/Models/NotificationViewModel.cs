@@ -43,7 +43,7 @@ namespace CAMS.Models
                             int days = User.DisconnectedPeriod.Value;
                             DateTime disconectedFrom = DateTime.Now.Date.AddDays(-days);
 
-                            List<Activity> offAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.Off && e.Login <= disconectedFrom).ToList();
+                            List<Activity> offAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == ActivityType.Off && e.Login <= disconectedFrom).ToList();
                             if (offAct.Count > 0)
                             {
                                 //for how long the computer is disconnected
@@ -56,12 +56,12 @@ namespace CAMS.Models
                         //check for unused notification
                         if (User.NotActivePeriod != null)
                         {
-                            List<Activity> userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == (byte)Constant.ActivityMode.User).ToList();
+                            List<Activity> userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == ActivityType.User).ToList();
                             //if there is no user connected rigth now
                             if (userAct.Count == 0)
                             {
                                 //find the last time user loged out
-                                DateTime? lastLogout = comp.Activities.Where(e => e.Mode == (byte)Constant.ActivityMode.User).Max(e => e.Logout);
+                                DateTime? lastLogout = comp.Activities.Where(e => e.Mode == ActivityType.User).Max(e => e.Logout);
                                 if (lastLogout == null)
                                 {
                                     ComputerLab cl = comp.ComputerLabs.Where(e => e.LabId == lab.LabId && !e.Exit.HasValue).ToList().First();

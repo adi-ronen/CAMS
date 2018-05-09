@@ -16,7 +16,7 @@ namespace CAMS.Models
     {
         public int UserId { get; set; }
         public int DepartmentId { get; set; }
-        public string AccessType { get; set; }
+        public AccessType AccessType { get; set; }
     
         public virtual Department Department { get; set; }
         public virtual User User { get; set; }

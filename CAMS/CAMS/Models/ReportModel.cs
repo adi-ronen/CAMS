@@ -91,7 +91,7 @@ namespace CAMS.Models
             if (!weekends)
             {
                 compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
-                && (e.Mode.Equals((byte)ActivityMode.User)|| e.Mode.Equals((byte)ActivityMode.Class)) // user or class activity
+                && (e.Mode.Equals(ActivityType.User)|| e.Mode.Equals(ActivityType.Class)) // user or class activity
                 && !(e.Weekend) 
                 && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range
 
@@ -99,7 +99,7 @@ namespace CAMS.Models
             else
             {
                 compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
-                && (e.Mode.Equals((byte)ActivityMode.User) || e.Mode.Equals((byte)ActivityMode.Class)) // user or class activity
+                && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
                 && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range
             }
 
@@ -117,7 +117,7 @@ namespace CAMS.Models
                 DateTime enfOfTimeReport = new DateTime(Math.Min(endOfActivity.Ticks,endOfActivity.Date.Add(endHour.TimeOfDay).Ticks));
 
                 //if its user activity add it the activity-time-no-classes
-                if (act.Mode.Equals((byte)ActivityMode.User))
+                if (act.Mode.Equals(ActivityType.User))
                 {
                     TimeSpan timeToAdd = enfOfTimeReport - startOfTimeReport;
                     computerTotalActiveTime = computerTotalActiveTime.Add(timeToAdd);

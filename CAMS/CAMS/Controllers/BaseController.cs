@@ -97,13 +97,13 @@ namespace CAMS.Controllers
             db.ComputerLabs.Add(cL);
             db.SaveChanges();
         }
-        public void testAddActivity(int compId,DateTime login,DateTime logout,ActivityMode Mode)
+        public void testAddActivity(int compId,DateTime login,DateTime logout,ActivityType Mode)
         {
             Activity act = new Activity();
             act.ComputerId = compId;
             act.Login = login;
             act.Logout = logout;
-            act.Mode = (byte)Mode;
+            act.Mode = Mode;
 
             db.Activities.Add(act);
             db.SaveChanges();

@@ -38,7 +38,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2018, 4, 16, 10, 0, 0);
             act1.Logout = new DateTime(2018, 4, 16, 12, 0, 0);
-            act1.Mode = (byte)Constant.ActivityMode.User;
+            act1.Mode = ActivityType.User;
 
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
@@ -88,7 +88,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2018, 4, 20, 13, 0, 0);
             act2.Logout = new DateTime(2018, 4, 20, 15, 0, 0);
-            act2.Mode = (byte)Constant.ActivityMode.User;
+            act2.Mode = ActivityType.User;
             act2.Weekend = true;
 
             //
@@ -240,7 +240,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 10, 10, 10, 0, 0);
             act1.Logout = new DateTime(2010, 10, 10, 19, 0, 0);
-            act1.Mode = (byte)Constant.ActivityMode.User;
+            act1.Mode = ActivityType.User;
 
             //
             msg = "computer enter and exit the lab during the report and have one activity";
@@ -279,7 +279,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 2, 16, 10, 0, 0);
             act1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
-            act1.Mode = (byte)Constant.ActivityMode.User;
+            act1.Mode = ActivityType.User;
 
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
@@ -379,7 +379,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2010, 2, 16, 13, 0, 0);
             act2.Logout = new DateTime(2010, 2, 16, 15, 0, 0);
-            act2.Mode = (byte)Constant.ActivityMode.User;
+            act2.Mode = ActivityType.User;
 
             //
             msg = "no computer activity should be included in the report out of 1 hours";
@@ -489,14 +489,14 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 2, 16, 10, 0, 0);
             act1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
-            act1.Mode = (byte)Constant.ActivityMode.User;
+            act1.Mode = ActivityType.User;
 
             Activity cact1 = new Activity();
             cact1.Computer = cl.Computer;
             cl.Computer.Activities.Add(cact1);
             cact1.Login = new DateTime(2010, 2, 16, 10, 0, 0);
             cact1.Logout = new DateTime(2010, 2, 16, 12, 0, 0);
-            cact1.Mode = (byte)Constant.ActivityMode.Class;
+            cact1.Mode = ActivityType.Class;
 
 
             ReportModel model = new ReportModel(controller);
@@ -597,7 +597,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(cact2);
             cact2.Login = new DateTime(2010, 2, 16, 10, 30, 0);
             cact2.Logout = new DateTime(2010, 2, 16, 12, 30, 0);
-            cact2.Mode = (byte)Constant.ActivityMode.Class;
+            cact2.Mode = ActivityType.Class;
 
 
             msg = "1h out of 2h, 1.5h union with class";
@@ -672,7 +672,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(cact3);
             cact3.Login = new DateTime(2010, 2, 16, 11, 30, 0);
             cact3.Logout = new DateTime(2010, 2, 16, 12, 30, 0);
-            cact3.Mode = (byte)Constant.ActivityMode.Class;
+            cact3.Mode = ActivityType.Class;
 
             // two activities 10-12,13-15
             Activity act2 = new Activity();
@@ -680,7 +680,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2010, 2, 16, 13, 0, 0);
             act2.Logout = new DateTime(2010, 2, 16, 15, 0, 0);
-            act2.Mode = (byte)Constant.ActivityMode.User;
+            act2.Mode = ActivityType.User;
 
             //
             msg = "0h out of 1h, class union- 0.5h";
@@ -704,19 +704,19 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act3);
             act3.Login = new DateTime(2010, 2, 16, 8, 0, 0);
             act3.Logout = new DateTime(2010, 2, 16, 9, 0, 0);
-            act3.Mode = (byte)Constant.ActivityMode.User;
+            act3.Mode = ActivityType.User;
             Activity act4 = new Activity();
             act3.Computer = cl.Computer;
             cl.Computer.Activities.Add(act4);
             act4.Login = new DateTime(2010, 2, 16, 9, 30, 0);
             act4.Logout = new DateTime(2010, 2, 16, 10, 0, 0);
-            act4.Mode = (byte)Constant.ActivityMode.User;
+            act4.Mode = ActivityType.User;
             Activity cact4 = new Activity();
             act3.Computer = cl.Computer;
             cl.Computer.Activities.Add(cact4);
             cact4.Login = new DateTime(2010, 2, 16, 8, 30, 0);
             cact4.Logout = new DateTime(2010, 2, 16, 9, 30, 0);
-            cact4.Mode = (byte)Constant.ActivityMode.Class;
+            cact4.Mode = ActivityType.Class;
             cact1.Login = new DateTime(2010, 2, 16, 14, 0, 0);
             cact1.Logout = new DateTime(2010, 2, 16,16, 0, 0);
             //
@@ -848,7 +848,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act1);
             act1.Login = new DateTime(2010, 4, 11, 10, 0, 0);
             act1.Logout = new DateTime(2010, 4, 11, 12, 0, 0);
-            act1.Mode = (byte)Constant.ActivityMode.Off;
+            act1.Mode = ActivityType.Off;
 
             msg = "report duration with one computer - no user activities(only off)  ";
             startDate = new DateTime(2010, 4, 11);
@@ -875,7 +875,7 @@ namespace CAMS.Tests
             cl.Computer.Activities.Add(act2);
             act2.Login = new DateTime(2010, 3, 11, 10, 0, 0);
             act2.Logout = new DateTime(2010, 3, 11, 12, 0, 0);
-            act2.Mode = (byte)Constant.ActivityMode.User;
+            act2.Mode = ActivityType.User;
             //report duration with computer not in the lab (but have activity in that time)
             msg = "report duration with computer not in the lab (but have activity in that time)";
             startDate = new DateTime(2010, 3, 11);
