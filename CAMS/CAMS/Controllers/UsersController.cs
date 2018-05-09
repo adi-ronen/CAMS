@@ -17,7 +17,8 @@ namespace CAMS.Controllers
         // GET: Users
         public ActionResult Index()
         {
-            return View(db.Users.ToList());
+            User user = db.Users.Find(0);
+            return View(new AccessViewModel(user,this));
         }
 
         // GET: Users/Details/5

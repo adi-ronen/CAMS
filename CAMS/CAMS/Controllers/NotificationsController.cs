@@ -68,7 +68,7 @@ namespace CAMS.Controllers
                 User user = db.Users.Find(id);
                 user.DisconnectedPeriod = Convert.ToInt32(Request["DisconnectedPeriod"].ToString());
                 user.NotActivePeriod = Convert.ToInt32(Request["NotActivePeriod"].ToString());
-                user.NotificationFrequency = Convert.ToByte(Request["NotificationFrequency"].ToString());
+                user.NotificationFrequency = (NotificationFrequency)Convert.ToByte(Request["NotificationFrequency"].ToString());
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

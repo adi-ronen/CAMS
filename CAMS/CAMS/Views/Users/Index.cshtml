@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CAMS.Models.User>
+﻿@model CAMS.Models.AccessViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -18,23 +18,23 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.Accesses) {
     <tr>
         <td>
 
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Email) @*TBD - Group by Email*@
+            @Html.DisplayFor(modelItem => item.User.Email) @*TBD - Group by Email*@
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.UserDepartments.First().Department.DepartmentName) @*TBD - for all departments*@
+            @Html.DisplayFor(modelItem => item.Department.DepartmentName) @*TBD - for all departments*@
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.UserDepartments.First().AccessType)
+            @Html.DisplayFor(modelItem => item.AccessType)
         </td>
         <td>
-            @Html.ActionLink("ערוך", "~/Views/Users/Edit", new { id=item.UserId }) |
-            @Html.ActionLink("מחק", "~/Views/Users/Delete", new { id=item.UserId })
+            @Html.ActionLink("ערוך", "~/Views/Users/Edit", new { id=item.User.UserId }) |
+            @Html.ActionLink("מחק", "~/Views/Users/Delete", new { id=item.User.UserId })
         </td>
     </tr>
 }
