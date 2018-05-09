@@ -39,7 +39,9 @@ namespace CAMS.Models
         private List<UserAccess> GetAccesses()
         {
             List<UserAccess> accesses = new List<UserAccess>();
-            foreach (var userDep in _user.UserDepartments)
+            //return access only for departments with full access
+
+            foreach (var userDep in _user.UserDepartments.Where(e => e.AccessType == AccessType.Full))
             {
                 if (userDep.UserId != _user.UserId)
                 {
@@ -52,10 +54,11 @@ namespace CAMS.Models
         private List<Department> GetDepartments()
         {
             List<Department> dep = new List<Department>();
-            foreach (var userDep in _user.UserDepartments)
+            //return only departments with full access
+
+            foreach (var userDep in _user.UserDepartments.Where(e => e.AccessType == AccessType.Full))
             {
-                if (userDep.AccessType == AccessType.Full)
-                    dep.Add(userDep.Department);
+                dep.Add(userDep.Department);
             }
             return dep;
         }
