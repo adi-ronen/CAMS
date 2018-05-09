@@ -8,6 +8,13 @@
 <p>
     @Html.ActionLink("ערוך הגדרות התראות", "Edit")
 </p>
+@if (Model.Notifications.Count == 0)
+{
+    @Html.Label("אין התראות"); //TBD - find somthing else to write when the user dose not have notifications
+}
+else
+{
+
 <table class="table table-bordered table-condensed text-right">
     <tr>
         <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
@@ -24,7 +31,7 @@
                 @Html.DisplayFor(modelItem => item.DepartmentName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Computer.Building)
+                @Html.DisplayFor(modelItem => item.Building)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RoomNumber)
@@ -40,4 +47,6 @@
             </td>
         </tr>
     }
+
 </table>
+}
