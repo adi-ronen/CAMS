@@ -35,8 +35,8 @@
                     @Html.DisplayFor(modelItem => item.AccessType)
                 </td>
                 <td>
-                    @Html.ActionLink("ערוך", "~/Views/Users/Edit", new { id = item.User.UserId }) |
-                    @Html.ActionLink("מחק", "~/Views/Users/Delete", new { id = item.User.UserId })
+                    @Html.ActionLink("ערוך", "/../Users/Edit", new { userId = item.User.UserId, depId = item.Department.DepartmentId }) |
+                    @Html.ActionLink("מחק", "/../Users/Delete", new { userId = item.User.UserId, depId = item.Department.DepartmentId })
                 </td>
             </tr>
             if (ViewBag.byDepartment == false)
@@ -54,7 +54,9 @@
             <tr>
                 @if (ViewBag.byDepartment == false)
                 {
-                <td></td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.User.Email)
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Department.DepartmentName)
                 </td>
@@ -64,14 +66,16 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.User.Email)
                 </td>
-                <td></td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.Department.DepartmentName)
+                </td>
                 }
                 <td>
                     @Html.DisplayFor(modelItem => item.AccessType)
                 </td>
                 <td>
-                    @Html.ActionLink("ערוך", "~/Views/Users/Edit", new { id = item.User.UserId }) |
-                    @Html.ActionLink("מחק", "~/Views/Users/Delete", new { id = item.User.UserId })
+                    @Html.ActionLink("ערוך", "/../Users/Edit", new { userId = item.User.UserId, depId = item.Department.DepartmentId }) |
+                    @Html.ActionLink("מחק", "/../Users/Delete", new { userId = item.User.UserId, depId = item.Department.DepartmentId })
                 </td>
             </tr>
         }

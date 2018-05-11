@@ -3,11 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace CAMS.Models
 {
     public class AccessViewModel
     {
+        public List<SelectListItem> UsersList
+        {
+            get { return GetUsers(); }
+        }
+
         public List<UserAccess> Accesses
         {
             get
@@ -32,13 +38,27 @@ namespace CAMS.Models
         private User _user;
         private bool _byDepartment;
 
-        public AccessViewModel(User user, UsersController controller, bool byDepartment)
+        public AccessViewModel(User user, UsersController controller, bool byDepartment = false)
         {
             _usersController = controller;
             _user = user;
             _byDepartment = byDepartment;
         }
 
+        public List<SelectListItem> GetUsers()
+        {
+            return _usersController.GetUsers();
+        }
+
+        public List<SelectListItem> GetDepartmentsList()
+        {
+            return _usersController.GetDepartmentsList();
+        }
+
+        public void AddUser()
+        {
+            _usersController.AddUser("");
+        }
         private List<UserAccess> GetAccesses()
         {
             List<UserAccess> accesses = new List<UserAccess>();
