@@ -67,6 +67,11 @@ namespace CAMS.Controllers
             }
         }
 
+        public List<User> GetEmailSubscribers(NotificationFrequency frequency)
+        {
+            return db.Users.Where(e => e.NotificationFrequency == frequency).ToList(); 
+        }
+
 
         //-----------------------------------------------------------------
         //for tests only
