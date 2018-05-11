@@ -1,12 +1,14 @@
 ﻿@model CAMS.Models.NotificationViewModel
 @{
     ViewBag.Title = "Index";
+    ViewBag.Notifications = Model.Notifications;
 }
 <h2>התראות</h2>
 <p>
     @Html.ActionLink("ערוך הגדרות התראות", "Edit")
 </p>
-@if (Model.Notifications.Count == 0)
+
+@if (ViewBag.Notifications.Count == 0)
 {
     @Html.Label("אין התראות"); //TBD - find somthing else to write when the user dose not have notifications
 }
@@ -22,7 +24,7 @@ else
             <td>פירוט התראה</td>
             <th></th>
         </tr>
-        @foreach (var item in Model.Notifications) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
+        @foreach (CAMS.Models.Notification item in ViewBag.Notifications) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
         {
             <tr>
                 <td>
@@ -38,10 +40,19 @@ else
                     @Html.DisplayFor(modelItem => item.ComputerName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.NotificationType)
+                    @switch (item.NotificationType)
+                    {
+                        case Constant.NotificationType.Disconnected:
+                            @Html.Raw("לא מחובר "+item.Days+" ימים")
+                            break;
+                        case Constant.NotificationType.NotUsed:
+                            @Html.Raw("לא בשימוש "+item.Days+" ימים")
+                            break;
+                    }
+                    
                 </td>
                 <td>
-                    @Html.ActionLink("צפה בכיתה", "~/Views/Labs/Details", new { id = item.LabId })
+                    @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
                 </td>
             </tr>
         }

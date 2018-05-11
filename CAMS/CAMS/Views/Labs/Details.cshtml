@@ -33,16 +33,16 @@
                 switch (@Model.GetComputerState(item))
                 {
 
-                    case Constant.ActivityMode.On:
+                    case CAMS.Models.ActivityType.On:
                         source = "green.png";
                         break;
-                    case Constant.ActivityMode.Off:
+                    case CAMS.Models.ActivityType.Off:
                         source = "black.png";
                         break;
-                    case Constant.ActivityMode.Class:
+                    case CAMS.Models.ActivityType.Class:
                         source = "red.png";
                         break;
-                    case Constant.ActivityMode.User:
+                    case CAMS.Models.ActivityType.User:
                         source = "red.png";
                         break;
                 }

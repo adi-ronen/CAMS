@@ -10,7 +10,7 @@ namespace CAMS.Controllers
 {
 
 
-    public class NotificationsController : Controller
+    public class NotificationsController : BaseController
     {
 
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();

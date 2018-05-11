@@ -13,6 +13,7 @@ using System.Diagnostics;
 using CAMS.Controllers;
 using CAMS.Models;
 using System.Threading;
+using System.Net.Mail;
 
 namespace CAMS
 {
@@ -32,8 +33,8 @@ namespace CAMS
             RegisterCacheEntry();
             checkSchedual();
             checkComputersActivity();
+           // sendReportsToUsers();
         }
-
 
         private const string collectionCacheItemKey = "collectionCache";
         private const string scheduleCacheItemKey = "classScheduleCache";
@@ -63,6 +64,7 @@ namespace CAMS
         }
         // TBD- change url
         private const string DummyPageUrl = "http://localhost:63976/TestCacheTimeout/dummy.aspx";
+        private const string Address = "partnermatcheryad2@gmail.com";
 
         public void CacheItemRemovedCallback(string key,
             object value, CacheItemRemovedReason reason)
@@ -76,6 +78,7 @@ namespace CAMS
                     break;
                 case scheduleCacheItemKey:
                     checkSchedual();
+                    sendReportsToUsers();
                     break;
             }
         }
@@ -98,6 +101,85 @@ namespace CAMS
                 activitiesModel.GetComputersActivity();
 
             }).Start();
+        }
+
+        private void sendReportsToUsers()
+        {
+            DateTime today = DateTime.Now.Date;
+            // send mail to daily users
+            findUsersAndNotifications(NotificationFrequency.Daily);
+            
+            if (today.DayOfWeek == DayOfWeek.Sunday)
+            {
+                //send mail to weekly users
+                findUsersAndNotifications(NotificationFrequency.Weekly);
+
+            }
+            if (today.Day == 1)
+            {
+                //send mail to montly
+                findUsersAndNotifications(NotificationFrequency.Monthly);
+
+            }
+
+        }
+
+        private void findUsersAndNotifications(NotificationFrequency frequency)
+        {
+            NotificationsController controller = new NotificationsController();
+
+            foreach (var user in controller.GetEmailSubscribers(frequency))
+            {
+                NotificationViewModel notificationModel = new NotificationViewModel(user, controller);
+                List<Notification> notifications = notificationModel.Notifications;
+                if (notifications.Count > 0)
+                {
+                    string msg = "<table>";
+                    msg += "<tr> <td> מחלקה </td> <td> בניין </td> <td> כיתה </td> <td> עמדה </td>  <td> פירוט התראה </td><th></th></tr> ";
+
+                    foreach (var notification in notificationModel.Notifications)
+                    {
+                        msg += "<tr> <td>" + notification.DepartmentName + "</td> ";
+                        msg += "<td>" + notification.Building + "</td> ";
+                        msg += "<td>" + notification.RoomNumber + "</td> ";
+                        msg += "<td>" + notification.ComputerName + "</td> ";
+                        switch (notification.NotificationType)
+                        {
+                            case Constant.NotificationType.Disconnected:
+                                msg += "<td> לא מחובר " + notification.Days + " ימים </td> ";
+                                break;
+                            case Constant.NotificationType.NotUsed:
+                                msg += "<td> לא בשימוש " + notification.Days + " ימים </td> ";
+                                break;
+                        }
+                        msg += "</tr>";
+
+                    }
+                    msg += "</table>";
+                    sendEmail(msg, user);
+                }
+
+
+            }
+        }
+
+        private void sendEmail(string msg, User user)
+        {
+
+            MailMessage mail = new MailMessage(Address, user.Email);
+            SmtpClient client = new SmtpClient();
+            client.Port = 587;
+            client.Host = "smtp.gmail.com";
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Credentials = new System.Net.NetworkCredential("partnermatcheryad2@gmail.com", "olla123456");
+            client.EnableSsl = true;
+
+            mail.Subject = "CAMS Computers Report";
+            mail.Body = msg;
+            mail.IsBodyHtml = true;
+            client.Send(mail);
+
+          
         }
 
         private void HitPage(string url)
