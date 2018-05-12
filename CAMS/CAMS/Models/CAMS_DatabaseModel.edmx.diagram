@@ -4,22 +4,22 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="58f02290500e42e0922c58e2b12b2cf2" Name="Diagram1" ZoomLevel="86">
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Activity" Width="1.5" PointX="2" PointY="3.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Computer" Width="1.5" PointX="2.125" PointY="0.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.ComputerLab" Width="1.5" PointX="4.25" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Department" Width="1.5" PointX="6.125" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.Lab" Width="1.5" PointX="4.25" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.User" Width="1.5" PointX="6.125" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.UserDepartment" Width="1.5" PointX="8.125" PointY="2.875" IsExpanded="true" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_Activity_ToComputer" ManuallyRouted="false" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_Computer_Lab" ManuallyRouted="false" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Computer" ManuallyRouted="false" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Lab" ManuallyRouted="false" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_Lab_Department" ManuallyRouted="false" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_UserDepartments_Department" ManuallyRouted="false" />
-        <AssociationConnector Association="CAMS_DatabaseModel.FK_UserDepartments_User" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.database_firewall_rules" Width="1.5" PointX="0.75" PointY="6.75" />
+      <Diagram DiagramId="58f02290500e42e0922c58e2b12b2cf2" Name="Diagram1" ZoomLevel="64">
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Activity" Width="1.5" PointX="6.625" PointY="0.5" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Computer" Width="1.5" PointX="6.625" PointY="3.625" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.ComputerLab" Width="1.5" PointX="6.625" PointY="6.75" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Department" Width="1.5" PointX="3.5" PointY="2.875" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.Lab" Width="1.5" PointX="2.625" PointY="5.875" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.User" Width="1.5" PointX="1" PointY="2.75" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.UserDepartment" Width="1.5" PointX="2.375" PointY="0.5" />
+        <EntityTypeShape EntityType="CAMS_DatabaseModel.database_firewall_rules" Width="1.5" PointX="8.75" PointY="0.5" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_Activity_ToComputer" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_Computer_Lab" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Computer" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Lab" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_Lab_Department" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_UserDepartments_Department" />
+        <AssociationConnector Association="CAMS_DatabaseModel.FK_UserDepartments_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

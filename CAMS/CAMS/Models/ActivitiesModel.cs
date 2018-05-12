@@ -45,7 +45,7 @@ namespace CAMS.Models
                 Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
                 
                 // if the last activity is user activity from the day before- split to two activities for each day
-                if(lastAct!=null && lastAct.Mode.Equals(ActivityMode.User) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
+                if(lastAct!=null && lastAct.Mode.Equals(ActivityType.User) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
                 {
                     lastAct = _aController.SplitActivity(lastAct);
                 }
@@ -61,13 +61,13 @@ namespace CAMS.Models
                         if (lastAct == null)
                         {
                             //create user activity
-                            AddNewActivity(comp, ActivityMode.User, userName);
+                            AddNewActivity(comp, ActivityType.User, userName);
                         }
                         else if (lastAct.UserName != userName)
                         {
                             //close current activity and create new user activity
                             CloseActivity(lastAct);
-                            AddNewActivity(comp, ActivityMode.User, userName);
+                            AddNewActivity(comp, ActivityType.User, userName);
                         }
                     }
                     else
@@ -86,13 +86,13 @@ namespace CAMS.Models
                     if (lastAct == null)
                     {
                         //create off activity
-                        AddNewActivity(comp, ActivityMode.Off, null);
+                        AddNewActivity(comp, ActivityType.Off, null);
                     }
-                    else if (lastAct.Mode != (byte)ActivityMode.Off)
+                    else if (lastAct.Mode !=ActivityType.Off)
                     {
                         //close current activity and create new off activity
                         CloseActivity(lastAct);
-                        AddNewActivity(comp, ActivityMode.Off, null);
+                        AddNewActivity(comp, ActivityType.Off, null);
 
                     }
                     // else- it already in off mode- dont change anything 
@@ -144,7 +144,7 @@ namespace CAMS.Models
             _aController.CloseActivity(lastAct);
         }
 
-        private void AddNewActivity(Computer comp, ActivityMode mode, string userName)
+        private void AddNewActivity(Computer comp, ActivityType mode, string userName)
         {
 
             _aController.CreateNewActivity(comp, mode, userName);

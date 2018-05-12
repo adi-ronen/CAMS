@@ -1,68 +1,61 @@
-﻿@model CAMS.Models.User
+﻿@model  CAMS.Models.UserDepartment
 
 @{
     ViewBag.Title = "Edit";
 }
 
-<h2>Edit</h2>
+<h2> ערוך הרשאה</h2>
 
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>User</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.UserId)
-
         <div class="form-group">
-            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("דוא''ל", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                @Html.DisplayFor(x=>x.User.Email)
+                @Html.HiddenFor(x=>x.UserId)
             </div>
         </div>
-
         <div class="form-group">
-            @Html.LabelFor(model => model.MailNotifications, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("מחלקה", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.MailNotifications)
-                    @Html.ValidationMessageFor(model => model.MailNotifications, "", new { @class = "text-danger" })
-                </div>
+                @Html.DisplayFor(x => x.Department.DepartmentName)
+                @Html.HiddenFor(x => x.DepartmentId)
             </div>
         </div>
-
         <div class="form-group">
-            @Html.LabelFor(model => model.DisconnectedPeriod, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("סוג הרשאה", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DisconnectedPeriod, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DisconnectedPeriod, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.NotActivePeriod, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.NotActivePeriod, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.NotActivePeriod, "", new { @class = "text-danger" })
+                <select class="form-control" name="AccessType">
+                    <option id="Full" value="0">הרשאה מלאה</option>
+                    <option id="Limited" value="1"> הרשאה חלקית (הפקת דוחות ועריכת כיתות)</option>
+                    <option id="View" value="2">הרשאת צפייה (הפקת דוחות בלבד)</option>
+                </select>
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="שמור" class="btn btn-default" />
             </div>
         </div>
     </div>
 }
 
 <div>
-    @Html.ActionLink("חזרה לרשימה", "Index")
+    @Html.ActionLink("חזרה להרשאות", "Index")
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+<script>
+ $(document).ready(function () {
+     document.getElementById('@Model.AccessType').setAttribute('selected','selected')
+ });
+</script>

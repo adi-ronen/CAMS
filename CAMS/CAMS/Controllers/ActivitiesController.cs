@@ -138,12 +138,12 @@ namespace CAMS.Controllers
         }
         
 
-        public void CreateNewActivity(Computer comp, ActivityMode mode, string userName)
+        public void CreateNewActivity(Computer comp, ActivityType mode, string userName)
         {
             Activity act = new Activity();
             if (userName != null)
                 act.UserName = userName;
-            act.Mode = (byte)mode;
+            act.Mode = mode;
             act.Login = DateTime.Now;
             act.Weekend = IsWeekend(act.Login.DayOfWeek);
             act.ComputerId = comp.ComputerId;

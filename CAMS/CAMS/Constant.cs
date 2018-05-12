@@ -7,7 +7,7 @@ namespace CAMS
 {
     public class Constant
     {
-        public enum ActivityMode : byte { User,Class, Off ,On };
+        public enum NotificationType {Disconnected,NotUsed };
 
 
     }

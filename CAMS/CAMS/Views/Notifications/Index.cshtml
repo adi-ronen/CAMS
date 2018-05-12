@@ -1,43 +1,60 @@
-﻿@model 
+﻿@model CAMS.Models.NotificationViewModel
 @{
     ViewBag.Title = "Index";
+    ViewBag.Notifications = Model.Notifications;
 }
-
 <h2>התראות</h2>
-
 <p>
     @Html.ActionLink("ערוך הגדרות התראות", "Edit")
 </p>
-<table class="table table-bordered table-condensed text-right">
-    <tr>
-        <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
-        <td>@Html.ActionLink("בניין", "Index", new { sortOrder = ViewBag.BuildingSortParm, currentFilter = ViewBag.CurrentFilter })</td>
-        <td>כיתה</td>
-        <td>עמדה</td>
-        <td>פירוט התראה</td>
-        <th></th>
-    </tr>
-    @foreach (var item in Model.Notification) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
-    {
+
+@if (ViewBag.Notifications.Count == 0)
+{
+    @Html.Label("אין התראות"); //TBD - find somthing else to write when the user dose not have notifications
+}
+else
+{
+
+    <table class="table table-bordered table-condensed text-right">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Department.DepartmentName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Building)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoomNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ComputerName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Details)
-            </td>
-            <td>
-                @Html.ActionLink("צפה בכיתה", "~/Views/Labs/Details", new { id = item.LabId })
-            </td>
+            <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
+            <td>@Html.ActionLink("בניין", "Index", new { sortOrder = ViewBag.BuildingSortParm, currentFilter = ViewBag.CurrentFilter })</td>
+            <td>כיתה</td>
+            <td>שם עמדה</td>
+            <td>פירוט התראה</td>
+            <th></th>
         </tr>
-    }
-</table>
+        @foreach (CAMS.Models.Notification item in ViewBag.Notifications) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DepartmentName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Building)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ComputerName)
+                </td>
+                <td>
+                    @switch (item.NotificationType)
+                    {
+                        case Constant.NotificationType.Disconnected:
+                            @Html.Raw("לא מחובר "+item.Days+" ימים")
+                            break;
+                        case Constant.NotificationType.NotUsed:
+                            @Html.Raw("לא בשימוש "+item.Days+" ימים")
+                            break;
+                    }
+                    
+                </td>
+                <td>
+                    @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
+                </td>
+            </tr>
+        }
+    </table>
+}
