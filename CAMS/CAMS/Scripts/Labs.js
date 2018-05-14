@@ -19,7 +19,7 @@
             }
         });
     });
- });
+});
 SaveComputersLocations = function () {
     var coms = {};
     $(".draggable").each(function () {
@@ -34,9 +34,24 @@ SaveComputersLocations = function () {
         url: "/Labs/Update",
         type: 'post',
         data: {
-            computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), Building: $("#Building").val()  },
+            computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), Building: $("#Building").val()
+        },
         success: function (data) {
             alert(data);
         }
     });
 };
+allowDrop = function(ev) {
+    ev.preventDefault();
+}
+drag = function (ev) {
+    var computer = { Name: ev.target.id, Doamin: ev.target.children[2].name }
+    ev.dataTransfer.setData("computer", computer);
+}
+drop = function(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("computer");
+    var positionX = ev.positionX;
+    var positionY = ev.positionY;
+
+}
