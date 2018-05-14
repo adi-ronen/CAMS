@@ -202,3 +202,6 @@ table {
 .draggable-computer-list {
     z-index: 0;
 }
+.grab:hover {
+    cursor: move;
+}

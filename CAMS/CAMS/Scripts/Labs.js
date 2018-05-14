@@ -45,13 +45,21 @@ allowDrop = function(ev) {
     ev.preventDefault();
 }
 drag = function (ev) {
-    var computer = { Name: ev.target.id, Doamin: ev.target.children[2].name }
-    ev.dataTransfer.setData("computer", computer);
+    ev.dataTransfer.setData("text", ev.target.id);
 }
 drop = function(ev) {
     ev.preventDefault();
-    var data = ev.dataTransfer.getData("computer");
-    var positionX = ev.positionX;
-    var positionY = ev.positionY;
-
+    var data = ev.dataTransfer.getData("text");
+    document.getElementById(data).remove();
+    
+    //computers_list.remove --> id computer name
+    //LabErea.add {
+    //    string top = item.LocationInLab.Split(',')[0];
+    //    string left = item.LocationInLab.Split(',')[1];
+    //    <figure class="draggable context-menu-one" style="position:absolute;top:@top;left:@left">
+    //        <img src="~/Images/clear.png" width="70">
+    //            <figcaption class="text-center">@item.ComputerName</figcaption>
+    //            <a style="visibility:hidden">@item.ComputerId</a>
+    //                    </figure>
+    //}
 }

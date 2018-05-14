@@ -23,11 +23,10 @@
                 <div id="computers_list">
                     @foreach (var item in Model.ComputersList)
                     {
-                        <figure draggable="true" ondragstart="drag(event)" class="draggable-computer-list row context-menu-one computers-list" id="@item.Key">
+                        <figure draggable="true" ondragstart="drag(event)" class="draggable-computer-list row context-menu-one computers-list" id="@item">
                             @*TBD- make it droppable in lab area*@
                             <img src="~/Images/clear.png" height="30">
-                            <figcaption class="text-center">@item.Key</figcaption>
-                            @Html.Hidden(item.Value)
+                            <figcaption class="text-left grab">@item</figcaption>
                         </figure>
                     }
                 </div>
@@ -39,7 +38,7 @@
                     {
                         string top = item.LocationInLab.Split(',')[0];
                         string left = item.LocationInLab.Split(',')[1];
-                        <figure class="draggable context-menu-one" style="position:absolute;top:@top;left:@left">
+                        <figure class="draggable context-menu-one grab" style="position:absolute;top:@top;left:@left">
                             <img src="~/Images/clear.png" width="70">
                             <figcaption class="text-center">@item.ComputerName</figcaption>
                             <a style="visibility:hidden">@item.ComputerId</a>
