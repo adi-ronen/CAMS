@@ -227,7 +227,7 @@ namespace CAMS.Controllers
         }
 
 
-
+        
 
         public void SaveLabEdit(List<Computer> comps, Lab lab)
         {
@@ -261,6 +261,12 @@ namespace CAMS.Controllers
             }
         }
 
+        // POST: Labs/Update
+        [HttpPost]
+        public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string Building)
+        {
+            return View();
+        }
 
 
     }

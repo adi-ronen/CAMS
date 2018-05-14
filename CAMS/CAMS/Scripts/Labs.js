@@ -1,7 +1,7 @@
 ﻿$(document).ready(function () {
     $(".draggable").draggable({
         containment: "#LabErea",
-        grid: [20, 20]
+        grid: [10, 10]
     });
     $(function () {
         $.contextMenu({
