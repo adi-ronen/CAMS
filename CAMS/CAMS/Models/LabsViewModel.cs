@@ -68,15 +68,15 @@ namespace CAMS.Models
 
         public Lab Lab;
         private LabsController _lController;
-        public Dictionary<string, string> ComputersList = new Dictionary<string, string>();
+        public List<string> ComputersList = new List<string>();
 
         public LabDetailsViewModel(Lab lab, LabsController labsController)
         {
             this.Lab = lab;
             this._lController = labsController;
-            ComputersList.Add("Class004pc05", "som.ad.ac.il");
-            ComputersList.Add("Class004pc06", "som.ad.ac.il");
-            ComputersList.Add("Class004pc07", "som.ad.ac.il");
+            ComputersList.Add("Class004pc05,");
+            ComputersList.Add("Class004pc06,");
+            ComputersList.Add("Class004pc07,");
         }
 
 
