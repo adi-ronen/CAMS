@@ -72,7 +72,15 @@ namespace CAMS.Controllers
             return db.Users.Where(e => e.NotificationFrequency == frequency).ToList(); 
         }
 
-
+        protected Computer CreateComputer(string computerName, string domain)
+        {
+            Computer comp = new Computer();
+            comp.ComputerName = computerName;
+            //comp.MAC= findComputerMac(computerName, domain);
+            db.Computers.Add(comp);
+            db.SaveChanges();
+            return comp;
+        }
         //-----------------------------------------------------------------
         //for tests only
         public void testAddLab(int id)

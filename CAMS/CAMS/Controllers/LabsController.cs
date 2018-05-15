@@ -188,9 +188,13 @@ namespace CAMS.Controllers
             if (comp.CurrentLab != labId)
                 return;
             ComputerLab cL = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e=>e.LabId.Equals(labId)).Last();
-            if (cL == null)
-                throw new Exception("no record of computer in lab");
-            cL.Exit= DateTime.Now;
+            if (cL != null)
+            {
+                cL.Exit = DateTime.Now;
+                db.ComputerLabs.Attach(cL);
+
+            }
+
             //lab.RoomNumber = lab.RoomNumber.Trim();
             comp.CurrentLab = null;
             //Lab lab = comp.Lab;
@@ -203,7 +207,6 @@ namespace CAMS.Controllers
             //db.Entry(comp).State = EntityState.Modified;
             //db.Entry(lab).State = EntityState.Modified;
             db.Computers.Attach(comp);
-            db.ComputerLabs.Attach(cL);
             db.SaveChanges();
 
 
@@ -229,7 +232,7 @@ namespace CAMS.Controllers
 
         
 
-        public void SaveLabEdit(List<Computer> comps, Lab lab)
+        public bool SaveLabEdit(List<Computer> comps, Lab lab)
         {
             using (var tr = db.Database.BeginTransaction())
             {
@@ -251,12 +254,15 @@ namespace CAMS.Controllers
                     {
                         db.Entry(item).State = EntityState.Modified;
                     }
+                    db.Entry(lab).State = EntityState.Modified;
                     db.SaveChanges();
                     tr.Commit();
+                    return true;
                 }
                 catch (Exception)
                 {
                     tr.Rollback();
+                    return false;
                 }
             }
         }
@@ -265,7 +271,58 @@ namespace CAMS.Controllers
         [HttpPost]
         public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string Building)
         {
-            return View();
+
+            Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
+            List<Computer> comps = new List<Computer>();
+            
+            foreach (var item in computers)
+            {
+                Computer computer;
+                //if computer have an id
+                if(int.TryParse(item.Key.Split(',')[1], out int n))
+                {
+                    computer = db.Computers.Find(n);
+                }
+                else
+                {
+                    computer= CreateComputer(item.Key.Split(',')[0],lab.Department.Domain);
+                }
+                //save computer new location
+                computer.LocationInLab = item.Value;
+                db.SaveChanges();
+                comps.Add(computer);
+            }
+            lab.RoomNumber = RoomNumber.Trim();
+            lab.Building = Building;
+            if (!SaveLabEdit(comps, lab))
+            {
+                //retry
+                SaveLabEdit(comps, lab);
+            }
+
+            //List<Computer> inLab = lab.Computers.ToList();
+            //foreach (var item in inLab)
+            //{
+            //    //if computer removed from lab
+            //    if (!comps.Contains(item))
+            //    {
+            //        RemoveComputerFromLab(item.ComputerId, lab.LabId);
+            //    }
+            //}
+
+            //foreach (var comp in comps)
+            //{
+            //    //if computer added to lab
+            //    if (!lab.Computers.Contains(comp))
+            //    {
+            //        AddComputerToLab(comp.ComputerId, lab.LabId);
+            //    }
+            //}
+
+            //db.Entry(lab).State = EntityState.Modified;
+            //db.SaveChanges();
+            return View(new LabDetailsViewModel(lab, this));
+
         }
 
 
