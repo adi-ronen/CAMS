@@ -17,6 +17,7 @@ Draggable = function () {
                     name: "מחק מחשב",
                     callback: function (itemKey, opt, rootMenu, originalEvent) {
                         dropList(opt.$trigger);
+                        Search();
                     }
                 }
             }
@@ -78,4 +79,16 @@ dropErea = function (ev) {
 drag = function (ev) {
     ev.dataTransfer.setData("computer_name", ev.target.id);
     ev.dataTransfer.setData("computer_id", ev.target.children[2].id );
+}
+Search = function () {
+    var search = $("#search").val();
+    $('#computers_list > figure').each(function () {
+        if (this.id.toLowerCase().indexOf(search.toLowerCase()) == -1) {
+            this.setAttribute('hidden', 'hidden');
+        }
+        else {
+            this.removeAttribute('hidden');
+        }
+    });
+
 }

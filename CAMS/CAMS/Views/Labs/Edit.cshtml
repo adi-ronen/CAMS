@@ -19,13 +19,13 @@
         <div class="row">
             <div class="col-sm-2 key">
                 <h3>מחשבים</h3>
-                <input type="search" />  @*TBD - search for computer by name*@
+                <input type="search" id="search" oninput="Search()"/>  @*TBD - search for computer by name*@
                 <div id="computers_list">
                     @foreach (var item in Model.ComputersList)
                         {
                             var comp_name = item.Split(',')[0];
                             var comp_id = item.Split(',')[1];
-                            <figure draggable="true" ondragstart="drag(event)" class="draggable-computer-list row context-menu-one computers-list" id="@comp_name">
+                            <figure draggable="true" ondragstart="drag(event)" class="draggable-computer-list row computers-list" id="@comp_name">
                                 @*TBD- make it droppable in lab area*@
                                 <img draggable="false" src="~/Images/clear.png" height="30">
                                 <figcaption class="text-left grab">@comp_name</figcaption>
