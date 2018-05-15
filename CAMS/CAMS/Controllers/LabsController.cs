@@ -7,7 +7,7 @@ using System.Web.Mvc;
 using CAMS.Models;
 using PagedList;
 using System.Collections.Generic;
-
+using System.Data.Entity.Infrastructure;
 
 namespace CAMS.Controllers
 {
@@ -179,7 +179,7 @@ namespace CAMS.Controllers
             base.Dispose(disposing);
         }
 
-       
+
 
         public void RemoveComputerFromLab(int compId, int labId)
         {
@@ -187,27 +187,34 @@ namespace CAMS.Controllers
             //computer not in lab- nothing to update
             if (comp.CurrentLab != labId)
                 return;
-            ComputerLab cL = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e=>e.LabId.Equals(labId)).Last();
+            ComputerLab cL = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).Last();
+
             if (cL != null)
             {
+                cL = db.ComputerLabs.Find(labId, comp.ComputerId, cL.Entrance);
+
                 cL.Exit = DateTime.Now;
-                db.ComputerLabs.Attach(cL);
+                db.Entry(cL).State = EntityState.Modified;
+
+                // db.ComputerLabs.Attach(cL);
 
             }
 
-            //lab.RoomNumber = lab.RoomNumber.Trim();
             comp.CurrentLab = null;
-            //Lab lab = comp.Lab;
-            //lab.Computers.Remove(comp);
-            //comp.Lab = null;
-
-            //lab.Computers.Remove(comp);
-            //comp.CurrentLab = null;
-            //db.Entry(cL).State = EntityState.Modified;
-            //db.Entry(comp).State = EntityState.Modified;
-            //db.Entry(lab).State = EntityState.Modified;
-            db.Computers.Attach(comp);
-            db.SaveChanges();
+            // db.Computers.Attach(comp);
+            db.Entry(comp).State = EntityState.Modified;
+            //try
+            //{
+            //    db.SaveChanges();
+            //}
+            //catch (DbUpdateConcurrencyException ex)
+            //{
+            //    foreach (var item in ex.Entries)
+            //    {
+            //        Console.WriteLine(item);
+            //    }
+                
+            //}
 
 
         }
@@ -225,41 +232,47 @@ namespace CAMS.Controllers
             comp.CurrentLab = labId;
             db.ComputerLabs.Add(cL);
 
-            db.SaveChanges();
+          //  db.SaveChanges();
 
         }
 
 
         
 
-        public bool SaveLabEdit(List<Computer> comps, Lab lab)
+        public bool SaveLabEdit(List<Computer> comps, int labId)
         {
             using (var tr = db.Database.BeginTransaction())
             {
                 try
                 {
+                    Lab lab = db.Labs.Find(labId);
+                    var privLabComputers = lab.Computers.ToList();
                     //computers in the lab that was removed (not in the current computer list)
-                    foreach (var item in lab.Computers.Except(comps))
+                    foreach (var item in privLabComputers.Except(comps))
                     {
                         RemoveComputerFromLab(item.ComputerId, lab.LabId);
                     }
                     //computers added to the lab (not in the lab computer list)
-                    foreach (var item in comps.Except(lab.Computers))
+                    foreach (var item in comps.Except(privLabComputers))
                     {
                         AddComputerToLab(item.ComputerId, lab.LabId);
                     }
 
                     //computers to update
-                    foreach (var item in comps.Intersect(lab.Computers))
+                    foreach (var item in comps.Intersect(privLabComputers))
                     {
                         db.Entry(item).State = EntityState.Modified;
                     }
                     db.Entry(lab).State = EntityState.Modified;
-                    db.SaveChanges();
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException ex) { }
                     tr.Commit();
                     return true;
                 }
-                catch (Exception)
+                 catch (Exception)
                 {
                     tr.Rollback();
                     return false;
@@ -274,53 +287,34 @@ namespace CAMS.Controllers
 
             Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
             List<Computer> comps = new List<Computer>();
-            
+
             foreach (var item in computers)
             {
+                if (item.Key.Split(',').Length != 2)
+                    break;
                 Computer computer;
                 //if computer have an id
-                if(int.TryParse(item.Key.Split(',')[1], out int n))
+                if (int.TryParse(item.Key.Split(',')[1], out int n))
                 {
                     computer = db.Computers.Find(n);
                 }
                 else
                 {
-                    computer= CreateComputer(item.Key.Split(',')[0],lab.Department.Domain);
+                    computer = CreateComputer(item.Key.Split(',')[0], lab.Department.Domain);
                 }
                 //save computer new location
                 computer.LocationInLab = item.Value;
                 db.SaveChanges();
                 comps.Add(computer);
             }
+
             lab.RoomNumber = RoomNumber.Trim();
             lab.Building = Building;
-            if (!SaveLabEdit(comps, lab))
+            if (!SaveLabEdit(comps, lab.LabId))
             {
                 //retry
-                SaveLabEdit(comps, lab);
+                SaveLabEdit(comps, lab.LabId);
             }
-
-            //List<Computer> inLab = lab.Computers.ToList();
-            //foreach (var item in inLab)
-            //{
-            //    //if computer removed from lab
-            //    if (!comps.Contains(item))
-            //    {
-            //        RemoveComputerFromLab(item.ComputerId, lab.LabId);
-            //    }
-            //}
-
-            //foreach (var comp in comps)
-            //{
-            //    //if computer added to lab
-            //    if (!lab.Computers.Contains(comp))
-            //    {
-            //        AddComputerToLab(comp.ComputerId, lab.LabId);
-            //    }
-            //}
-
-            //db.Entry(lab).State = EntityState.Modified;
-            //db.SaveChanges();
             return View(new LabDetailsViewModel(lab, this));
 
         }
