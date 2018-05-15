@@ -74,9 +74,9 @@ namespace CAMS.Models
         {
             this.Lab = lab;
             this._lController = labsController;
-            ComputersList.Add("Class004pc05");
-            ComputersList.Add("Class004pc06");
-            ComputersList.Add("Class004pc07");
+            ComputersList.Add("Class004pc05,");
+            ComputersList.Add("Class004pc06,");
+            ComputersList.Add("Class004pc07,");
         }
 
 
