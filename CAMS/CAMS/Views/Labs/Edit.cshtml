@@ -60,7 +60,7 @@
     </div>
 }
 <div style="padding-right:15px;">
-    @Html.ActionLink("ביטול", "Index")
+    @Html.ActionLink("ביטול", "Details", new { id = Model.Lab.LabId })
 </div>
 @section PreloadScripts{
     @Scripts.Render("~/bundles/jquery-ui")

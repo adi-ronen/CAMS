@@ -8,7 +8,6 @@ using PagedList;
 
 namespace CAMS.Controllers
 {
-    [RequireHttps]
     public class HomeController : BaseController
     {
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)

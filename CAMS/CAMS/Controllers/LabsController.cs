@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 namespace CAMS.Controllers
 {
-    [RequireHttps]
     public class LabsController : BaseController
 
     {
