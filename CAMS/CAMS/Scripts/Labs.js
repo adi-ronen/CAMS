@@ -66,20 +66,20 @@ dropErea = function (ev) {
     ev.preventDefault();
     var computer_name = ev.dataTransfer.getData("computer_name");
     var computer_id = ev.dataTransfer.getData("computer_id");
-    if (computer_name == 'undefined' || computer_id == 'undefined')
-        break;
-    $("#" + computer_name).remove();
-    var left = Math.round((ev.offsetX / $("#LabErea").width()) * 100);
-    var top = Math.round((ev.offsetY / $("#LabErea").height()) * 100);
-    $("#LabErea").append("<figure id=" + computer_name + " class=\"draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
-        "<img src=\"/Images/clear.png\" width=\"70\">" +
-        "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
-        "<a style=\"visibility:collapse\">" + computer_id+"</a>"+
-        "</figure>");
-    Draggable();
+    if (computer_name !== 'undefined' || computer_id !== 'undefined' && computer_name !== '') {
+        $("#" + computer_name).remove();
+        var left = Math.round((ev.offsetX / $("#LabErea").width()) * 100);
+        var top = Math.round((ev.offsetY / $("#LabErea").height()) * 100);
+        $("#LabErea").append("<figure id=" + computer_name + " class=\"draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
+            "<img src=\"/Images/clear.png\" width=\"70\">" +
+            "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
+            "<a style=\"visibility:collapse\">" + computer_id + "</a>" +
+            "</figure>");
+        Draggable();
+    }
 }
 drag = function (ev) {
-    if (typeof ev.target.id !== 'undefined' && typeof ev.target.children[2].id !== 'undefined') {
+    if (typeof ev.target.id !== 'undefined' && typeof (ev.target.children[2].id) !== 'undefined') {
         ev.dataTransfer.setData("computer_name", ev.target.id);
         ev.dataTransfer.setData("computer_id", ev.target.children[2].id );
     }
