@@ -71,6 +71,15 @@ namespace CAMS.Models
             ComputersList.Add("Class004pc05,");
             ComputersList.Add("Class004pc06,");
             ComputersList.Add("Class004pc07,");
+            ComputersList.Add("Class004pc08,");
+            ComputersList.Add("Class004pc09,");
+            ComputersList.Add("Class004pc10,");
+            ComputersList.Add("Class004pc11,");
+            ComputersList.Add("Class004pc12,");
+            ComputersList.Add("Class004pc13,");
+            ComputersList.Add("Class004pc14,");
+            ComputersList.Add("Class004pc15,");
+            ComputersList.Add("Class004pc16,");
         }
 
 

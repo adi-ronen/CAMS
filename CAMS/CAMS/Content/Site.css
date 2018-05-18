@@ -22,7 +22,11 @@ select,
 textarea {
     max-width: 280px;
 }
-
+#computers_list {
+    overflow: scroll;
+    height: 87%;
+    width: 115%;
+}
 .labs {
     background-color: #fdfdfd;
     width: 900px;
@@ -33,10 +37,13 @@ textarea {
 
 .key {
     background-color: #fdfdfd;
-    width: 200px;
-    height: 500px;
+    max-height: 500px;
+    overflow: auto;
 }
-
+input[type="search"] {
+    max-width: 100%;
+    margin-bottom: 6px;
+}
 .todaysclasses {
     border: 1px solid #c6c6c6;
     border-radius: 4px;

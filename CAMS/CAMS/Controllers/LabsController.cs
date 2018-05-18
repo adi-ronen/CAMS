@@ -59,7 +59,7 @@ namespace CAMS.Controllers
             return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
         }
 
-        
+
 
 
         // GET: Labs/Details/5
@@ -157,7 +157,7 @@ namespace CAMS.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Lab lab = db.Labs.Find(id);
-            while (lab.Computers.Count>0)
+            while (lab.Computers.Count > 0)
             {
                 RemoveComputerFromLab(lab.Computers.First().ComputerId, lab.LabId);
             }
@@ -186,25 +186,20 @@ namespace CAMS.Controllers
             if (comp.CurrentLab != labId)
                 return;
             var cList = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).ToList();
-            if (cList.Count>0)
+            if (cList.Count > 0)
             {
                 ComputerLab cL = db.ComputerLabs.Find(labId, comp.ComputerId, cList.First().Entrance);
-
                 cL.Exit = DateTime.Now;
                 db.Entry(cL).State = EntityState.Modified;
-
-                // db.ComputerLabs.Attach(cL);
+                db.SaveChanges();
+                //db.ComputerLabs.Attach(cL);
 
             }
 
             comp.CurrentLab = null;
             // db.Computers.Attach(comp);
             db.Entry(comp).State = EntityState.Modified;
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException ex) { }
+            db.SaveChanges();
 
 
         }
@@ -224,11 +219,8 @@ namespace CAMS.Controllers
             comp.CurrentLab = labId;
             db.ComputerLabs.Add(cL);
 
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException ex) { }
+            db.SaveChanges();
+
         }
 
         public bool SaveLabEdit(List<Computer> comps, int labId, string roomNumber, string building)
@@ -265,7 +257,7 @@ namespace CAMS.Controllers
                 catch (DbUpdateConcurrencyException ex) { }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -350,7 +342,7 @@ namespace CAMS.Controllers
             if (!SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building))
             {
                 //retry
-                SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(),Building);
+                SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building);
             }
             return View(new LabDetailsViewModel(lab, this));
 
