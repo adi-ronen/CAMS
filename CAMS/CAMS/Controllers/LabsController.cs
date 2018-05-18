@@ -216,11 +216,13 @@ namespace CAMS.Controllers
             //already in lab- nothing to update
             if (comp.CurrentLab == labId)
                 return;
-            ComputerLab cL = new ComputerLab();
-            cL.ComputerId = compId;
-            cL.LabId = labId;
-            cL.Entrance = DateTime.Now;
-            cL.Exit = null;
+            ComputerLab cL = new ComputerLab
+            {
+                ComputerId = compId,
+                LabId = labId,
+                Entrance = DateTime.Now,
+                Exit = null
+            };
             comp.CurrentLab = labId;
             db.ComputerLabs.Add(cL);
 

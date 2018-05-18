@@ -31,8 +31,8 @@ namespace CAMS
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             activitiesModel = new ActivitiesModel(new ActivitiesController());
             RegisterCacheEntry();
-            checkSchedual();
-            checkComputersActivity();
+            CheckSchedual();
+            CheckComputersActivity();
            // sendReportsToUsers();
         }
 
@@ -74,16 +74,16 @@ namespace CAMS
             switch (key)
             {
                 case collectionCacheItemKey:
-                    checkComputersActivity();
+                    CheckComputersActivity();
                     break;
                 case scheduleCacheItemKey:
-                    checkSchedual();
-                    sendReportsToUsers();
+                    CheckSchedual();
+                    SendReportsToUsers();
                     break;
             }
         }
 
-        private void checkSchedual()
+        private void CheckSchedual()
         {
             new Thread(() =>
             {
@@ -93,7 +93,7 @@ namespace CAMS
             }).Start();
         }
 
-        private void checkComputersActivity()
+        private void CheckComputersActivity()
         {
             new Thread(() =>
             {
@@ -103,28 +103,28 @@ namespace CAMS
             }).Start();
         }
 
-        private void sendReportsToUsers()
+        private void SendReportsToUsers()
         {
             DateTime today = DateTime.Now.Date;
             // send mail to daily users
-            findUsersAndNotifications(NotificationFrequency.Daily);
+            FindUsersAndNotifications(NotificationFrequency.Daily);
             
             if (today.DayOfWeek == DayOfWeek.Sunday)
             {
                 //send mail to weekly users
-                findUsersAndNotifications(NotificationFrequency.Weekly);
+                FindUsersAndNotifications(NotificationFrequency.Weekly);
 
             }
             if (today.Day == 1)
             {
                 //send mail to montly
-                findUsersAndNotifications(NotificationFrequency.Monthly);
+                FindUsersAndNotifications(NotificationFrequency.Monthly);
 
             }
 
         }
 
-        private void findUsersAndNotifications(NotificationFrequency frequency)
+        private void FindUsersAndNotifications(NotificationFrequency frequency)
         {
             NotificationsController controller = new NotificationsController();
 
@@ -156,23 +156,25 @@ namespace CAMS
 
                     }
                     msg += "</table>";
-                    sendEmail(msg, user);
+                    SendEmail(msg, user);
                 }
 
 
             }
         }
 
-        private void sendEmail(string msg, User user)
+        private void SendEmail(string msg, User user)
         {
 
             MailMessage mail = new MailMessage(Address, user.Email);
-            SmtpClient client = new SmtpClient();
-            client.Port = 587;
-            client.Host = "smtp.gmail.com";
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.Credentials = new System.Net.NetworkCredential("partnermatcheryad2@gmail.com", "olla123456");
-            client.EnableSsl = true;
+            SmtpClient client = new SmtpClient
+            {
+                Port = 587,
+                Host = "smtp.gmail.com",
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                Credentials = new System.Net.NetworkCredential("partnermatcheryad2@gmail.com", "olla123456"),
+                EnableSsl = true
+            };
 
             mail.Subject = "CAMS Computers Report";
             mail.Body = msg;
@@ -219,7 +221,7 @@ namespace CAMS
             {
                 authTicket = FormsAuthentication.Decrypt(authCookie.Value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Write the exception to the Event Log.
                 return;

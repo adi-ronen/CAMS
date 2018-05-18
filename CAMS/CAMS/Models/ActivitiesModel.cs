@@ -111,7 +111,7 @@ namespace CAMS.Models
             {
                 //get the classes that are plenned in this lab for today
 
-                string classes = "";
+                //string classes = "";
 
                 //_aController.UpdateLabSchedule(lab, classes);
 
