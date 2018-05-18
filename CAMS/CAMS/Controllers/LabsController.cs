@@ -11,7 +11,6 @@ using System.Data.Entity.Infrastructure;
 
 namespace CAMS.Controllers
 {
-    [RequireHttps]
     public class LabsController : BaseController
 
     {

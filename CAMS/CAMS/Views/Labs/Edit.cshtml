@@ -19,13 +19,13 @@
         <div class="row">
             <div class="col-sm-2 key">
                 <h3>מחשבים</h3>
-                <input type="search" />  @*TBD - search for computer by name*@
+                <input type="search" id="search" oninput="Search()"/>  @*TBD - search for computer by name*@
                 <div id="computers_list">
                     @foreach (var item in Model.ComputersList)
                         {
                             var comp_name = item.Split(',')[0];
                             var comp_id = item.Split(',')[1];
-                            <figure draggable="true" ondragstart="drag(event)" class="draggable-computer-list row context-menu-one computers-list" id="@comp_name">
+                            <figure draggable="true" ondragstart="drag(event)" class="draggable-computer-list row computers-list" id="@comp_name">
                                 @*TBD- make it droppable in lab area*@
                                 <img draggable="false" src="~/Images/clear.png" height="30">
                                 <figcaption class="text-left grab">@comp_name</figcaption>
@@ -37,17 +37,7 @@
             </div>
             <div class="col-sm-10">
                 <div class="labs droppable" id="LabErea" ondrop="dropErea(event)" ondragover="allowDrop(event)">
-                    @foreach (var item in Model.Lab.Computers)
-                    {
-                        string top = item.LocationInLab.Split(',')[0];
-                        string left = item.LocationInLab.Split(',')[1];
-                        <figure id="@item.ComputerName" class="draggable context-menu-one grab" style="position:absolute;top:@top;left:@left">
-                            <img src="~/Images/clear.png" width="70">
-                            <figcaption class="text-center">@item.ComputerName</figcaption>
-                            <a style="visibility:collapse">,@item.ComputerId</a>
-                        </figure>
-                    }
-                </div>
+                <figure id="Class004pc05" class="draggable context-menu-one ui-draggable ui-draggable-handle" style="position: absolute; top: 185.243px; left: 298.148px;"><img src="/Images/clear.png" width="70"><figcaption class="text-center">Class004pc05</figcaption><a style="visibility:collapse"></a></figure></div>
                 <p>*לחץ קליק ימני על המחשב על מנת למחוק אותו</p>
             </div>
         </div>
@@ -60,7 +50,7 @@
     </div>
 }
 <div style="padding-right:15px;">
-    @Html.ActionLink("ביטול", "Index")
+    @Html.ActionLink("ביטול", "Details", new { id = Model.Lab.LabId })
 </div>
 @section PreloadScripts{
     @Scripts.Render("~/bundles/jquery-ui")
