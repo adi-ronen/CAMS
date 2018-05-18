@@ -31,7 +31,7 @@ SaveComputersLocations = function () {
         let Div_Width = parseFloat($(this).parent().css("width"));
         let New_Computer_Top = Math.round(Computer_Position.top * 100 / Div_Height);
         let New_Computer_Left = Math.round(Computer_Position.left * 100 / Div_Width);
-        coms[$(this).children(1).text() + "," + $(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
+        coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
     });
     $.ajax({
         url: "/Labs/Update",
@@ -71,7 +71,7 @@ dropErea = function (ev) {
     $("#LabErea").append("<figure id=" + computer_name + " class=\"draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
         "<img src=\"/Images/clear.png\" width=\"70\">" +
         "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
-        "<a style=\"visibility:collapse\">" + computer_id+"</a>"+
+        "<a style=\"visibility:collapse\">," + computer_id+"</a>"+
         "</figure>");
     Draggable();
 }

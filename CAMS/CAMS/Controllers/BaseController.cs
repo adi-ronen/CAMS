@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -76,9 +77,16 @@ namespace CAMS.Controllers
         {
             Computer comp = new Computer();
             comp.ComputerName = computerName;
+            comp.ComputerId = db.Computers.Max(e => e.ComputerId)+1;
+            comp.LocationInLab = "0%,0%";
             //comp.MAC= findComputerMac(computerName, domain);
             db.Computers.Add(comp);
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex) { }
+
             return comp;
         }
         //-----------------------------------------------------------------
