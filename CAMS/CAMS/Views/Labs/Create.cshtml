@@ -1,5 +1,4 @@
-﻿@model CAMS.Models.LoginViewModel
-
+﻿@model IEnumerable<SelectListItem>
 @{
     ViewBag.Title = "Create";
 }
@@ -12,50 +11,27 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Lab</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @*<div class="form-group">
-            @Html.LabelFor(model => model.LabId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.LabId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.LabId, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
         <div class="form-group">
-            <label class="control-label col-md-2">בניין</label>
             @Html.Label("בניין", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <select resource="@Model.GetBuildings()" name="building">
-
-                </select>
-               @* @Html.DropDownList("בניין", Model.GetBuildings(), new { htmlAttributes = new { @class = "form-control" } })*@
+               @Html.DropDownList("Building", Model , htmlAttributes: new { @class = "form-control widthinput" })
             </div>
         </div>
-
         <div class="form-group">
             @Html.Label("כיתה", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.Editor("RoomNumber", new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-
-        @*<div class="form-group">
-            @Html.LabelFor(model => model.DepartmentId, "DepartmentId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("DepartmentId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.DepartmentId, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
-
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="צור" class="btn btn-default" />
             </div>
         </div>
     </div>
 }
-
 <div>
     @Html.ActionLink("חזרה לרשימה", "Index")
 </div>

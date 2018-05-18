@@ -80,8 +80,7 @@ namespace CAMS.Controllers
         // GET: Labs/Create
         public ActionResult Create()
         {
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName");
-            return View();
+            return View(db.Labs.Select(x => new SelectListItem { Text = x.Building }).Distinct());
         }
 
         // POST: Labs/Create
@@ -215,11 +214,13 @@ namespace CAMS.Controllers
             //already in lab- nothing to update
             if (comp.CurrentLab == labId)
                 return;
-            ComputerLab cL = new ComputerLab();
-            cL.ComputerId = compId;
-            cL.LabId = labId;
-            cL.Entrance = DateTime.Now;
-            cL.Exit = null;
+            ComputerLab cL = new ComputerLab
+            {
+                ComputerId = compId,
+                LabId = labId,
+                Entrance = DateTime.Now,
+                Exit = null
+            };
             comp.CurrentLab = labId;
             db.ComputerLabs.Add(cL);
 

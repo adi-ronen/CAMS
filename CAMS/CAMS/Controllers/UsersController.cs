@@ -84,10 +84,12 @@ namespace CAMS.Controllers
         {
             try
             {
-                UserDepartment userDepartment = new UserDepartment();
-                userDepartment.UserId =Convert.ToInt32(Request.Form["UsersList"].ToString());
-                userDepartment.DepartmentId = Convert.ToInt32(Request.Form["Departments"].ToString());
-                userDepartment.AccessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
+                UserDepartment userDepartment = new UserDepartment
+                {
+                    UserId = Convert.ToInt32(Request.Form["UsersList"].ToString()),
+                    DepartmentId = Convert.ToInt32(Request.Form["Departments"].ToString()),
+                    AccessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString())
+                };
                 db.UserDepartments.Add(userDepartment);
                 db.SaveChanges();
                 return RedirectToAction("Index");
