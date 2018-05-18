@@ -73,7 +73,7 @@ dropErea = function (ev) {
         $("#LabErea").append("<figure id=" + computer_name + " class=\"draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
             "<img src=\"/Images/clear.png\" width=\"70\">" +
             "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
-            "<a style=\"visibility:collapse\",>" + computer_id + "</a>" +
+            "<a style=\"visibility:collapse\">" + computer_id + "</a>" +
             "</figure>");
         Draggable();
     }
