@@ -80,8 +80,7 @@ namespace CAMS.Controllers
         // GET: Labs/Create
         public ActionResult Create()
         {
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName");
-            return View();
+            return View(db.Labs.Select(x => new SelectListItem { Text = x.Building }).Distinct());
         }
 
         // POST: Labs/Create

@@ -56,12 +56,6 @@ namespace CAMS.Models
 
             return false;
         }
-
-        public IEnumerable<SelectListItem> GetBuildings()
-        {
-            return _lController.GetBuildings().Select(x => new SelectListItem { Text = x, Value = x });
-        }
-
     }
     public class LabDetailsViewModel
     {
