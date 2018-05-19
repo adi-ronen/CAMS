@@ -27,7 +27,7 @@ namespace CAMS.Models
                 return ans;
             foreach (Computer comp in lab.Computers)
             {
-                if (_lController.LastActivityDetails(comp) == null)
+                if (_lController.LastActivityDetails(comp.ComputerId) == null)
                 {
                     ans++;
                 }

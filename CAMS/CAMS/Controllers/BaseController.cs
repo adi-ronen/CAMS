@@ -46,8 +46,11 @@ namespace CAMS.Controllers
         }
         public Activity LastActivityDetails(int id)
         {
-            Computer computer = db.Computers.Find(id);
-            return LastActivityDetails(computer);
+            lock (syncLock)
+            {
+                Computer computer = db.Computers.Find(id);
+                return LastActivityDetails(computer);
+            }
         }
         public Activity LastActivityDetails(Computer comp)
         {

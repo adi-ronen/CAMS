@@ -14,6 +14,7 @@ using CAMS.Controllers;
 using CAMS.Models;
 using System.Threading;
 using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace CAMS
 {
@@ -63,7 +64,7 @@ namespace CAMS
             }
         }
         // TBD- change url
-        private const string DummyPageUrl = "http://localhost:63976/TestCacheTimeout/dummy.aspx";
+        private const string DummyPageUrl = "http://localhost:21657/TestCacheTimeout/dummy.aspx";
         private const string Address = "partnermatcheryad2@gmail.com";
 
         public void CacheItemRemovedCallback(string key,
@@ -85,22 +86,41 @@ namespace CAMS
 
         private void CheckSchedual()
         {
-            new Thread(() =>
-            {
-                Thread.CurrentThread.IsBackground = true;
-                activitiesModel.GetClassesSchedule();
+            //new Thread(() =>
+            //{
+            //    Thread.CurrentThread.IsBackground = true;
+            //    activitiesModel.GetClassesSchedule();
 
-            }).Start();
+            //}).Start();
         }
 
         private void CheckComputersActivity()
         {
-            new Thread(() =>
+            //activitiesModel.GetComputersActivity();
+            Task t = Task.Factory.StartNew(() =>
             {
-                Thread.CurrentThread.IsBackground = true;
-                activitiesModel.GetComputersActivity();
+                try
+                {
+                    Debug.WriteLine("start of collecting user acttivities");
+                    Thread.CurrentThread.IsBackground = true;
+                    activitiesModel.GetComputersActivity();
+                    Debug.WriteLine("end of collecting user acttivities");
+                }catch(Exception ex)
+                {
+                    Debug.WriteLine("CheckComputersActivity error: " + ex.Message);
+                    HitPage(DummyPageUrl);
+                }
 
-            }).Start();
+            });
+            Task.WaitAll(new Task[] { t});
+           
+           // t.Start();
+            //new Thread(() =>
+            //{
+            //    Thread.CurrentThread.IsBackground = true;
+            //    activitiesModel.GetComputersActivity();
+
+            //}).Start();
         }
 
         private void SendReportsToUsers()
@@ -187,20 +207,18 @@ namespace CAMS
         private void HitPage(string url)
         {
             WebClient client = new WebClient();
-           // client.DownloadData(url);
+            client.DownloadData(url);
         }
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
             // If the dummy page is hit, then it means we want to add another item
-
-            // in cache
-            Debug.WriteLine("beginRequest " + DateTime.Now.ToString());
 
             if (HttpContext.Current.Request.Url.ToString() == DummyPageUrl )
             {
                 // Add the item in cache and when succesful, do the work.
 
                 RegisterCacheEntry();
+                Debug.WriteLine("beginRequest " + DateTime.Now.ToString());
             }
         }
 

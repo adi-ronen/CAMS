@@ -13,6 +13,8 @@ namespace CAMS.Controllers
 {
     public class ActivitiesController : BaseController
     {
+        private readonly object syncLock = new object();
+
         // GET: Activities
         public ActionResult Index()
         {
@@ -138,20 +140,28 @@ namespace CAMS.Controllers
         }
         
 
-        public void CreateNewActivity(Computer comp, ActivityType mode, string userName)
+        public void CreateNewActivity(int compId, ActivityType mode, string userName)
         {
-            Activity act = new Activity();
-            if (userName != null)
-                act.UserName = userName;
-            act.Mode = mode;
-            act.Login = DateTime.Now;
-            act.Weekend = IsWeekend(act.Login.DayOfWeek);
-            act.ComputerId = comp.ComputerId;
-            act.Computer = comp;
-            db.Activities.Add(act);
-            comp.Activities.Add(act);
-            db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
-            db.SaveChanges();
+             lock (syncLock)
+             {
+            // Activity act = new Activity();
+            Computer comp = db.Computers.Find(compId);
+                string uName = null;
+                if (userName != null)
+                    uName = userName;
+                Activity act = new Activity
+                {
+                    UserName = uName,
+                    Mode = mode,
+                    Login = DateTime.Now,
+                    Weekend = IsWeekend(DateTime.Now.DayOfWeek),
+                    ComputerId = comp.ComputerId
+                };
+                db.Activities.Add(act);
+                comp.Activities.Add(act);
+                db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
+                db.SaveChanges();
+            }
         }
 
         private bool IsWeekend(DayOfWeek dayOfWeek)
@@ -163,30 +173,36 @@ namespace CAMS.Controllers
        
         public void CloseActivity(Activity act)
         {
-            act.Logout = DateTime.Now;
-            db.Entry(act).State = EntityState.Modified; //same as above
-            db.SaveChanges();
+            lock (syncLock)
+            {
+                act.Logout = DateTime.Now;
+                db.Entry(act).State = EntityState.Modified; //same as above
+                db.SaveChanges();
+            }
 
         }
 
         public Activity SplitActivity(Activity act)
         {
-            act.Logout = DateTime.Now.Date.AddTicks(-1);
-            Activity newAct = new Activity();
-            newAct.Login = DateTime.Now.Date;
-            newAct.Weekend = IsWeekend(newAct.Login.DayOfWeek);
-            newAct.ComputerId = act.ComputerId;
-            newAct.Mode = act.Mode;
-            if (act.UserName != null)
-                act.UserName = act.UserName;
-            db.Activities.Add(newAct);
-            db.SaveChanges();
-            return newAct;
+            lock (syncLock)
+            {
+                act.Logout = DateTime.Now.Date.AddTicks(-1);
+                Activity newAct = new Activity();
+                newAct.Login = DateTime.Now.Date;
+                newAct.Weekend = IsWeekend(newAct.Login.DayOfWeek);
+                newAct.ComputerId = act.ComputerId;
+                newAct.Mode = act.Mode;
+                if (act.UserName != null)
+                    act.UserName = act.UserName;
+                db.Activities.Add(newAct);
+                db.SaveChanges();
+                return newAct;
+            }
         }
 
         internal List<Lab> GetAllLabs()
         {
-            return db.Labs.Select(e => e).ToList<Lab>();
+            return db.Labs.ToList();
         }
     }
 }

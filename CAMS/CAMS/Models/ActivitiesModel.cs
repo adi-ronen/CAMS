@@ -10,6 +10,9 @@ using System.Management.Automation.Runspaces;
 using System.Text.RegularExpressions;
 using CAMS.Controllers;
 using static CAMS.Constant;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace CAMS.Models
 {
@@ -26,79 +29,136 @@ namespace CAMS.Models
         /// get current cumputer activity. 
         /// </summary>
         public void GetComputersActivity()
-        {
-            //List<Lab> labs = GetLabs();
-            List<Lab> labs = new List<Lab>();
-            foreach (Lab lab in labs)
+        {try
             {
-                GetComputerActivity(lab.Computers);
+                List<Lab> labs = GetLabs();
+                //  List<Lab> labs = new List<Lab>();
+                //  labs.Add(_aController.GetLab(53));
+                List<Task> tasks = new List<Task>();
+                try
+                {
+                    foreach (Lab lab in labs)
+                    {
+                        Task t = Task.Factory.StartNew(() =>
+                        {
+                            try
+                            {
+                                Debug.WriteLine("start of data collection for lab in: " + lab.Building + ", " + lab.RoomNumber);
+
+                                Thread.CurrentThread.IsBackground = true;
+                                GetComputerActivity(lab.Computers);
+                                Debug.WriteLine("end of data collection for lab in: " + lab.Building + ", " + lab.RoomNumber);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("faild on lab:" + lab.LabId + " in dep:" + lab.Department.DepartmentName + ". error is:" + ex.Message);
+                            }
+                        });
+                        tasks.Add(t);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("faild in lab foreach. error is:" + ex.Message);
+                }
+                Task.WaitAll(tasks.ToArray());
+                Debug.WriteLine("done");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("faild in lab waitall. error is:" + ex.Message);
             }
         }
 
         private void GetComputerActivity(ICollection<Computer> compList)
         {
-
-            //TBD- make it asyncronic!
-            foreach (var comp in compList)
+            try
             {
-                //check for the last activity of the computer
-                Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
-                
-                // if the last activity is user activity from the day before- split to two activities for each day
-                if(lastAct!=null && lastAct.Mode.Equals(ActivityType.User) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
+                List<Task> tasks = new List<Task>();
+                try
                 {
-                    lastAct = _aController.SplitActivity(lastAct);
-                }
+                    foreach (var comp in compList)
+                    {
+                        Task t = Task.Factory.StartNew(() =>
+                            {
+                                try
+                                {
+                                //check for the last activity of the computer
+                                Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
 
-                string logedOn = IsComputerLogedOn(comp.ComputerName);
-                // TBD- change the ugly T: isComputerLogedOn should return a boolean (in the func use trim)
-                if (logedOn.Contains("T"))
-                {
-                    String userName = GetUserLogOn(comp.ComputerName);
-                    if (!Regex.Replace(userName, @"\s+", "").Equals(""))
-                    {
-                        ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
-                        if (lastAct == null)
-                        {
-                            //create user activity
-                            AddNewActivity(comp, ActivityType.User, userName);
-                        }
-                        else if (lastAct.UserName != userName)
-                        {
-                            //close current activity and create new user activity
-                            CloseActivity(lastAct);
-                            AddNewActivity(comp, ActivityType.User, userName);
-                        }
-                    }
-                    else
-                    {
-                        //computer is avilable- compare with last activity and update if neseccery 
-                        //if last activity is null- no need to update. if not close the last activity 
-                        if (lastAct != null)
-                        {
-                            CloseActivity(lastAct);
-                        }
-                    }
-                }
-                else
-                {
-                    //computer is disconnected- compare with last activity and update if neseccery 
-                    if (lastAct == null)
-                    {
-                        //create off activity
-                        AddNewActivity(comp, ActivityType.Off, null);
-                    }
-                    else if (lastAct.Mode !=ActivityType.Off)
-                    {
-                        //close current activity and create new off activity
-                        CloseActivity(lastAct);
-                        AddNewActivity(comp, ActivityType.Off, null);
+                                // if the last activity is user activity from the day before- split to two activities for each day
+                                if (lastAct != null && lastAct.Mode.Equals(ActivityType.User) && !lastAct.Login.Date.Equals(DateTime.Now.Date))
+                                    {
+                                        lastAct = _aController.SplitActivity(lastAct);
+                                    }
 
+                                    string logedOn = IsComputerLogedOn(comp.ComputerName);
+                                // TBD- change the ugly T: isComputerLogedOn should return a boolean (in the func use trim)
+                                if (logedOn.Contains("T"))
+                                    {
+                                        String userName = GetUserLogOn(comp.ComputerName);
+                                        if (!Regex.Replace(userName, @"\s+", "").Equals(""))
+                                        {
+                                        ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
+                                        if (lastAct == null)
+                                            {
+                                            //create user activity
+                                            AddNewActivity(comp, ActivityType.User, userName);
+                                            }
+                                            else if (lastAct.UserName != userName)
+                                            {
+                                            //close current activity and create new user activity
+                                            CloseActivity(lastAct);
+                                                AddNewActivity(comp, ActivityType.User, userName);
+                                            }
+                                        }
+                                        else
+                                        {
+                                        //computer is avilable- compare with last activity and update if neseccery 
+                                        //if last activity is null- no need to update. if not close the last activity 
+                                        if (lastAct != null)
+                                            {
+                                                CloseActivity(lastAct);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                    //computer is disconnected- compare with last activity and update if neseccery 
+                                    if (lastAct == null)
+                                        {
+                                        //create off activity
+                                        AddNewActivity(comp, ActivityType.Off, null);
+                                        }
+                                        else if (lastAct.Mode != ActivityType.Off)
+                                        {
+                                        //close current activity and create new off activity
+                                        CloseActivity(lastAct);
+                                            AddNewActivity(comp, ActivityType.Off, null);
+
+                                        }
+                                    // else- it already in off mode- dont change anything 
+                                }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine("faild on computer:" + comp.ComputerName + " in dep:" + comp.Lab.Department.DepartmentName + ". error is:" + ex.Message);
+                                }
+
+                            });
+                        tasks.Add(t);
                     }
-                    // else- it already in off mode- dont change anything 
                 }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("faild in computer foreach. error is:" + ex.Message);
+                }
+                Task.WaitAll(tasks.ToArray());
             }
-            
+            catch (Exception ex)
+            {
+                Debug.WriteLine("faild in computer waitall. error is:" + ex.Message);
+            }
         }
 
 
@@ -147,7 +207,7 @@ namespace CAMS.Models
         private void AddNewActivity(Computer comp, ActivityType mode, string userName)
         {
 
-            _aController.CreateNewActivity(comp, mode, userName);
+            _aController.CreateNewActivity(comp.ComputerId, mode, userName);
         }
 
 

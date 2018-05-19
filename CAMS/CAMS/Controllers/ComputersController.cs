@@ -46,6 +46,41 @@ namespace CAMS.Controllers
             return View();
         }
 
+
+
+        public void AddCompToLab(string compName, int labId)
+        {
+            Lab lab = db.Labs.Find(labId);
+            //while( lab.ComputerLabs.Count>0)
+            //{
+            //    db.ComputerLabs.Remove(lab.ComputerLabs.First());
+
+            //}
+            //while (lab.Computers.Count > 0)
+            //{
+            //    db.Computers.Remove(lab.Computers.First());
+
+            //}
+            //db.SaveChanges();
+            Computer comp = new Computer();
+            comp.ComputerName = compName;
+            comp.CurrentLab = labId;
+            comp.LocationInLab = "0%,0%";
+            comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
+            db.Computers.Add(comp);
+            db.SaveChanges();
+
+            ComputerLab cl = new ComputerLab();
+
+            cl.ComputerId = comp.ComputerId;
+            cl.LabId = labId;
+            cl.Entrance = DateTime.Now.Date;
+            db.ComputerLabs.Add(cl);
+            db.SaveChanges();
+        }
+
+
+
         // POST: Computers/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
