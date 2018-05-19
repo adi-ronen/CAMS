@@ -43,13 +43,13 @@ else
                     @switch (item.NotificationType)
                     {
                         case Constant.NotificationType.Disconnected:
-                            @Html.Raw("לא מחובר "+item.Days+" ימים")
+                            @Html.Raw("לא מחובר " + item.Days + " ימים")
                             break;
                         case Constant.NotificationType.NotUsed:
-                            @Html.Raw("לא בשימוש "+item.Days+" ימים")
+                            @Html.Raw("לא בשימוש " + item.Days + " ימים")
                             break;
                     }
-                    
+
                 </td>
                 <td>
                     @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
