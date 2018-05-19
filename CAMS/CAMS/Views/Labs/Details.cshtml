@@ -9,20 +9,22 @@
     <h6>בניין: @Html.DisplayFor(model => model.Lab.Building)</h6>
     <h6>כיתה: @Html.DisplayFor(model => model.Lab.RoomNumber)</h6>
     <div class="row">
-        <h6>שיעורים מתוכננים להיום:</h6>
-        @if (Model.Lab.TodaysClasses == null)
-        {
-            @Html.Raw("אין")
-        }
-        else
-        {
-            List<string> TodaysClasses = Model.Lab.TodaysClasses.Split(',').ToList();
-            foreach (var item in TodaysClasses)
+        <h6>
+            שיעורים מתוכננים להיום:
+            @if (Model.Lab.TodaysClasses == null)
             {
-                <input class="todaysclasses" type="text" value="@item" readonly="readonly">
+                @Html.Raw("אין")
             }
+            else
+            {
+                List<string> TodaysClasses = Model.Lab.TodaysClasses.Split(',').ToList();
+                foreach (var item in TodaysClasses)
+                {
+                    <input class="todaysclasses" type="text" value="@item" readonly="readonly">
+                }
 
-        }
+            }
+        </h6>
     </div>
     <hr />
     <div class="row">
