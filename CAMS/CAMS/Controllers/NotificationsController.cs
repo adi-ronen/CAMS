@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using CAMS.Models;
 
@@ -99,6 +100,19 @@ namespace CAMS.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult Chart()
+        { //TBD - CHNGE CHART
+            var key = new Chart(width: 300, height: 300)
+                .AddTitle("Employee Chart")
+                .AddSeries(
+                chartType: "Bubble",
+                name: "Employee",
+                xValue: new[] { "Peter", "Andrew", "Julie", "Dave" },
+                yValues: new[] { "2", "7", "5", "3" });
+
+            return File(key.ToWebImage().GetBytes(), "image/jpeg");
         }
     }
 }
