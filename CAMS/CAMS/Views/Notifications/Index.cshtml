@@ -17,134 +17,145 @@
 }
 else
 {
-
-<table class="table table-bordered table-condensed text-right align-middle">
-    <tr>
-        <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
-        <td>@Html.ActionLink("בניין", "Index", new { sortOrder = ViewBag.BuildingSortParm, currentFilter = ViewBag.CurrentFilter })</td>
-        <td>כיתה</td>
-        <td>שם עמדה</td>
-        <td>פירוט התראה</td>
-        <th></th>
-    </tr>
-    @foreach (CAMS.Models.Notification item in ViewBag.Notifications) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
-    {
-        if (ViewBag.LastDep == null || ViewBag.LastDep != item.DepartmentName)
+    <p>חפש לפי שם מחלקה/ בניין: <input oninput="Search()" id="search" /></p>
+    <table class="table table-bordered table-condensed text-right align-middle">
+        <tr>
+            <td>@Html.ActionLink("מחלקה", "Index", new { sortOrder = ViewBag.DepSortParm, currentFilter = ViewBag.CurrentFilter })</td>
+            <td>@Html.ActionLink("בניין", "Index", new { sortOrder = ViewBag.BuildingSortParm, currentFilter = ViewBag.CurrentFilter })</td>
+            <td>כיתה</td>
+            <td>שם עמדה</td>
+            <td>פירוט התראה</td>
+            <th></th>
+        </tr>
+        @foreach (CAMS.Models.Notification item in ViewBag.Notifications) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DepartmentName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Building)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoomNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ComputerName)
-                </td>
-                <td>
-                    @switch (item.NotificationType)
-                    {
-                        case Constant.NotificationType.Disconnected:
-                            @Html.Raw("לא מחובר " + item.Days + " ימים")
-                            break;
-                        case Constant.NotificationType.NotUsed:
-                            @Html.Raw("לא בשימוש " + item.Days + " ימים")
-                            break;
-                    }
+            if (ViewBag.LastDep == null || ViewBag.LastDep != item.DepartmentName)
+            {
+                <tr>
+                    <td hidden>@item.DepartmentName @item.Building</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DepartmentName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Building)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ComputerName)
+                    </td>
+                    <td>
+                        @switch (item.NotificationType)
+                        {
+                            case Constant.NotificationType.Disconnected:
+                                @Html.Raw("לא מחובר " + item.Days + " ימים")
+                                break;
+                            case Constant.NotificationType.NotUsed:
+                                @Html.Raw("לא בשימוש " + item.Days + " ימים")
+                                break;
+                        }
 
-                </td>
-                <td>
-                    @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
-                </td>
-            </tr>
-            ViewBag.LastDep = item.DepartmentName;
-            ViewBag.LastBuilding = item.Building;
-            ViewBag.LastRoomNumber = item.RoomNumber;
-        }
-        else if (ViewBag.LastBuilding != item.Building)
-        {
-            <tr>
-                <td></td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Building)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoomNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ComputerName)
-                </td>
-                <td>
-                    @switch (item.NotificationType)
-                    {
-                        case Constant.NotificationType.Disconnected:
-                            @Html.Raw("לא מחובר " + item.Days + " ימים")
-                            break;
-                        case Constant.NotificationType.NotUsed:
-                            @Html.Raw("לא בשימוש " + item.Days + " ימים")
-                            break;
-                    }
+                    </td>
+                    <td>
+                        @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
+                    </td>
+                </tr>
+                ViewBag.LastDep = item.DepartmentName;
+                ViewBag.LastBuilding = item.Building;
+                ViewBag.LastRoomNumber = item.RoomNumber;
+            }
+            else if (ViewBag.LastBuilding != item.Building)
+            {
+                <tr>
+                    <td hidden>@item.DepartmentName @item.Building</td>
+                    <td></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Building)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ComputerName)
+                    </td>
+                    <td>
+                        @switch (item.NotificationType)
+                        {
+                            case Constant.NotificationType.Disconnected:
+                                @Html.Raw("לא מחובר " + item.Days + " ימים")
+                                break;
+                            case Constant.NotificationType.NotUsed:
+                                @Html.Raw("לא בשימוש " + item.Days + " ימים")
+                                break;
+                        }
 
-                </td>
-                <td>
-                    @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
-                </td>
-            </tr>
-            ViewBag.LastBuilding = item.Building;
-            ViewBag.LastRoomNumber = item.RoomNumber;
-        }
-        else if (ViewBag.LastRoomNumber != item.RoomNumber)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoomNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ComputerName)
-                </td>
-                <td>
-                    @switch (item.NotificationType)
-                    {
-                        case Constant.NotificationType.Disconnected:
-                            @Html.Raw("לא מחובר " + item.Days + " ימים")
-                            break;
-                        case Constant.NotificationType.NotUsed:
-                            @Html.Raw("לא בשימוש " + item.Days + " ימים")
-                            break;
-                    }
+                    </td>
+                    <td>
+                        @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
+                    </td>
+                </tr>
+                ViewBag.LastBuilding = item.Building;
+                ViewBag.LastRoomNumber = item.RoomNumber;
+            }
+            else if (ViewBag.LastRoomNumber != item.RoomNumber)
+            {
+                <tr>
+                    <td hidden>@item.DepartmentName @item.Building</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ComputerName)
+                    </td>
+                    <td>
+                        @switch (item.NotificationType)
+                        {
+                            case Constant.NotificationType.Disconnected:
+                                @Html.Raw("לא מחובר " + item.Days + " ימים")
+                                break;
+                            case Constant.NotificationType.NotUsed:
+                                @Html.Raw("לא בשימוש " + item.Days + " ימים")
+                                break;
+                        }
 
-                </td>
-                <td>
-                    @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
-                </td>
-            </tr>
-        }
-        else
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ComputerName)
-                </td>
-                <td>
-                    @switch (item.NotificationType)
-                    {
-                        case Constant.NotificationType.Disconnected:
-                            @Html.Raw("לא מחובר " + item.Days + " ימים")
-                            break;
-                        case Constant.NotificationType.NotUsed:
-                            @Html.Raw("לא בשימוש " + item.Days + " ימים")
-                            break;
-                    }
-                </td>
-            </tr>
-        }
+                    </td>
+                    <td>
+                        @Html.ActionLink("צפה בכיתה", "/../Labs/Details", new { id = item.LabId })
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td hidden>@item.DepartmentName @item.Building</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ComputerName)
+                    </td>
+                    <td>
+                        @switch (item.NotificationType)
+                        {
+                            case Constant.NotificationType.Disconnected:
+                                @Html.Raw("לא מחובר " + item.Days + " ימים")
+                                break;
+                            case Constant.NotificationType.NotUsed:
+                                @Html.Raw("לא בשימוש " + item.Days + " ימים")
+                                break;
+                        }
+                    </td>
+                    <td></td>
+                </tr>
+            }
 
-    }
-</table>
+        }
+    </table>
     <div>
-       <img src="@Url.Action("Chart")"/>
-</div>
+        <img src="@Url.Action("Chart")" />
+    </div>
 }
+<script src="~/Scripts/CAMS_scripts/Notifications.js"></script>

@@ -4,7 +4,6 @@
 Draggable = function () {
     $(".draggable").draggable({
         containment: "#LabErea",
-        grid: [5, 5],
         snap: true
     });
     $(function () {
@@ -53,7 +52,7 @@ dropList = function (element) {
     var computer_name = element[0].id;
     var computer_id = element[0].children[2].text;
     element.remove();
-    $("#computers_list").append("<figure draggable=\"true\" ondragstart=\"drag(event)\" class=\"draggable-computer-list row context-menu-one computers-list\" id=" + computer_name + ">" +
+    $("#computers_list").append("<figure draggable=\"true\" ondragstart=\"drag(event)\" class=\"flex-nowrap draggable-computer-list row context-menu-one computers-list\" id=" + computer_name + ">" +
         "<img draggable=\"false\" src=\"/Images/clear.png\" height=\"30\">" +
         "<figcaption class=\"text-left grab\">" + computer_name + "</figcaption>" +
         "<a hidden>" + computer_id+"</a>"+
@@ -67,7 +66,7 @@ dropErea = function (ev) {
         $("#" + computer_name).remove();
         var left = Math.round((ev.offsetX / $("#LabErea").width()) * 100);
         var top = Math.round((ev.offsetY / $("#LabErea").height()) * 100);
-        $("#LabErea").append("<figure id=" + computer_name + " class=\"draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
+        $("#LabErea").append("<figure id=" + computer_name + " class=\"grab draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
             "<img src=\"/Images/clear.png\" width=\"70\">" +
             "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
             "<a hidden>," + computer_id + "</a>" +
@@ -91,5 +90,4 @@ Search = function () {
             this.removeAttribute('hidden');
         }
     });
-
 }

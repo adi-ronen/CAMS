@@ -57,8 +57,10 @@ namespace CAMS.Tests
         [TestMethod]
         public void DisconnectedNotificationTest()
         {
-            User user = new User();
-            user.DisconnectedPeriod = 2;
+            User user = new User
+            {
+                DisconnectedPeriod = 2
+            };
             Computer comp = new Computer();
             Lab lab = new Lab();
             comp.Lab = lab;
