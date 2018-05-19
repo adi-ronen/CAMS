@@ -25,6 +25,73 @@ namespace CAMS.Models
             return _lController.GetDepartments();
         }
 
+        public List<LabOccupancyReport> CreateOccupancyLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, List<int> labsIds, bool weekends)
+        {
+            List<LabOccupancyReport> reports = new List<LabOccupancyReport>();
+
+            foreach (var id in labsIds)
+            {
+                LabOccupancyReport labReport = CreateOccupancyLabReport(startDate, endDate, startHour, endHour, id, weekends);
+                reports.Add(labReport);
+            }
+
+            return reports;
+        }
+
+        public LabOccupancyReport CreateOccupancyLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, int id, bool weekends)
+        {
+            Lab lab = _lController.GetLab(id);
+            return CreateOccupancyLabReport(startDate, endDate, startHour, endHour, lab, weekends);
+
+        }
+
+        public LabOccupancyReport CreateOccupancyLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, Lab lab, bool weekends)
+        {
+            LabOccupancyReport labReport = new LabOccupancyReport(lab);
+
+            TimeSpan labTotalActiveTime = TimeSpan.Zero;
+
+            //get all computers that were in the lab during that time - the whole period only
+            List<ComputerLab> cL = lab.ComputerLabs.Where(e => (e.Entrance <= startDate) && (e.Exit >= endDate)).ToList();
+            List<int> hoursToCheck = new List<int>();
+            Dictionary<int, LabHourOccupancyReport> hourReports = new Dictionary<int, LabHourOccupancyReport>();
+            int start = startHour.Hour;
+            while (start <= endHour.Hour)
+            {
+                hoursToCheck.Add(start);
+                hourReports.Add(start, new LabHourOccupancyReport());
+                start++;
+
+            }
+            Dictionary<DayOfWeek, LabDayOfWeekReport> weekDayReports = new Dictionary<DayOfWeek, LabDayOfWeekReport>();
+            for(int i = 0; i < 7; i++)
+            {
+                weekDayReports.Add((DayOfWeek)i, new LabDayOfWeekReport());
+            }
+
+            foreach (var item in cL)
+            {
+                //for each day
+                for(DateTime date=startDate.Date;date<=endDate.Date;date=date.AddDays(1))
+                {
+                    //for each hour check how many computers were on
+                    foreach (var hour in hoursToCheck)
+                    {
+
+                    }
+                }
+
+                
+
+            }
+
+            return labReport;
+        }
+
+        private bool IsComputerOn(int computerId,DateTime time)
+        {
+            return _lController.IsComputerOn(computerId, time);
+        }
 
 
 

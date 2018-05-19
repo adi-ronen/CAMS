@@ -107,6 +107,14 @@ namespace CAMS.Controllers
             return View();
         }
 
+        internal bool IsComputerOn(int computerId, DateTime time)
+        {
+            var comp = db.Computers.Find(computerId);
+            var acts=comp.Activities.Where(e => e.Login <= time && 
+                                            ((e.Logout.HasValue && e.Logout.Value >= time)|| (!e.Logout.HasValue))).ToList();
+            return (acts.Count > 0);
+        }
+
         // POST: Reports/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)

@@ -76,16 +76,16 @@ namespace CAMS.Controllers
         protected Computer CreateComputer(string computerName, string domain)
         {
             Computer comp = new Computer();
-            comp.ComputerName = computerName;
-            comp.ComputerId = db.Computers.Max(e => e.ComputerId)+1;
-            comp.LocationInLab = "0%,0%";
-            //comp.MAC= findComputerMac(computerName, domain);
-            db.Computers.Add(comp);
-            try
+            using (db)
             {
+                
+                comp.ComputerName = computerName;
+                comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
+                comp.LocationInLab = "0%,0%";
+                //comp.MAC= findComputerMac(computerName, domain);
+                db.Computers.Add(comp);
                 db.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException ex) { }
 
             return comp;
         }

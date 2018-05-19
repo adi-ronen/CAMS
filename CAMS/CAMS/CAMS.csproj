@@ -258,6 +258,7 @@
     <Compile Include="Models\Lab.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LabOccupancyReport.cs" />
     <Compile Include="Models\LabReport.cs" />
     <Compile Include="Models\LabsReportViewModel.cs" />
     <Compile Include="Models\LabsViewModel.cs" />
