@@ -41,7 +41,7 @@
                         string top = item.LocationInLab.Split(',')[0];
                         string left = item.LocationInLab.Split(',')[1];
                         <figure id="@item.ComputerName" class="draggable context-menu-one grab" style="position:absolute;top:@top;left:@left">
-                            <img src="~/Images/clear.png" width="70">
+                            <img src="~/Images/clear.png" width="60">
                             <figcaption class="text-center">@item.ComputerName</figcaption>
                             <a hidden>,@item.ComputerId</a>
                         </figure>
@@ -61,11 +61,12 @@
     @Html.ActionLink("ביטול", "Details", new { id = Model.Lab.LabId })
 </div>
 @section PreloadScripts{
-    @Scripts.Render("~/bundles/jquery-ui")
     <script src="~/Scripts/jquery.contextMenu.min.js"></script>
     <script src="~/Scripts/CAMS_scripts/Labs.js"></script>
 }
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script src="~/Scripts/jquery-ui.drag-multiple.js"></script>
 }

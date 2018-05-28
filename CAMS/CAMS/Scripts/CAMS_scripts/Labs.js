@@ -4,7 +4,7 @@
 Draggable = function () {
     $(".draggable").draggable({
         containment: "#LabErea",
-        snap: true
+        scope: "tasks"
     });
     $(function () {
         $.contextMenu({

@@ -187,8 +187,10 @@ namespace CAMS.Controllers
             lock (syncLock)
             {
                 act.Logout = DateTime.Now.Date.AddTicks(-1);
-                Activity newAct = new Activity();
-                newAct.Login = DateTime.Now.Date;
+                Activity newAct = new Activity
+                {
+                    Login = DateTime.Now.Date
+                };
                 newAct.Weekend = IsWeekend(newAct.Login.DayOfWeek);
                 newAct.ComputerId = act.ComputerId;
                 newAct.Mode = act.Mode;

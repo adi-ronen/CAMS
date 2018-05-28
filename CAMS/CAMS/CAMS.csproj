@@ -470,6 +470,8 @@
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ui.drag-multiple.js" />
+    <Content Include="Scripts\jquery-ui.drag-multiple.min.js" />
     <Content Include="Scripts\jquery.contextMenu.js" />
     <Content Include="Scripts\jquery.contextMenu.min.js" />
     <Content Include="Scripts\jquery.contextMenu.min.js.map" />
@@ -504,7 +506,9 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
