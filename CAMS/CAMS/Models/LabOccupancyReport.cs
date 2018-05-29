@@ -17,6 +17,14 @@ namespace CAMS.Models
             ByHours = new List<LabHourOccupancyReport>();
             ByDay = new List<LabDayOfWeekReport>();
         }
+        public void AddByHourReport(LabHourOccupancyReport report)
+        {
+            ByHours.Add(report);
+        }
+        public void AddByDayReport(LabDayOfWeekReport report)
+        {
+            ByDay.Add(report);
+        }
 
     }
 
@@ -27,21 +35,27 @@ namespace CAMS.Models
         public int MaxOccupancy
         {
         get {
-                return computersinUseEachDay.Max();
+                if (computersinUseEachDay.Count > 0)
+                    return computersinUseEachDay.Max();
+                return 0;
             }
         }
-        int MinOccupancy
+        public int MinOccupancy
         {
             get
             {
-                return computersinUseEachDay.Min();
+                if (computersinUseEachDay.Count > 0)
+                    return computersinUseEachDay.Min();
+                return 0;
             }
         }
-        double AvgOccupancy
+        public double AvgOccupancy
         {
             get
             {
-                return computersinUseEachDay.Average();
+                if (computersinUseEachDay.Count > 0)
+                    return computersinUseEachDay.Average();
+                return 0;
             }
         }
         private List<int> computersinUseEachDay = new List<int>();
@@ -60,21 +74,27 @@ namespace CAMS.Models
         {
             get
             {
-                return maxComputersInUse.Max();
+                if(maxComputersInUse.Count>0)
+                    return maxComputersInUse.Max();
+                return 0;
             }
         }
-        int MinOccupancy
+        public int MinOccupancy
         {
             get
             {
-                return minComputersInUse.Min();
+                if (minComputersInUse.Count > 0)
+                    return minComputersInUse.Min();
+                return 0;
             }
         }
-        double AvgOccupancy
+        public double AvgOccupancy
         {
             get
             {
-                return avgComputerinUse.Average();
+                if (avgComputerinUse.Count > 0)
+                    return avgComputerinUse.Average();
+                return 0;
             }
         }
         private List<int> maxComputersInUse = new List<int>();

@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CAMS.Tests
 {
     [TestClass]
-    public class ReportsTest
+    public class LabReportsTest
     {
 
         ReportsController controller = new ReportsController();

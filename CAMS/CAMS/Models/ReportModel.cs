@@ -51,41 +51,64 @@ namespace CAMS.Models
 
             TimeSpan labTotalActiveTime = TimeSpan.Zero;
 
-            //get all computers that were in the lab during that time - the whole period only
-            List<ComputerLab> cL = lab.ComputerLabs.Where(e => (e.Entrance <= startDate) && (e.Exit >= endDate)).ToList();
+            List<ComputerLab> cL = getComputerInLab(lab, startDate, endDate);
             List<int> hoursToCheck = new List<int>();
             Dictionary<int, LabHourOccupancyReport> hourReports = new Dictionary<int, LabHourOccupancyReport>();
-            int start = startHour.Hour;
-            while (start <= endHour.Hour)
+            Dictionary<DateTime, Dictionary<int, bool>> computerStatusForTime = new Dictionary<DateTime, Dictionary<int, bool>>();
+            for (int start = startHour.Hour; start < endHour.Hour; start++)
             {
                 hoursToCheck.Add(start);
                 hourReports.Add(start, new LabHourOccupancyReport());
-                start++;
-
             }
             Dictionary<DayOfWeek, LabDayOfWeekReport> weekDayReports = new Dictionary<DayOfWeek, LabDayOfWeekReport>();
-            for(int i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 weekDayReports.Add((DayOfWeek)i, new LabDayOfWeekReport());
             }
 
-            foreach (var item in cL)
+            //for each day
+            for (DateTime date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
-                //for each day
-                for(DateTime date=startDate.Date;date<=endDate.Date;date=date.AddDays(1))
+                int maxCompNum = 0;
+                int minCompNum = int.MaxValue;
+                int sum = 0;
+                //for each hour check how many computers were on
+                foreach (var hour in hoursToCheck)
                 {
-                    //for each hour check how many computers were on
-                    foreach (var hour in hoursToCheck)
+                    int computerCount = 0;
+                    foreach (var item in cL)
                     {
-
+                        //if the computer were in the lab in this specific day
+                        if (date >= item.Entrance && (!item.Exit.HasValue || date <= item.Exit.Value))
+                        {
+                            if (IsComputerActive(date, hour, item))
+                                computerCount++;
+                        }
                     }
+                    maxCompNum = Math.Max(maxCompNum, computerCount);
+                    minCompNum = Math.Min(minCompNum, computerCount);
+                    sum += computerCount;
+                    hourReports[hour].AddDay(computerCount);
                 }
-
-                
+                weekDayReports[date.DayOfWeek].AddDay(maxCompNum, minCompNum, (double)sum / hoursToCheck.Count);
 
             }
-
+            foreach (var item in weekDayReports)
+            {
+                labReport.AddByDayReport(item.Value);
+            }
+            foreach (var item in hourReports)
+            {
+                labReport.AddByHourReport(item.Value);
+            }
             return labReport;
+        }
+
+        private static bool IsComputerActive(DateTime date, int hour, ComputerLab cl)
+        {
+            List<Activity> activities = cl.Computer.Activities.Where(e => e.Mode.Equals(ActivityType.User) && (!e.Login.Date.Equals(date))).ToList();
+            //check if the computer had an activity during this hour
+            return activities.Where(e => (!((e.Login.Hour > hour + 1) || (e.Logout.Value.Hour < hour)))).Count() > 0;
         }
 
         private bool IsComputerOn(int computerId,DateTime time)
@@ -121,8 +144,7 @@ namespace CAMS.Models
 
             TimeSpan labTotalActiveTime = TimeSpan.Zero;
 
-            //get all computers that were in the lab during that time or part of it
-            List<ComputerLab> cL = lab.ComputerLabs.Where(e => (!((e.Entrance > endDate) || (e.Exit < startDate)))).ToList();
+            List<ComputerLab> cL = getComputerInLab(lab, startDate, endDate);
             foreach (var item in cL)
             {
                 
@@ -137,6 +159,17 @@ namespace CAMS.Models
             }
 
             return labReport;
+        }
+        /// <summary>
+        /// get all computers that were in the lab during that time or part of it
+        /// </summary>
+        /// <param name="lab"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        private List<ComputerLab> getComputerInLab(Lab lab, DateTime startDate, DateTime endDate)
+        {
+            return lab.ComputerLabs.Where(e => (!((e.Entrance > endDate) || (e.Exit < startDate)))).ToList();
         }
 
         private ComputerReport CreateComputerInLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, ComputerLab comp, bool weekends)
