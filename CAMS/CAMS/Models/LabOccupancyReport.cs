@@ -32,7 +32,7 @@ namespace CAMS.Models
     public class LabHourOccupancyReport
     {
         public int Hour;
-        public int MaxOccupancy
+        public double MaxOccupancy
         {
         get {
                 if (computersinUseEachDay.Count > 0)
@@ -40,7 +40,7 @@ namespace CAMS.Models
                 return 0;
             }
         }
-        public int MinOccupancy
+        public double MinOccupancy
         {
             get
             {
@@ -58,9 +58,13 @@ namespace CAMS.Models
                 return 0;
             }
         }
-        private List<int> computersinUseEachDay = new List<int>();
+        private List<double> computersinUseEachDay = new List<double>();
+        public LabHourOccupancyReport(int hour)
+        {
+            Hour = hour;
+        }
 
-        public void AddDay(int compNum)
+        public void AddDay(double compNum)
         {
             computersinUseEachDay.Add(compNum);
         }
@@ -69,8 +73,9 @@ namespace CAMS.Models
     }
     public class LabDayOfWeekReport
     {
-        DayOfWeek DayOfWeek;
-        public int MaxOccupancy
+        
+        public DayOfWeek DayOfWeek;
+        public double MaxOccupancy
         {
             get
             {
@@ -79,7 +84,7 @@ namespace CAMS.Models
                 return 0;
             }
         }
-        public int MinOccupancy
+        public double MinOccupancy
         {
             get
             {
@@ -97,12 +102,16 @@ namespace CAMS.Models
                 return 0;
             }
         }
-        private List<int> maxComputersInUse = new List<int>();
-        private List<int> minComputersInUse = new List<int>();
+        private List<double> maxComputersInUse = new List<double>();
+        private List<double> minComputersInUse = new List<double>();
         private List<double> avgComputerinUse = new List<double>();
 
+        public LabDayOfWeekReport(DayOfWeek day)
+        {
+            DayOfWeek = day;
+        }
 
-        public void AddDay(int maxCompNum,int minCompNum,double avgCompNum)
+        public void AddDay(double maxCompNum, double minCompNum,double avgCompNum)
         {
             maxComputersInUse.Add(maxCompNum);
             minComputersInUse.Add(minCompNum);

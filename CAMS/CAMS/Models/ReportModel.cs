@@ -58,24 +58,26 @@ namespace CAMS.Models
             for (int start = startHour.Hour; start < endHour.Hour; start++)
             {
                 hoursToCheck.Add(start);
-                hourReports.Add(start, new LabHourOccupancyReport());
+                hourReports.Add(start, new LabHourOccupancyReport(start));
             }
             Dictionary<DayOfWeek, LabDayOfWeekReport> weekDayReports = new Dictionary<DayOfWeek, LabDayOfWeekReport>();
             for (int i = 0; i < 7; i++)
             {
-                weekDayReports.Add((DayOfWeek)i, new LabDayOfWeekReport());
+                weekDayReports.Add((DayOfWeek)i, new LabDayOfWeekReport((DayOfWeek)i));
             }
 
             //for each day
             for (DateTime date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
-                int maxCompNum = 0;
-                int minCompNum = int.MaxValue;
-                int sum = 0;
+                double maxCompNum = 0;
+                double minCompNum = int.MaxValue;
+                double sum = 0;
                 //for each hour check how many computers were on
                 foreach (var hour in hoursToCheck)
                 {
                     int computerCount = 0;
+                    int computers = 0;
+                    double occPrecent = 0;
                     foreach (var item in cL)
                     {
                         //if the computer were in the lab in this specific day
@@ -83,14 +85,17 @@ namespace CAMS.Models
                         {
                             if (IsComputerActive(date, hour, item))
                                 computerCount++;
+                            computers++;
                         }
                     }
-                    maxCompNum = Math.Max(maxCompNum, computerCount);
-                    minCompNum = Math.Min(minCompNum, computerCount);
-                    sum += computerCount;
-                    hourReports[hour].AddDay(computerCount);
+                    if (computers > 0)
+                        occPrecent = (double)computerCount / computers;
+                    maxCompNum = Math.Max(maxCompNum, occPrecent);
+                    minCompNum = Math.Min(minCompNum, occPrecent);
+                    sum += occPrecent;
+                    hourReports[hour].AddDay(occPrecent);
                 }
-                weekDayReports[date.DayOfWeek].AddDay(maxCompNum, minCompNum, (double)sum / hoursToCheck.Count);
+                weekDayReports[date.DayOfWeek].AddDay(maxCompNum, minCompNum, sum / hoursToCheck.Count);
 
             }
             foreach (var item in weekDayReports)
@@ -106,9 +111,12 @@ namespace CAMS.Models
 
         private static bool IsComputerActive(DateTime date, int hour, ComputerLab cl)
         {
-            List<Activity> activities = cl.Computer.Activities.Where(e => e.Mode.Equals(ActivityType.User) && (!e.Login.Date.Equals(date))).ToList();
+            List<Activity> activities = cl.Computer.Activities.Where(e => e.Mode.Equals(ActivityType.User) && (e.Login.Date.Equals(date))).ToList();
             //check if the computer had an activity during this hour
-            return activities.Where(e => (!((e.Login.Hour > hour + 1) || (e.Logout.Value.Hour < hour)))).Count() > 0;
+            TimeSpan tsStart = new TimeSpan(hour, 0, 0);
+            TimeSpan tsEnd= new TimeSpan(hour+1, 0, 0);
+
+            return activities.Where(e => (!((e.Login.TimeOfDay >= tsEnd) || (e.Logout.Value.TimeOfDay <= tsStart)))).Count() > 0;
         }
 
         private bool IsComputerOn(int computerId,DateTime time)
