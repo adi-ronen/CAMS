@@ -26,6 +26,98 @@ namespace CAMS.Models
             ByDay.Add(report);
         }
 
+        public string[] GetHours()
+        {
+            string[] hours = new string[ByHours.Count];
+            int i = 0;
+            foreach (var item in ByHours)
+            {
+                int endTime = item.Hour + 1;
+                hours[i] = item.Hour + ":00-" + endTime + ":00";
+                i++;
+            }
+            return hours;
+        }
+        public string[] GetHoursMax()
+        {
+            string[] max = new string[ByHours.Count];
+            int i = 0;
+            foreach (var item in ByHours)
+            {
+                max[i] = String.Format("{0:P2}.", item.MaxOccupancy);
+                i++;
+            }
+            return max;
+        }
+        public string[] GetHoursMin()
+        {
+            string[] min = new string[ByHours.Count];
+            int i = 0;
+            foreach (var item in ByHours)
+            {
+                min[i] = String.Format("{0:P2}.", item.MinOccupancy);
+                i++;
+            }
+            return min;
+        }
+        public string[] GetHoursAvg()
+        {
+            string[] avg = new string[ByHours.Count];
+            int i = 0;
+            foreach (var item in ByHours)
+            {
+                avg[i] = String.Format("{0:P2}.", item.AvgOccupancy);
+                i++;
+            }
+            return avg;
+        }
+
+        public string[] GetDaysOfWeek()
+        {
+            string[] days = new string[ByDay.Count];
+            int i = 0;
+            foreach (var item in ByDay)
+            {
+                days[i] = item.DayOfWeek.ToString();
+                i++;
+            }
+            return days;
+        }
+        public string[] GetDaysMax()
+        {
+            string[] max = new string[ByDay.Count];
+            int i = 0;
+            foreach (var item in ByDay)
+            {
+                max[i] = String.Format("{0:P2}.", item.MaxOccupancy);
+                i++;
+            }
+            return max;
+        }
+        public string[] GetDaysMin()
+        {
+            string[] min = new string[ByDay.Count];
+            int i = 0;
+            foreach (var item in ByHours)
+            {
+                min[i] = String.Format("{0:P2}.", item.MinOccupancy);
+                i++;
+            }
+            return min;
+        }
+        public string[] GetDaysAvg()
+        {
+            string[] avg = new string[ByDay.Count];
+            int i = 0;
+            foreach (var item in ByDay)
+            {
+                avg[i] = String.Format("{0:P2}.", item.AvgOccupancy);
+                i++;
+            }
+            return avg;
+        }
+
+
     }
 
 

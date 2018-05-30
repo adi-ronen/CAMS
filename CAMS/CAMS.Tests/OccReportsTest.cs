@@ -750,6 +750,11 @@ namespace CAMS.Tests
                     Assert.AreEqual(0, item.AvgOccupancy, msg + " -no avg hour occupancy expected on: " + item.Hour);
                 }
 
+                var a = lr.GetDaysAvg();
+                var b = lr.GetDaysOfWeek();
+                var c = lr.GetHours();
+                var d = lr.GetHoursMax();
+
             }
 
 
