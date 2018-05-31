@@ -1,0 +1,25 @@
+﻿@model CAMS.Models.LabOccupancyReport
+
+    @{
+        ViewBag.Title = "LabOccupancyReport";
+    }
+
+    <h2>דוח תפוסת כיתות</h2>
+
+    <div>
+        @{
+            var myChart = new Chart(width: 600, height: 400)
+               .AddTitle("אחוז תפוסת מחשבים בכיתות")
+               .AddSeries(chartType: "column",
+                  xValue: Model.GetHours(),
+                  yValues: new[] { "0%" ,"10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"}
+                      ).Write();
+            }
+    </div>
+    <p>
+        @Html.ActionLink("צור דוח חדש", "Create")
+    </p>
+    @*TBD - LOAD JQUERY UI CSS FILE...*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
