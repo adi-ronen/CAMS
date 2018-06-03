@@ -1,25 +1,110 @@
 ﻿@model CAMS.Models.LabOccupancyReport
 
-    @{
-        ViewBag.Title = "LabOccupancyReport";
-    }
-
-    <h2>דוח תפוסת כיתות</h2>
-
-    <div>
-        @{
-            var myChart = new Chart(width: 600, height: 400)
-               .AddTitle("אחוז תפוסת מחשבים בכיתות")
-               .AddSeries(chartType: "column",
-                  xValue: Model.GetHours(),
-                  yValues: new[] { "0%" ,"10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"}
-                      ).Write();
-            }
-    </div>
-    <p>
-        @Html.ActionLink("צור דוח חדש", "Create")
-    </p>
-    @*TBD - LOAD JQUERY UI CSS FILE...*@
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+@{
+    ViewBag.Title = "LabOccupancyReport";
+    //var chartImage = new Chart(800,600);
+    //chartImage.AddTitle("אחוז תפוסת מחשבים בכיתות");
+    //chartImage.AddSeries(
+    //        axisLabel: "מינימום",
+    //        xValue: new[] { "09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00" },
+    //        yValues: new[] { "0", "1", "2", "5", "1", "2", "0", "1", "2", "5", "1", "2" });
+    //chartImage.AddSeries(
+    //    axisLabel: "ממוצע",
+    //    yValues: new[] { "20", "21", "26", "28.5", "36", "3", "20", "21", "22", "25.5", "6", "7" });
+    //chartImage.AddSeries(
+    //    axisLabel: "מקסימום",
+    //    yValues: new[] { "40", "41", "52", "52", "71", "4", "40", "41", "42", "50", "11", "12" });
+    //chartImage.Write();
 }
+<h2>דוח תפוסת כיתות</h2>
+<canvas id="canvas" width="800" height="400"></canvas>
+<div>
+    @*@{
+        var myChart = new Chart(width: 600, height: 400);
+        myChart.AddTitle("אחוז תפוסת מחשבים בכיתות");
+        myChart.AddSeries(chartType: "column",
+            xField: "טווח שעות",
+            yFields: "מחשבים שהיו בשימוש באחוזים",
+            xValue: Model.GetHours(),
+            yValues: Model.GetHoursMin());
+        myChart.AddSeries(yValues: Model.GetHoursAvg());
+        myChart.AddSeries(yValues: Model.GetHoursMax());
+        myChart.Write();
+    }*@
+</div>
+<p>
+    @Html.ActionLink("צור דוח חדש", "Create")
+</p>
+@*TBD - LOAD JQUERY UI CSS FILE...*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval");
+    <script type="text/javascript" src="~/Scripts/Chart.js"></script>
+}
+<script>
+
+    var MONTHS = ["09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00"];
+    var config = {
+        type: 'line',
+        data: {
+            labels: ["09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00"],
+            datasets: [{
+                label: 'מנימום',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: ["0", "1", "2", "5", "1", "2", "0", "1", "2", "5", "1", "2"],
+                fill: false,
+            }, {
+                label: 'ממוצע',
+                fill: false,
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderColor: 'rgb(54, 162, 235)',
+                data: ["20", "21", "26", "28.5", "36", "3", "20", "21", "22", "25.5", "6", "7"],
+            }, {
+                label: 'מקסימום',
+                fill: false,
+                backgroundColor: 'rgb(255, 205, 86)',
+                borderColor: 'rgb(255, 205, 86)',
+                data: ["40", "41", "52", "52", "71", "4", "40", "41", "42", "50", "11", "12"],
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'טווח שעות'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'מחשבים פעילים בו זמנית'
+
+                    },
+                    ticks: {
+                        min: 0,
+                        max: 100,
+                        callback: function (value) { return value + "%" }
+                    }
+
+                }]
+            }
+        }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        window.myLine = new Chart(ctx, config);
+    };
+</script>
