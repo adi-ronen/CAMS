@@ -1,0 +1,31 @@
+﻿@model CAMS.Models.DepartmentBuildings
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>בנייני המחלקה</h2>
+<h3>@Model.DepartmentName</h3>
+<hr/>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("שם הבניין")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Buildings)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BuildingName)
+            </td>
+            <td>
+                @Html.ActionLink("ערוך", "EditBuilding", new { id = item.DepartmentId }) |
+                @Html.ActionLink("מחק", "DeleteBuilding", new { id = item.DepartmentId })
+            </td>
+        </tr>
+    }
+
+</table>

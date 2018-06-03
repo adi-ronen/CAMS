@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿import { debounce } from "../popper-utils";
+
+$(document).ready(function () {
     Draggable();
 });
 Draggable = function () {
@@ -90,4 +92,8 @@ Search = function () {
             this.removeAttribute('hidden');
         }
     });
+}
+DepartmentSelection = function (depId) {
+    $('.building-option').attr('hidden','hidden')
+    $("."+depId).removeAttr('hidden')
 }

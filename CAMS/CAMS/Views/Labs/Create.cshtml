@@ -1,5 +1,5 @@
-﻿@model IEnumerable<SelectListItem>
-@{
+﻿@model Dictionary<CAMS.Models.Department,List<CAMS.Models.Lab>>
+@{//TBD - list of buildings
     ViewBag.Title = "Create";
 }
 
@@ -10,32 +10,55 @@
 {
     @Html.AntiForgeryToken()
     
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.Label("בניין", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-               @Html.DropDownList("Building", Model , htmlAttributes: new { @class = "form-control widthinput" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.Label("כיתה", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.Editor("RoomNumber", new { htmlAttributes = new { @class = "form-control" } })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="צור" class="btn btn-default" />
-            </div>
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.Label("מחלקה", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <select class="form-control widthinput" onchange="DepartmentSelection(this.value)"> 
+                @foreach (var dep in Model.Keys)
+                {
+                    <option value="@dep.DepartmentId">
+                        @dep.DepartmentName
+                    </option>
+                }
+            </select>
         </div>
     </div>
+    <div class="form-group">
+        @Html.Label("בניין", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <select class="form-control widthinput" >
+                @foreach (var dep in Model)
+                {
+                    foreach (var building in dep.Value)
+                    {
+                        <option class="@dep.Key.DepartmentId building-option" hidden><!--TBD- javascript enable selection-->
+                            @building.Building
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.Label("כיתה", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.Editor("RoomNumber", new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="צור" class="btn btn-default" />
+        </div>
+    </div>
+</div>
 }
 <div>
     @Html.ActionLink("חזרה לרשימה", "Index")
 </div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/CAMS_scripts/Labs.js"></script>
 }

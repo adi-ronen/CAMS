@@ -4,15 +4,15 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>מחלקות</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("מחלקה חדשה", "Create")
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.DepartmentName)
+            @Html.DisplayName("שם המחלקה")
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Domain)
@@ -29,9 +29,9 @@
             @Html.DisplayFor(modelItem => item.Domain)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.DepartmentId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.DepartmentId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.DepartmentId })
+            @Html.ActionLink("ערוך", "Edit", new { id=item.DepartmentId }) |
+            @Html.ActionLink("בנייני המחלקה", "../Buildings/Index", new { id=item.DepartmentId }) |
+            @Html.ActionLink("מחק", "Delete", new { id=item.DepartmentId })
         </td>
     </tr>
 }

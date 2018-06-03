@@ -80,7 +80,12 @@ namespace CAMS.Controllers
         // GET: Labs/Create
         public ActionResult Create()
         {
-            return View(db.Labs.Select(x => new SelectListItem { Text = x.Building }).Distinct());
+            Dictionary<Department, List<Lab>> DepartmentBuildings = new Dictionary<Department, List<Lab>>();
+            foreach (Department dep in db.Departments)
+            {
+                DepartmentBuildings.Add(dep, db.Labs.Where(x => x.DepartmentId == dep.DepartmentId).Distinct().ToList());
+            }
+            return View(DepartmentBuildings);
         }
 
         // POST: Labs/Create
