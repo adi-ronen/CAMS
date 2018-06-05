@@ -50,29 +50,22 @@ namespace CAMS.Controllers
             return View(building);
         }
 
-        // GET: Buildings/Delete/5
-        public ActionResult Delete(int? id)
+        // GET: Buildings/Delete/name
+        public ActionResult Delete(string id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Department department = db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
+            return DeleteConfirmed(id);
         }
 
-        // POST: Buildings/Delete/5
+        // POST: Buildings/Delete/name
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(string id)
         {
-            Department department = db.Departments.Find(id);
-            db.Departments.Remove(department);
-            db.SaveChanges();
+            List<int> labsId = db.Labs.Where(e => e.Building.Equals(id)).Select(e => e.LabId).ToList();
+            foreach (var lbid in labsId)
+            {
+                DeleteLab(lbid);
+            }
             return RedirectToAction("Index");
         }
 
