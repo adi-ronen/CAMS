@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CAMS.Models.Department>
+﻿ @model IEnumerable<CAMS.Models.Department>
 
 @{
     ViewBag.Title = "Index";
@@ -30,7 +30,6 @@
         </td>
         <td>
             @Html.ActionLink("ערוך", "Edit", new { id=item.DepartmentId }) |
-            @Html.ActionLink("בנייני המחלקה", "../Buildings/Index", new { id=item.DepartmentId }) |
             @Html.ActionLink("מחק", "Delete", new { id=item.DepartmentId })
         </td>
     </tr>
