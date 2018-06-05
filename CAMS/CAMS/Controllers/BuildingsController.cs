@@ -41,13 +41,13 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditBuildingName([Bind(Include = "Building")] string building)
+        public ActionResult Edit(string NewName, string OldName)
         {
-            if (ModelState.IsValid)
+            if (NewName == null|| NewName == string.Empty || OldName == null)
             {
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            return View(building);
+            return View(NewName);
         }
 
         // GET: Buildings/Delete/name

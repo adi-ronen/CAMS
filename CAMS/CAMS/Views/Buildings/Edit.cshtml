@@ -16,9 +16,10 @@
         <div class="form-group">
             @Html.Label("שם בניין", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <input name="Building" class="form-control widthinput" type="text" value="@ViewBag.Building" />
+                <input name="NewName" class="form-control widthinput" type="text" value="@ViewBag.Building" />
             </div>
         </div>
+        <input type="hidden" name="OldName" value="@ViewBag.Building"/>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="שמור" class="btn btn-default" />
