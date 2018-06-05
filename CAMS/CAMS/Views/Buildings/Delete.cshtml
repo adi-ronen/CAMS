@@ -1,7 +1,8 @@
-﻿@model string
+﻿@model object
 
 @{
     ViewBag.Title = "Delete";
+    ViewBag.Building = (string)Model;
 }
 
 <h2>מחיקה</h2>
@@ -13,16 +14,14 @@
         <dt>
             @Html.DisplayName("שם הבניין")
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model, "Building")
+            @ViewBag.Building
         </dd>
     </dl>
-
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-
+        <input type="hidden" name="building" value="@ViewBag.Building"
         <div class="form-actions no-color">
             <input type="submit" value="מחק" class="btn btn-default" /> |
             @Html.ActionLink("חזרה לרשימה", "Index")

@@ -51,17 +51,18 @@ namespace CAMS.Controllers
         }
 
         // GET: Buildings/Delete/name
-        public ActionResult Delete(string id)
+        public ActionResult Delete(string building)
         {
-            return DeleteConfirmed(id);
+            object buildingName = building;
+            return View(buildingName);
         }
 
         // POST: Buildings/Delete/name
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
+        public ActionResult DeleteConfirmed(string building)
         {
-            List<int> labsId = db.Labs.Where(e => e.Building.Equals(id)).Select(e => e.LabId).ToList();
+            List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
             foreach (var lbid in labsId)
             {
                 DeleteLab(lbid);
