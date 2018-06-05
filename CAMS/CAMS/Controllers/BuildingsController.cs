@@ -54,7 +54,7 @@ namespace CAMS.Controllers
         // GET: Buildings/Delete/name
         public ActionResult Delete(string id)
         {
-            return RedirectToAction("Index");
+            return DeleteConfirmed(id);
         }
 
         // POST: Buildings/Delete/name

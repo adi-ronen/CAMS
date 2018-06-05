@@ -102,6 +102,7 @@ namespace CAMS.Controllers
             }
 
             db.Labs.Remove(lab);
+            db.SaveChanges();
         }
 
         public void RemoveComputerFromLab(int compId, int labId)

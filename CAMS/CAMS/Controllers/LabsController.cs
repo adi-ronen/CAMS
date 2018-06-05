@@ -92,6 +92,7 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Building,RoomNumber,DepartmentId")] Lab lab)
         {
+            lab.LabId = db.Labs.Max(e => e.LabId)+1;
             if (ModelState.IsValid)
             {
                 db.Labs.Add(lab);
