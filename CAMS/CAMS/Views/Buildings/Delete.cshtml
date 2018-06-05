@@ -1,1 +1,32 @@
-﻿
+﻿@model string
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>מחיקה</h2>
+
+<div>
+    <h3>האם אתה בטוח רוצה למחוק בניין זה?</h3>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayName("שם הבניין")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model, "Building")
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="מחק" class="btn btn-default" /> |
+            @Html.ActionLink("חזרה לרשימה", "Index")
+        </div>
+    }
+</div>
+
