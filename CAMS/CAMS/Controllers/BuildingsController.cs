@@ -16,49 +16,9 @@ namespace CAMS.Controllers
         // GET: Buildings
         public ActionResult Index()
         {
-
-            
-
-            return View(db.Departments.ToList());
+            return View(db.Labs.Select(e => e.Building).Distinct().ToList());
         }
-
-        // GET: Buildings/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Department department = db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
-        }
-
-        // GET: Buildings/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Buildings/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "DepartmentId,DepartmentName,Domain")] Department department)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Departments.Add(department);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(department);
-        }
+        
 
         // GET: Buildings/Edit/5
         public ActionResult Edit(int? id)
