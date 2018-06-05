@@ -14,7 +14,6 @@ namespace CAMS.Controllers
     public class LabsController : BaseController
 
     {
-
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
@@ -80,12 +79,10 @@ namespace CAMS.Controllers
         // GET: Labs/Create
         public ActionResult Create()
         {
-            Dictionary<Department, List<Lab>> DepartmentBuildings = new Dictionary<Department, List<Lab>>();
-            foreach (Department dep in db.Departments)
-            {
-                DepartmentBuildings.Add(dep, db.Labs.Where(x => x.DepartmentId == dep.DepartmentId).Distinct().ToList());
-            }
-            return View(DepartmentBuildings);
+            //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
+            List<Department> departments = db.Departments.ToList();
+            List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
+            return View(new object[] {departments, buildings});
         }
 
         // POST: Labs/Create
@@ -93,7 +90,7 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "LabId,TodaysClasses,Building,RoomNumber,DepartmentId")] Lab lab)
+        public ActionResult Create([Bind(Include = "Building,RoomNumber,DepartmentId")] Lab lab)
         {
             if (ModelState.IsValid)
             {

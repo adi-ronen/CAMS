@@ -1,6 +1,8 @@
-﻿@model Dictionary<CAMS.Models.Department,List<CAMS.Models.Lab>>
-@{//TBD - list of buildings
+﻿@model object[]
+@{//object[0] = list of departments, object[1] = list of buildings
     ViewBag.Title = "Create";
+    ViewBag.Depatrments = Model[0];
+    ViewBag.Buildings = Model[1];
 }
 
 <h2>כיתת מחשוב חדשה</h2>
@@ -16,8 +18,8 @@
     <div class="form-group">
         @Html.Label("מחלקה", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <select form="DepartmentId" class="form-control widthinput" onchange="DepartmentSelection(this.value)"> 
-                @foreach (var dep in Model.Keys)
+            <select name="DepartmentId" class="form-control widthinput">
+                @foreach (var dep in ViewBag.Depatrments)
                 {
                     <option value="@dep.DepartmentId">
                         @dep.DepartmentName
@@ -29,15 +31,12 @@
     <div class="form-group">
         @Html.Label("בניין", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <select form="Building" class="form-control widthinput" >
-                @foreach (var dep in Model)
+            <select name="Building" class="form-control widthinput">
+                @foreach (var building in ViewBag.Buildings)
                 {
-                    foreach (var building in dep.Value)
-                    {
-                        <option class="@dep.Key.DepartmentId building-option" hidden><!--TBD- javascript enable selection-->
-                            @building.Building
-                        </option>
-                    }
+                <option value="@building">
+                    @building
+                </option>
                 }
             </select>
         </div>
@@ -60,5 +59,4 @@
 </div>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script src="~/Scripts/CAMS_scripts/Labs.js"></script>
 }

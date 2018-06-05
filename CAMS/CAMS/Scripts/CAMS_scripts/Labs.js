@@ -93,7 +93,3 @@ Search = function () {
         }
     });
 }
-DepartmentSelection = function (depId) {
-    $('.building-option').attr('hidden','hidden')
-    $("."+depId).removeAttr('hidden')
-}
