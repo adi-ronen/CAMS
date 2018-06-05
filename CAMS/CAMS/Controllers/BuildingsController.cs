@@ -20,19 +20,20 @@ namespace CAMS.Controllers
         }
         
 
-        // GET: Buildings/Edit/5
-        public ActionResult Edit(int? id)
+        // GET: Buildings/Edit/building name
+        public ActionResult Edit(string building)
         {
-            if (id == null)
+            if (building == null || building == string.Empty)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Department department = db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
+            //Department department = db.Departments.Find(id);
+            //if (department == null)
+            //{
+            //    return HttpNotFound();
+            //}
+            object buildingName = building;
+            return View(buildingName);
         }
 
         // POST: Buildings/Edit/5
@@ -40,15 +41,13 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "DepartmentId,DepartmentName,Domain")] Department department)
+        public ActionResult EditBuildingName([Bind(Include = "Building")] string building)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(department).State = EntityState.Modified;
-                db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(department);
+            return View(building);
         }
 
         // GET: Buildings/Delete/5
