@@ -63,12 +63,17 @@ namespace CAMS.Models
             Dictionary<DayOfWeek, LabDayOfWeekReport> weekDayReports = new Dictionary<DayOfWeek, LabDayOfWeekReport>();
             for (int i = 0; i < 7; i++)
             {
+                if (!weekends && isWeekend((DayOfWeek)i))
+                    continue;
                 weekDayReports.Add((DayOfWeek)i, new LabDayOfWeekReport((DayOfWeek)i));
             }
 
             //for each day
             for (DateTime date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
+                //skip the weekends dates if weekends unincluded
+                if (!weekends && isWeekend(date.DayOfWeek))
+                    continue;
                 double maxCompNum = 0;
                 double minCompNum = int.MaxValue;
                 double sum = 0;
@@ -107,6 +112,11 @@ namespace CAMS.Models
                 labReport.AddByHourReport(item.Value);
             }
             return labReport;
+        }
+
+        private bool isWeekend(DayOfWeek day)
+        {
+            return (day == DayOfWeek.Friday || day == DayOfWeek.Saturday);
         }
 
         private static bool IsComputerActive(DateTime date, int hour, ComputerLab cl)
