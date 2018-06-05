@@ -10,9 +10,8 @@ using CAMS.Models;
 
 namespace CAMS.Controllers
 {
-    public class DepartmentsController : Controller
+    public class DepartmentsController : BaseController
     {
-        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         // GET: Departments
         public ActionResult Index()
@@ -46,8 +45,9 @@ namespace CAMS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "DepartmentId,DepartmentName,Domain")] Department department)
+        public ActionResult Create([Bind(Include = "DepartmentName,Domain")] Department department)
         {
+            department.DepartmentId = db.Departments.Max(e => e.DepartmentId) + 1;
             if (ModelState.IsValid)
             {
                 db.Departments.Add(department);
@@ -110,6 +110,11 @@ namespace CAMS.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Department department = db.Departments.Find(id);
+            List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
+            foreach (var lbid in labsId)
+            {
+                DeleteLab(lbid);
+            }
             db.Departments.Remove(department);
             db.SaveChanges();
             return RedirectToAction("Index");

@@ -161,18 +161,12 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Lab lab = db.Labs.Find(id);
-            while (lab.Computers.Count > 0)
-            {
-                RemoveComputerFromLab(lab.Computers.First().ComputerId, lab.LabId);
-            }
-
-            db.Labs.Remove(lab);
+            DeleteLab(id);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-
+        
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -180,34 +174,11 @@ namespace CAMS.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+            
         }
 
 
-
-        public void RemoveComputerFromLab(int compId, int labId)
-        {
-            Computer comp = db.Computers.Find(compId);
-            //computer not in lab- nothing to update
-            if (comp.CurrentLab != labId)
-                return;
-            var cList = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).ToList();
-            if (cList.Count > 0)
-            {
-                ComputerLab cL = db.ComputerLabs.Find(labId, comp.ComputerId, cList.First().Entrance);
-                cL.Exit = DateTime.Now;
-                db.Entry(cL).State = EntityState.Modified;
-                db.SaveChanges();
-                //db.ComputerLabs.Attach(cL);
-
-            }
-
-            comp.CurrentLab = null;
-            // db.Computers.Attach(comp);
-            db.Entry(comp).State = EntityState.Modified;
-            db.SaveChanges();
-
-
-        }
+        
         public void AddComputerToLab(int compId, int labId)
         {
             Computer comp = db.Computers.Find(compId);
