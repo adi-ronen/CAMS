@@ -14,15 +14,15 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model.Buildings)
+    @foreach (var item in Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.BuildingName)
+                @Html.DisplayFor(modelItem => item)
             </td>
             <td>
-                @Html.ActionLink("ערוך", "EditBuilding", new { id = item.DepartmentId }) |
-                @Html.ActionLink("מחק", "DeleteBuilding", new { id = item.DepartmentId })
+                @Html.ActionLink("ערוך", "Edit", new { name = item}) |
+                @Html.ActionLink("מחק", "Delete", new { name = item})
             </td>
         </tr>
     }
