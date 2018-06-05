@@ -16,7 +16,7 @@
     <div class="form-group">
         @Html.Label("מחלקה", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <select class="form-control widthinput" onchange="DepartmentSelection(this.value)"> 
+            <select form="DepartmentId" class="form-control widthinput" onchange="DepartmentSelection(this.value)"> 
                 @foreach (var dep in Model.Keys)
                 {
                     <option value="@dep.DepartmentId">
@@ -29,7 +29,7 @@
     <div class="form-group">
         @Html.Label("בניין", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <select class="form-control widthinput" >
+            <select form="Building" class="form-control widthinput" >
                 @foreach (var dep in Model)
                 {
                     foreach (var building in dep.Value)
