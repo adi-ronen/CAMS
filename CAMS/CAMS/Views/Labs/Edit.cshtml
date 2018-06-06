@@ -40,7 +40,7 @@
                     {
                         string top = item.LocationInLab.Split(',')[0];
                         string left = item.LocationInLab.Split(',')[1];
-                        <figure id="@item.ComputerName" class="draggable context-menu-one grab" style="position:absolute;top:@top;left:@left">
+                        <figure id="@item.ComputerName" class="multidraggable grab" style="position:absolute;top:@top;left:@left">
                             <img src="~/Images/clear.png" width="60">
                             <figcaption class="text-center">@item.ComputerName</figcaption>
                             <a hidden>,@item.ComputerId</a>
@@ -48,6 +48,7 @@
                     }
                 </div>
                 <p>*לחץ קליק ימני על המחשב על מנת למחוק אותו</p>
+                <!--TBD - ICON SIZE BIG/MEDUIM/SMALL -->
             </div>
         </div>
     </div>
@@ -60,13 +61,9 @@
 <div style="padding-right:15px;">
     @Html.ActionLink("ביטול", "Details", new { id = Model.Lab.LabId })
 </div>
-@section PreloadScripts{
-    <script src="~/Scripts/jquery.contextMenu.min.js"></script>
-    <script src="~/Scripts/CAMS_scripts/Labs.js"></script>
-}
-
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/jquery-ui")
-    <script src="~/Scripts/jquery-ui.drag-multiple.js"></script>
+    <script src="~/Scripts/multidraggable/jquery-1.4.4.min.js"></script>
+    <script src="~/Scripts/multidraggable/jquery-ui-1.8.8.custom.min.js"></script>
+    <script src="~/Scripts/multidraggable/jquery.ui.multidraggable-1.8.8.js"></script>
+    <script src="~/Scripts/CAMS_scripts/Labs.js"></script>
 }

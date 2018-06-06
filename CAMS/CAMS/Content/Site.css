@@ -37,6 +37,11 @@ textarea {
     border: 1px solid #c6c6c6;
     position: relative;
 }
+#LabErea img {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
 
 .key {
     background-color: #fdfdfd;
@@ -214,4 +219,18 @@ table {
 }
 .grab:hover {
     cursor: move;
+}
+
+.ui-draggable {
+    opacity: 1;
+}
+
+.ui-selected {
+    /*background: #f7931d;*/
+    /*opacity: 1 !important;*/
+    font-weight:bold;
+}
+
+.ui-draggable-dragging {
+    opacity: 0.5 !important;
 }

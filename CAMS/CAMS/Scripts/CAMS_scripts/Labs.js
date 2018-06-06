@@ -1,13 +1,13 @@
-﻿import { debounce } from "../popper-utils";
+﻿//import { debounce } from "../popper-utils";
 
 $(document).ready(function () {
     Draggable();
 });
 Draggable = function () {
-    $(".draggable").draggable({
-        containment: "#LabErea",
-        scope: "tasks"
+    $(".multidraggable").multidraggable({
+        containment: "#LabErea"
     });
+    $("#LabErea").selectable();
     $(function () {
         $.contextMenu({
             selector: '.context-menu-one',
@@ -28,7 +28,7 @@ Draggable = function () {
 }
 SaveComputersLocations = function () {
     var coms = {};
-    $(".draggable").each(function () {
+    $(".multidraggable").each(function () {
         let Computer_Position = $(this).position();
         let Div_Height = parseFloat($(this).parent().css("height"));
         let Div_Width = parseFloat($(this).parent().css("width"));
@@ -68,8 +68,8 @@ dropErea = function (ev) {
         $("#" + computer_name).remove();
         var left = Math.round((ev.offsetX / $("#LabErea").width()) * 100);
         var top = Math.round((ev.offsetY / $("#LabErea").height()) * 100);
-        $("#LabErea").append("<figure id=" + computer_name + " class=\"grab draggable context-menu-one\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
-            "<img src=\"/Images/clear.png\" width=\"70\">" +
+        $("#LabErea").append("<figure id=" + computer_name + " class=\"multidraggable grab\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
+            "<img src=\"/Images/clear.png\" width=\"60\">" +
             "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
             "<a hidden>," + computer_id + "</a>" +
             "</figure>");
