@@ -18,8 +18,7 @@ Draggable = function () {
                 "delete": {
                     name: "מחק מחשב",
                     callback: function (itemKey, opt, rootMenu, originalEvent) {
-                        dropList(opt.$trigger);
-                        Search();
+
                     }
                 }
             }
@@ -51,8 +50,8 @@ allowDrop = function (ev) {
     ev.preventDefault();
 }
 dropList = function (element) {
-    var computer_name = element[0].id;
-    var computer_id = element[0].children[2].text;
+    var computer_name = element.id;
+    var computer_id = element.children[2].text;
     element.remove();
     $("#computers_list").append("<figure draggable=\"true\" ondragstart=\"drag(event)\" class=\"flex-nowrap draggable-computer-list row context-menu-one computers-list\" id=" + computer_name + ">" +
         "<img draggable=\"false\" src=\"/Images/clear.png\" height=\"30\">" +
@@ -92,4 +91,10 @@ Search = function () {
             this.removeAttribute('hidden');
         }
     });
+}
+DeleteComputers = function () {
+    $('figure[class*="ui-selected"').each(function () {
+        dropList(this);
+    });
+    Search();
 }
