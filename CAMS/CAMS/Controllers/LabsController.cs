@@ -230,7 +230,7 @@ namespace CAMS.Controllers
 
         }
 
-        public bool SaveLabEdit(List<Computer> comps, int labId, string roomNumber, string building)
+        public bool SaveLabEdit(List<Computer> comps, int labId, string roomNumber, string building, int ComputerSize)
         {
 
             try
@@ -241,6 +241,7 @@ namespace CAMS.Controllers
 
                     lab.RoomNumber = roomNumber;
                     lab.Building = building;
+                    lab.ComputerSize = ComputerSize;
                     var privLabComputers = lab.Computers.ToList();
                     //computers in the lab that was removed (not in the current computer list)
                     foreach (var item in privLabComputers.Except(comps))
@@ -321,7 +322,7 @@ namespace CAMS.Controllers
 
         // POST: Labs/Update
         [HttpPost]
-        public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string Building)
+        public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string Building, string ComputerSize)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
@@ -349,10 +350,10 @@ namespace CAMS.Controllers
                     comps.Add(computer);
                 }
 
-                if (!SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building))
+                if (!SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building, Convert.ToInt32(ComputerSize)))
                 {
                     //retry
-                    SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building);
+                    SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building, Convert.ToInt32(ComputerSize));
                 }
                 return View(new LabDetailsViewModel(lab, this));
             }
