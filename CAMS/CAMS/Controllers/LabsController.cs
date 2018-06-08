@@ -343,8 +343,7 @@ namespace CAMS.Controllers
                     //save computer new location
                     computer.LocationInLab = item.Value;
                     db.Entry(computer).State = EntityState.Modified;
-                    try { db.SaveChanges(); }
-                    catch (DbUpdateConcurrencyException ex) { }
+                    db.SaveChanges();
                     comps.Add(computer);
                 }
 
