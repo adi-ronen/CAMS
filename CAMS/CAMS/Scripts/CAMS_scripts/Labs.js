@@ -1,29 +1,13 @@
-﻿//import { debounce } from "../popper-utils";
-
-$(document).ready(function () {
+﻿$(document).ready(function () {
     Draggable();
+    ComputerSize = $("#ComputerSize").val();
+    ChangeComputerSize(ComputerSize);
 });
 Draggable = function () {
     $(".multidraggable").multidraggable({
         containment: "#LabErea"
     });
     $("#LabErea").selectable();
-    $(function () {
-        $.contextMenu({
-            selector: '.context-menu-one',
-            callback: function (obj) {
-                this.remove(obj);
-            },
-            items: {
-                "delete": {
-                    name: "מחק מחשב",
-                    callback: function (itemKey, opt, rootMenu, originalEvent) {
-
-                    }
-                }
-            }
-        });
-    });
 }
 SaveComputersLocations = function () {
     var coms = {};
@@ -39,7 +23,7 @@ SaveComputersLocations = function () {
         url: "/Labs/Update",
         type: 'post',
         data: {
-            computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), Building: $("#Building").val()
+            computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), Building: $("#Building").val(), ComputerSize: $("#ComputerSize").val()
         },
         success: function (data) {
             alert(data);
@@ -68,11 +52,13 @@ dropErea = function (ev) {
         var left = Math.round((ev.offsetX / $("#LabErea").width()) * 100);
         var top = Math.round((ev.offsetY / $("#LabErea").height()) * 100);
         $("#LabErea").append("<figure id=" + computer_name + " class=\"multidraggable grab\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
-            "<img src=\"/Images/clear.png\" width=\"60\">" +
-            "<figcaption class=\"text-center\">" + computer_name + "</figcaption>" +
+            "<img class=\"sizeable\" src=\"/Images/clear.png\">" +
+            "<figcaption class=\"text-center sizeable\">" + computer_name + "</figcaption>" +
             "<a hidden>," + computer_id + "</a>" +
             "</figure>");
         Draggable();
+        var size;
+        ChangeComputerSize($("#ComputerSize").val());        
     }
 }
 drag = function (ev) {
@@ -88,13 +74,45 @@ Search = function () {
             this.setAttribute('hidden', 'hidden');
         }
         else {
-            this.removeAttribute('hidden');
+            $(this).removeAttr('hidden');
         }
     });
 }
-DeleteComputers = function () {
-    $('figure[class*="ui-selected"').each(function () {
+Delete = function () {
+    $('figure[class*="ui-selected"]').each(function () {
         dropList(this);
     });
     Search();
+}
+ChangeComputerSize = function (size) {
+    $("#ComputerSize").val(size);
+    $('input[type*="radio"]').each(function () {
+        $(this).removeAttr('checked');
+    });
+    var width;
+    var font;
+    switch (size) {
+        case 'Large':
+            $("#Large").attr('checked', 'checked');
+            width = 70;
+            font = '18px';
+            break;
+        case 'Medium':
+            $("#Medium").attr('checked', 'checked');
+            width = 50;
+            font = '14px';
+            break;
+        case 'Small':
+            $("#Small").attr('checked', 'checked');
+            width = 30;
+            font = '10px';
+            break;
+    }
+    $('img[class*="sizeable"]').each(function () {
+        $(this).css("width", width);
+    });
+    $('figcaption[class*="sizeable"]').each(function () {
+        $(this).css("font-size", font);
+    });
+    
 }

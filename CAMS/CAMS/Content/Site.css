@@ -226,11 +226,19 @@ table {
 }
 
 .ui-selected {
-    /*background: #f7931d;*/
-    /*opacity: 1 !important;*/
-    font-weight:bold;
+    font-weight: bold;
+    color: darkred;
 }
 
 .ui-draggable-dragging {
     opacity: 0.5 !important;
+}
+
+#DeleteComputers, #SetLocation, #CompSize {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+#CompSize {
+    margin-right: auto;
 }

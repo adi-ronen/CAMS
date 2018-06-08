@@ -2,12 +2,10 @@
 @{
     ViewBag.Title = "Edit";
 }
-
 <h2>עריכה</h2>
-
-
 @using (Html.BeginForm())
 {
+    <input type="hidden" value="Medium" id="ComputerSize" />@*@Model.Lab.ComputerSize*@
     @Html.AntiForgeryToken()
     <div>
         <h6>בניין:</h6> @Html.DisplayFor(model => model.Lab.Building, new { htmlAttributes = new { @class = "widthinput", id = "Building" } })
@@ -21,7 +19,6 @@
                 <h3>מחשבים</h3>
                 <input type="search" id="search" oninput="Search()" />
                 <div id="computers_list">
-                    @*//TBD-  ComputersList הוספה של מחשבים רואה רק את אלו שהוא מורשה אליהם לפי דומיינים*@
                     @foreach (var item in Model.ComputersList)
                     {
                         var comp_name = item.Split(',')[0];
@@ -41,17 +38,22 @@
                         string top = item.LocationInLab.Split(',')[0];
                         string left = item.LocationInLab.Split(',')[1];
                         <figure id="@item.ComputerName" class="multidraggable grab" style="position:absolute;top:@top;left:@left">
-                            <img src="~/Images/clear.png" width="60">
-                            <figcaption class="text-center">@item.ComputerName</figcaption>
+                            <img class="sizeable" src="~/Images/clear.png">
+                            <figcaption class="sizeable text-center">@item.ComputerName</figcaption>
                             <a hidden>,@item.ComputerId</a>
                         </figure>
                     }
                 </div>
-                <input type="button" value="מחק מחשבים נבחרים" onclick="DeleteComputers()"/>
-                <input type="button" value="בחירת מיקום ידנית"/>
-                <input type="radio" title="גדול"/>
-                <input type="radio" title="בינוני"/>
-                <input type="radio" title="קטן" />
+                <div class="row">
+                    <button type="button" id="DeleteComputers" onclick="Delete()">מחק מחשבים נבחרים</button>
+                    @*<button type="button" id="SetLocation" onclick="SetLocation()">בחירת מיקום ידנית</button>*@
+                    <div id="CompSize" class="text-left">
+                        גודל מחשבים:
+                        <input class="checkbox-margin" type="radio" id="Large" onclick="ChangeComputerSize('Large')" />גדול
+                        <input class="checkbox-margin" type="radio" id="Medium" onclick="ChangeComputerSize('Medium')" />בינוני
+                        <input class="checkbox-margin" type="radio" id="Small" onclick="ChangeComputerSize('Small')" />קטן
+                    </div>
+                </div>
             </div>
         </div>
     </div>
