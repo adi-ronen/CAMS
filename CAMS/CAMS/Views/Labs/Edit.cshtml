@@ -5,7 +5,7 @@
 <h2>עריכה</h2>
 @using (Html.BeginForm())
 {
-    <input type="hidden" value="Medium" id="ComputerSize" />@*@Model.Lab.ComputerSize*@
+    <input type="hidden" value="50" name="ComputerSize"/>@*@Model.Lab.ComputerSize*@
     @Html.AntiForgeryToken()
     <div>
         <h6>בניין:</h6> @Html.DisplayFor(model => model.Lab.Building, new { htmlAttributes = new { @class = "widthinput", id = "Building" } })
@@ -38,7 +38,7 @@
                         string top = item.LocationInLab.Split(',')[0];
                         string left = item.LocationInLab.Split(',')[1];
                         <figure id="@item.ComputerName" class="multidraggable grab" style="position:absolute;top:@top;left:@left">
-                            <img class="sizeable" src="~/Images/clear.png">
+                            <img class="sizeable" src="~/Images/clear.png" width="@Model.Lab.ComputerSize">
                             <figcaption class="sizeable text-center">@item.ComputerName</figcaption>
                             <a hidden>,@item.ComputerId</a>
                         </figure>
@@ -49,9 +49,9 @@
                     @*<button type="button" id="SetLocation" onclick="SetLocation()">בחירת מיקום ידנית</button>*@
                     <div id="CompSize" class="text-left">
                         גודל מחשבים:
-                        <input class="checkbox-margin" type="radio" id="Large" onclick="ChangeComputerSize('Large')" />גדול
-                        <input class="checkbox-margin" type="radio" id="Medium" onclick="ChangeComputerSize('Medium')" />בינוני
-                        <input class="checkbox-margin" type="radio" id="Small" onclick="ChangeComputerSize('Small')" />קטן
+                        <input class="checkbox-margin" type="radio" id="Large" onclick="ChangeComputerSize(70)" />גדול
+                        <input class="checkbox-margin" type="radio" id="Medium" onclick="ChangeComputerSize(50)" />בינוני
+                        <input class="checkbox-margin" type="radio" id="Small" onclick="ChangeComputerSize(30)" />קטן
                     </div>
                 </div>
             </div>

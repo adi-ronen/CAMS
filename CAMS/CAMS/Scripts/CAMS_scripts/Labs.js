@@ -84,29 +84,19 @@ Delete = function () {
     });
     Search();
 }
-ChangeComputerSize = function (size) {
-    $("#ComputerSize").val(size);
+ChangeComputerSize = function (width) {
     $('input[type*="radio"]').each(function () {
         $(this).removeAttr('checked');
     });
-    var width;
-    var font;
-    switch (size) {
-        case 'Large':
-            $("#Large").attr('checked', 'checked');
-            width = 70;
-            font = '18px';
-            break;
-        case 'Medium':
-            $("#Medium").attr('checked', 'checked');
-            width = 50;
-            font = '14px';
-            break;
-        case 'Small':
-            $("#Small").attr('checked', 'checked');
-            width = 30;
-            font = '10px';
-            break;
+    var font = "'" + ((size / 5) + 4) + "px'";
+    if (width >= 70) {
+        $("#Large").attr('checked', 'checked');
+    }
+    else if (width <= 30) {
+        $("#Small").attr('checked', 'checked');
+    }
+    else {
+        $("#Medium").attr('checked', 'checked');
     }
     $('img[class*="sizeable"]').each(function () {
         $(this).css("width", width);
@@ -114,5 +104,5 @@ ChangeComputerSize = function (size) {
     $('figcaption[class*="sizeable"]').each(function () {
         $(this).css("font-size", font);
     });
-    
+    $("#ComputerSize").val(size);
 }

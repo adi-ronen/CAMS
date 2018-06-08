@@ -50,21 +50,21 @@
                 }
                 string top = item.LocationInLab.Split(',')[0];
                 string left = item.LocationInLab.Split(',')[1];
-                <img src="~/Images/@source" width="60" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
+                <img src="~/Images/@source" width="@Model.Lab.ComputerSize" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
             }
         </div>
         <div class="col-sm-2 key">
             <h3>מקרא</h3>
             <hr />
-            <img src="~/Images/green.png" width="60" title="המחשב פנוי" />
+            <img src="~/Images/green.png" width="@Model.Lab.ComputerSize" title="המחשב פנוי" />
             <br />
             <text>מחשב פנוי</text>
             <hr />
-            <img src="~/Images/black.png" width="60" title="המחשב לא מגיב - מכובה/ ללא תקשורת/ תקול" />
+            <img src="~/Images/black.png" width="@Model.Lab.ComputerSize" title="המחשב לא מגיב - מכובה/ ללא תקשורת/ תקול" />
             <br />
             <text>מחשב כבוי</text>
             <hr />
-            <img src="~/Images/red.png" width="60" title="המחשב נמצא בשימוש/ בשיעור" />
+            <img src="~/Images/red.png" width="@Model.Lab.ComputerSize" title="המחשב נמצא בשימוש/ בשיעור" />
             <br />
             <text>מחשב תפוס</text>
             <hr />
