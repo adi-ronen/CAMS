@@ -26,6 +26,7 @@ namespace CAMS.Models
         public string Building { get; set; }
         public string RoomNumber { get; set; }
         public int DepartmentId { get; set; }
+        public int ComputerSize { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Computer> Computers { get; set; }
