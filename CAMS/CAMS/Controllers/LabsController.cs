@@ -230,47 +230,35 @@ namespace CAMS.Controllers
 
         }
 
-        public bool SaveLabEdit(List<Computer> comps, int labId, string roomNumber, string building, int ComputerSize)
+        public bool SaveLabEdit(List<int> comps, int labId, string roomNumber, int ComputerSize)
         {
 
-            try
+            using (var db = new CAMS_DatabaseEntities())
             {
-                using (var db = new CAMS_DatabaseEntities())
+                Lab lab = db.Labs.Find(labId);
+
+                lab.RoomNumber = roomNumber;
+                lab.ComputerSize = ComputerSize;
+                var privLabComputers = lab.Computers.Select(e=>e.ComputerId).ToList();
+                //computers in the lab that was removed (not in the current computer list)
+                foreach (var item in privLabComputers.Except(comps))
                 {
-                    Lab lab = db.Labs.Find(labId);
-
-                    lab.RoomNumber = roomNumber;
-                    lab.Building = building;
-                    lab.ComputerSize = ComputerSize;
-                    var privLabComputers = lab.Computers.ToList();
-                    //computers in the lab that was removed (not in the current computer list)
-                    foreach (var item in privLabComputers.Except(comps))
-                    {
-                        RemoveComputerFromLab(item.ComputerId, lab.LabId);
-                    }
-                    //computers added to the lab (not in the lab computer list)
-                    foreach (var item in comps.Except(privLabComputers))
-                    {
-                        AddComputerToLab(item.ComputerId, lab.LabId);
-                    }
-
-                    //computers to update
-                    foreach (var item in comps.Intersect(privLabComputers))
-                    {
-                        db.Entry(item).State = EntityState.Modified;
-                    }
-                    db.Entry(lab).State = EntityState.Modified;
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DbUpdateConcurrencyException ex) { }
-                    return true;
+                    RemoveComputerFromLab(item, lab.LabId);
                 }
-            }
-            catch (Exception ex)
-            {
-                return false;
+                //computers added to the lab (not in the lab computer list)
+                foreach (var item in comps.Except(privLabComputers))
+                {
+                    AddComputerToLab(item, lab.LabId);
+                }
+
+                //computers to update
+                //foreach (var item in comps.Intersect(privLabComputers))
+                //{
+                //    db.Entry(item).State = EntityState.Modified;
+                //}
+                db.Entry(lab).State = EntityState.Modified;
+                db.SaveChanges();
+                return true;
             }
 
         }
@@ -322,12 +310,12 @@ namespace CAMS.Controllers
 
         // POST: Labs/Update
         [HttpPost]
-        public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string Building, string ComputerSize)
+        public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string ComputerSize)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
                 Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
-                List<Computer> comps = new List<Computer>();
+                List<int> comps = new List<int>();
 
                 foreach (var item in computers)
                 {
@@ -347,14 +335,11 @@ namespace CAMS.Controllers
                     computer.LocationInLab = item.Value;
                     db.Entry(computer).State = EntityState.Modified;
                     db.SaveChanges();
-                    comps.Add(computer);
+                    comps.Add(computer.ComputerId);
                 }
 
-                if (!SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building, Convert.ToInt32(ComputerSize)))
-                {
-                    //retry
-                    SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building, Convert.ToInt32(ComputerSize));
-                }
+                SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Convert.ToInt32(ComputerSize));
+                
                 return View(new LabDetailsViewModel(lab, this));
             }
 

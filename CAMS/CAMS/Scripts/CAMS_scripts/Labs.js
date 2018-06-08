@@ -23,7 +23,7 @@ SaveComputersLocations = function () {
         url: "/Labs/Update",
         type: 'post',
         data: {
-            computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), Building: $("#Building").val(), ComputerSize: $("#ComputerSize").val()
+            computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), ComputerSize: $("#ComputerSize").val()
         },
         success: function (data) {
             alert(data);
