@@ -18,31 +18,40 @@ namespace CAMS.Controllers
         // GET: Activities
         public ActionResult Index()
         {
-            var activities = db.Activities.Include(a => a.Computer);
-            return View(activities.ToList());
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                var activities = db.Activities.Include(a => a.Computer);
+                return View(activities.ToList());
+            }
         }
 
         // GET: Activities/Details/5
         public ActionResult Details(DateTime id)
         {
-            if (id == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Activity activity = db.Activities.Find(id);
+                if (activity == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(activity);
             }
-            Activity activity = db.Activities.Find(id);
-            if (activity == null)
-            {
-                return HttpNotFound();
-            }
-            return View(activity);
         }
 
         // GET: Activities/Create
         public ActionResult Create()
         {
-            //TBD- get all the labs that the user can create a report with
-            ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC");
-            return View();
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                //TBD- get all the labs that the user can create a report with
+                ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC");
+                return View();
+            }
         }
 
         // POST: Activities/Create
@@ -52,32 +61,39 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Login,UserName,Logout,Mode,ComputerId")] Activity activity)
         {
-            //TBD- bind with the report details... 
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Activities.Add(activity);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                //TBD- bind with the report details... 
+                if (ModelState.IsValid)
+                {
+                    db.Activities.Add(activity);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
 
-            ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
-            return View(activity); //TBD- view report? HOW?!
+
+                ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
+                return View(activity); //TBD- view report? HOW?!
+            }
         }
 
         // GET: Activities/Edit/5
         public ActionResult Edit(DateTime id)
         {
-            if (id == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Activity activity = db.Activities.Find(id);
+                if (activity == null)
+                {
+                    return HttpNotFound();
+                }
+                ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
+                return View(activity);
             }
-            Activity activity = db.Activities.Find(id);
-            if (activity == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
-            return View(activity);
         }
 
         // POST: Activities/Edit/5
@@ -87,29 +103,35 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Login,UserName,Logout,Mode,ComputerId")] Activity activity)
         {
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Entry(activity).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(activity).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
+                return View(activity);
             }
-            ViewBag.ComputerId = new SelectList(db.Computers, "ComputerId", "MAC", activity.ComputerId);
-            return View(activity);
         }
 
         // GET: Activities/Delete/5
         public ActionResult Delete(DateTime id)
         {
-            if (id == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Activity activity = db.Activities.Find(id);
+                if (activity == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(activity);
             }
-            Activity activity = db.Activities.Find(id);
-            if (activity == null)
-            {
-                return HttpNotFound();
-            }
-            return View(activity);
         }
 
         // POST: Activities/Delete/5
@@ -117,35 +139,44 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(DateTime id)
         {
-            Activity activity = db.Activities.Find(id);
-            db.Activities.Remove(activity);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Activity activity = db.Activities.Find(id);
+                db.Activities.Remove(activity);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Dispose();
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
         }
 
         internal void UpdateLabSchedule(Lab lab, string classes)
         {
-            lab.TodaysClasses = classes;
-            db.Entry(lab).State = EntityState.Modified;
-            db.SaveChanges();
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                lab.TodaysClasses = classes;
+                db.Entry(lab).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
         
 
         public void CreateNewActivity(int compId, ActivityType mode, string userName)
         {
-             lock (syncLock)
-             {
-            // Activity act = new Activity();
-            Computer comp = db.Computers.Find(compId);
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                // Activity act = new Activity();
+                Computer comp = db.Computers.Find(compId);
                 string uName = null;
                 if (userName != null)
                     uName = userName;
@@ -173,7 +204,7 @@ namespace CAMS.Controllers
        
         public void CloseActivity(Activity act)
         {
-            lock (syncLock)
+            using (var db = new CAMS_DatabaseEntities())
             {
                 act.Logout = DateTime.Now;
                 db.Entry(act).State = EntityState.Modified; //same as above
@@ -184,7 +215,7 @@ namespace CAMS.Controllers
 
         public Activity SplitActivity(Activity act)
         {
-            lock (syncLock)
+            using (var db = new CAMS_DatabaseEntities())
             {
                 act.Logout = DateTime.Now.Date.AddTicks(-1);
                 Activity newAct = new Activity
@@ -204,7 +235,10 @@ namespace CAMS.Controllers
 
         internal List<Lab> GetAllLabs()
         {
-            return db.Labs.ToList();
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                return db.Labs.ToList();
+            }
         }
     }
 }

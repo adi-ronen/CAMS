@@ -16,7 +16,10 @@ namespace CAMS.Controllers
         // GET: Departments
         public ActionResult Index()
         {
-            return View(db.Departments.ToList());
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                return View(db.Departments.ToList());
+            }
         }
 
         // GET: Departments/Details/5
@@ -26,12 +29,15 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Department department = db.Departments.Find(id);
-            if (department == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                Department department = db.Departments.Find(id);
+                if (department == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(department);
             }
-            return View(department);
         }
 
         // GET: Departments/Create
@@ -47,30 +53,36 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "DepartmentName,Domain")] Department department)
         {
-            department.DepartmentId = db.Departments.Max(e => e.DepartmentId) + 1;
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Departments.Add(department);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                department.DepartmentId = db.Departments.Max(e => e.DepartmentId) + 1;
+                if (ModelState.IsValid)
+                {
+                    db.Departments.Add(department);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
 
-            return View(department);
+                return View(department);
+            }
         }
 
         // GET: Departments/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Department department = db.Departments.Find(id);
+                if (department == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(department);
             }
-            Department department = db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
         }
 
         // POST: Departments/Edit/5
@@ -80,28 +92,34 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "DepartmentId,DepartmentName,Domain")] Department department)
         {
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Entry(department).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(department).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                return View(department);
             }
-            return View(department);
         }
 
         // GET: Departments/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Department department = db.Departments.Find(id);
+                if (department == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(department);
             }
-            Department department = db.Departments.Find(id);
-            if (department == null)
-            {
-                return HttpNotFound();
-            }
-            return View(department);
         }
 
         // POST: Departments/Delete/5
@@ -109,24 +127,30 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Department department = db.Departments.Find(id);
-            List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
-            foreach (var lbid in labsId)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                DeleteLab(lbid);
+                Department department = db.Departments.Find(id);
+                List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
+                foreach (var lbid in labsId)
+                {
+                    DeleteLab(lbid);
+                }
+                db.Departments.Remove(department);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
-            db.Departments.Remove(department);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Dispose();
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
         }
     }
 }

@@ -16,8 +16,11 @@ namespace CAMS.Controllers
         // GET: Computers
         public ActionResult Index()
         {
-            var computers = db.Computers.Include(c => c.Lab);
-            return View(computers.ToList());
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                var computers = db.Computers.Include(c => c.Lab);
+                return View(computers.ToList());
+            }
         }
 
         // GET: Computers/Details/5
@@ -27,13 +30,16 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Computer computer = db.Computers.Find(id);
-            if (computer == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
-            }
+                Computer computer = db.Computers.Find(id);
+                if (computer == null)
+                {
+                    return HttpNotFound();
+                }
 
-            return View(computer);
+                return View(computer);
+            }
         }
 
 
@@ -42,43 +48,48 @@ namespace CAMS.Controllers
         // GET: Computers/Create
         public ActionResult Create()
         {
-            ViewBag.CurrentLab = new SelectList(db.Labs, "LabId");
-            return View();
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                ViewBag.CurrentLab = new SelectList(db.Labs, "LabId");
+                return View();
+            }
         }
 
 
 
         public void AddCompToLab(string compName, int labId)
         {
-            Lab lab = db.Labs.Find(labId);
-            //while( lab.ComputerLabs.Count>0)
-            //{
-            //    db.ComputerLabs.Remove(lab.ComputerLabs.First());
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Lab lab = db.Labs.Find(labId);
+                //while( lab.ComputerLabs.Count>0)
+                //{
+                //    db.ComputerLabs.Remove(lab.ComputerLabs.First());
 
-            //}
-            //while (lab.Computers.Count > 0)
-            //{
-            //    db.Computers.Remove(lab.Computers.First());
+                //}
+                //while (lab.Computers.Count > 0)
+                //{
+                //    db.Computers.Remove(lab.Computers.First());
 
-            //}
-            //db.SaveChanges();
-            Computer comp = new Computer();
-            comp.ComputerName = compName;
-            comp.CurrentLab = labId;
-            comp.LocationInLab = "0%,0%";
-            comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
-            db.Computers.Add(comp);
-            db.SaveChanges();
+                //}
+                //db.SaveChanges();
+                Computer comp = new Computer();
+                comp.ComputerName = compName;
+                comp.CurrentLab = labId;
+                comp.LocationInLab = "0%,0%";
+                comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
+                db.Computers.Add(comp);
+                db.SaveChanges();
 
-            ComputerLab cl = new ComputerLab();
+                ComputerLab cl = new ComputerLab();
 
-            cl.ComputerId = comp.ComputerId;
-            cl.LabId = labId;
-            cl.Entrance = DateTime.Now.Date;
-            db.ComputerLabs.Add(cl);
-            db.SaveChanges();
+                cl.ComputerId = comp.ComputerId;
+                cl.LabId = labId;
+                cl.Entrance = DateTime.Now.Date;
+                db.ComputerLabs.Add(cl);
+                db.SaveChanges();
+            }
         }
-
 
 
         // POST: Computers/Create
@@ -88,15 +99,18 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ComputerId,MAC,ComputerName,CurrentLab,LocationInLab")] Computer computer)
         {
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Computers.Add(computer);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                if (ModelState.IsValid)
+                {
+                    db.Computers.Add(computer);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
 
-            ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
-            return View(computer);
+                ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
+                return View(computer);
+            }
         }
 
 
@@ -108,13 +122,16 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Computer computer = db.Computers.Find(id);
-            if (computer == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                Computer computer = db.Computers.Find(id);
+                if (computer == null)
+                {
+                    return HttpNotFound();
+                }
+                ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
+                return View(computer);
             }
-            ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
-            return View(computer);
         }
 
         // POST: Computers/Edit/5
@@ -124,14 +141,17 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ComputerId,MAC,ComputerName,CurrentLab,LocationInLab")] Computer computer)
         {
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Entry(computer).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(computer).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
+                return View(computer);
             }
-            ViewBag.CurrentLab = new SelectList(db.Labs, "LabId", "LabName", computer.CurrentLab);
-            return View(computer);
         }
 
         // GET: Computers/Delete/5
@@ -141,12 +161,15 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Computer computer = db.Computers.Find(id);
-            if (computer == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                Computer computer = db.Computers.Find(id);
+                if (computer == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(computer);
             }
-            return View(computer);
         }
 
         // POST: Computers/Delete/5
@@ -154,19 +177,25 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Computer computer = db.Computers.Find(id);
-            db.Computers.Remove(computer);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Computer computer = db.Computers.Find(id);
+                db.Computers.Remove(computer);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Dispose();
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
         }
     }
 }

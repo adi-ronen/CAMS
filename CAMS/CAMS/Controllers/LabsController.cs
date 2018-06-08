@@ -29,33 +29,35 @@ namespace CAMS.Controllers
                 searchString = currentFilter;
             }
             ViewBag.CurrentFilter = searchString;
-            var Labs = from l in db.Labs
-                       select l;
-            if (!String.IsNullOrEmpty(searchString))
+            using (var db = new CAMS_DatabaseEntities())
             {
-                Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
-                                       || l.Building.Contains(searchString));
-            }
+                var Labs = db.Labs.Include(e => e.Department).Include(e=>e.Computers);
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
+                                           || l.Building.Contains(searchString));
+                }
 
-            switch (sortOrder)
-            {
-                case "dep_desc":
-                    Labs = Labs.OrderByDescending(l => l.Department.DepartmentName);
-                    break;
-                case "Building":
-                    Labs = Labs.OrderBy(l => l.Building);
-                    break;
-                case "building_desc":
-                    Labs = Labs.OrderByDescending(l => l.Building);
-                    break;
-                default:
-                    Labs = Labs.OrderBy(l => l.Department.DepartmentName);
-                    break;
+                switch (sortOrder)
+                {
+                    case "dep_desc":
+                        Labs = Labs.OrderByDescending(l => l.Department.DepartmentName);
+                        break;
+                    case "Building":
+                        Labs = Labs.OrderBy(l => l.Building);
+                        break;
+                    case "building_desc":
+                        Labs = Labs.OrderByDescending(l => l.Building);
+                        break;
+                    default:
+                        Labs = Labs.OrderBy(l => l.Department.DepartmentName);
+                        break;
+                }
+                int pageSize = 8;
+                int pageNumber = (page ?? 1);
+                //return View(Labs.ToPagedList(pageNumber, pageSize));
+                return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
             }
-            int pageSize = 8;
-            int pageNumber = (page ?? 1);
-            //return View(Labs.ToPagedList(pageNumber, pageSize));
-            return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
         }
 
 
@@ -68,21 +70,28 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Lab lab = db.Labs.Find(id);
-            if (lab == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                Lab lab = db.Labs.Find(id);
+                db.Entry(lab).Collection(e=>e.Computers).Load();
+                if (lab == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(new LabDetailsViewModel(lab, this));
             }
-            return View(new LabDetailsViewModel(lab, this));
         }
 
         // GET: Labs/Create
         public ActionResult Create()
         {
-            //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
-            List<Department> departments = db.Departments.ToList();
-            List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
-            return View(new object[] {departments, buildings});
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
+                List<Department> departments = db.Departments.ToList();
+                List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
+                return View(new object[] { departments, buildings });
+            }
         }
 
         // POST: Labs/Create
@@ -92,16 +101,19 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Building,RoomNumber,DepartmentId")] Lab lab)
         {
-            lab.LabId = db.Labs.Max(e => e.LabId)+1;
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Labs.Add(lab);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                lab.LabId = db.Labs.Max(e => e.LabId) + 1;
+                if (ModelState.IsValid)
+                {
+                    db.Labs.Add(lab);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
 
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-            return View(lab);
+                ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                return View(lab);
+            }
         }
 
         // GET: Labs/Edit/5
@@ -112,13 +124,17 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Lab lab = db.Labs.Find(id);
-            if (lab == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                Lab lab = db.Labs.Find(id);
+                if (lab == null)
+                {
+                    return HttpNotFound();
+                }
+                db.Entry(lab).Collection(e => e.Computers).Load();
+                ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                return View(new LabDetailsViewModel(lab, this));
             }
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-            return View(new LabDetailsViewModel(lab, this));
         }
 
         // POST: Labs/Edit/5
@@ -128,30 +144,36 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "LabId,TodaysClasses,Building,RoomNumber,DepartmentId,Computers")] Lab lab)
         {
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                lab.RoomNumber = lab.RoomNumber.Trim();
-                db.Entry(lab).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    lab.RoomNumber = lab.RoomNumber.Trim();
+                    db.Entry(lab).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                return View(lab);
             }
-            ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-            return View(lab);
         }
 
         // GET: Labs/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Lab lab = db.Labs.Find(id);
+                if (lab == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(lab);
             }
-            Lab lab = db.Labs.Find(id);
-            if (lab == null)
-            {
-                return HttpNotFound();
-            }
-            return View(lab);
         }
 
         // POST: Labs/Delete/5
@@ -159,19 +181,25 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DeleteLab(id);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                DeleteLab(id);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
         
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Dispose();
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
             
         }
 
@@ -179,21 +207,24 @@ namespace CAMS.Controllers
         
         public void AddComputerToLab(int compId, int labId)
         {
-            Computer comp = db.Computers.Find(compId);
-            //already in lab- nothing to update
-            if (comp.CurrentLab == labId)
-                return;
-            ComputerLab cL = new ComputerLab
+            using (var db = new CAMS_DatabaseEntities())
             {
-                ComputerId = compId,
-                LabId = labId,
-                Entrance = DateTime.Now,
-                Exit = null
-            };
-            comp.CurrentLab = labId;
-            db.ComputerLabs.Add(cL);
+                Computer comp = db.Computers.Find(compId);
+                //already in lab- nothing to update
+                if (comp.CurrentLab == labId)
+                    return;
+                ComputerLab cL = new ComputerLab
+                {
+                    ComputerId = compId,
+                    LabId = labId,
+                    Entrance = DateTime.Now,
+                    Exit = null
+                };
+                comp.CurrentLab = labId;
+                db.ComputerLabs.Add(cL);
 
-            db.SaveChanges();
+                db.SaveChanges();
+            }
 
         }
 
@@ -202,34 +233,37 @@ namespace CAMS.Controllers
 
             try
             {
-                Lab lab = db.Labs.Find(labId);
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    Lab lab = db.Labs.Find(labId);
 
-                lab.RoomNumber = roomNumber;
-                lab.Building = building;
-                var privLabComputers = lab.Computers.ToList();
-                //computers in the lab that was removed (not in the current computer list)
-                foreach (var item in privLabComputers.Except(comps))
-                {
-                    RemoveComputerFromLab(item.ComputerId, lab.LabId);
-                }
-                //computers added to the lab (not in the lab computer list)
-                foreach (var item in comps.Except(privLabComputers))
-                {
-                    AddComputerToLab(item.ComputerId, lab.LabId);
-                }
+                    lab.RoomNumber = roomNumber;
+                    lab.Building = building;
+                    var privLabComputers = lab.Computers.ToList();
+                    //computers in the lab that was removed (not in the current computer list)
+                    foreach (var item in privLabComputers.Except(comps))
+                    {
+                        RemoveComputerFromLab(item.ComputerId, lab.LabId);
+                    }
+                    //computers added to the lab (not in the lab computer list)
+                    foreach (var item in comps.Except(privLabComputers))
+                    {
+                        AddComputerToLab(item.ComputerId, lab.LabId);
+                    }
 
-                //computers to update
-                foreach (var item in comps.Intersect(privLabComputers))
-                {
-                    db.Entry(item).State = EntityState.Modified;
+                    //computers to update
+                    foreach (var item in comps.Intersect(privLabComputers))
+                    {
+                        db.Entry(item).State = EntityState.Modified;
+                    }
+                    db.Entry(lab).State = EntityState.Modified;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException ex) { }
+                    return true;
                 }
-                db.Entry(lab).State = EntityState.Modified;
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException ex) { }
-                return true;
             }
             catch (Exception ex)
             {
@@ -287,38 +321,40 @@ namespace CAMS.Controllers
         [HttpPost]
         public ActionResult Update(Dictionary<string, string> computers, string LabId, string RoomNumber, string Building)
         {
-
-            Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
-            List<Computer> comps = new List<Computer>();
-
-            foreach (var item in computers)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                if (item.Key.Split(',').Length != 2)
-                    break;
-                Computer computer;
-                //if computer have an id
-                if (int.TryParse(item.Key.Split(',')[1], out int n))
-                {
-                    computer = db.Computers.Find(n);
-                }
-                else
-                {
-                    computer = CreateComputer(item.Key.Split(',')[0], lab.Department.Domain);
-                }
-                //save computer new location
-                computer.LocationInLab = item.Value;
-                db.Entry(computer).State = EntityState.Modified;
-                try { db.SaveChanges(); }
-                catch (DbUpdateConcurrencyException ex) { }
-                comps.Add(computer);
-            }
+                Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
+                List<Computer> comps = new List<Computer>();
 
-            if (!SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building))
-            {
-                //retry
-                SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building);
+                foreach (var item in computers)
+                {
+                    if (item.Key.Split(',').Length != 2)
+                        break;
+                    Computer computer;
+                    //if computer have an id
+                    if (int.TryParse(item.Key.Split(',')[1], out int n))
+                    {
+                        computer = db.Computers.Find(n);
+                    }
+                    else
+                    {
+                        computer = CreateComputer(item.Key.Split(',')[0], lab.Department.Domain);
+                    }
+                    //save computer new location
+                    computer.LocationInLab = item.Value;
+                    db.Entry(computer).State = EntityState.Modified;
+                    try { db.SaveChanges(); }
+                    catch (DbUpdateConcurrencyException ex) { }
+                    comps.Add(computer);
+                }
+
+                if (!SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building))
+                {
+                    //retry
+                    SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Building);
+                }
+                return View(new LabDetailsViewModel(lab, this));
             }
-            return View(new LabDetailsViewModel(lab, this));
 
         }
 

@@ -24,22 +24,33 @@ namespace CAMS.Models
 
         public int NumberOfAvilableComputers(Lab lab)
         {
-            int ans = 0;
+            List<int> freeComp = new List<int>();
             if (IsLabOccupied(lab))
-                return ans;
+                return 0;
             List<Task> tasks = new List<Task>();
-            foreach (Computer comp in lab.Computers.ToList())
+            List<int> ids = lab.Computers.Select(e => e.ComputerId).ToList();
+            foreach (int id in ids)
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    if (_lController.LastActivityDetails(comp.ComputerId) == null)
-                    {
-                        ans++;
-                    }
-                }));
+                 tasks.Add(Task.Run(() => IsComputerAvilable(id, freeComp)));
+                //IsComputerAvilable(id, freeComp);
+
+
             }
             Task.WaitAll(tasks.ToArray());
-            return ans;
+            return freeComp.Count();
+        }
+
+        private void IsComputerAvilable(int id, List<int> freeComp)
+        {
+            Activity act = _lController.CurrentActivityDetails(id);
+            if (act == null || act.Mode==ActivityType.Off)
+            {
+                lock (freeComp)
+                {
+                    freeComp.Add(id);
+                }
+
+            }
         }
 
         public bool IsLabOccupied(Lab lab)
@@ -91,7 +102,7 @@ namespace CAMS.Models
 
         public ActivityType GetComputerState(Computer comp)
         {
-            Activity currentAct = _lController.LastActivityDetails(comp.ComputerId);
+            Activity currentAct = _lController.CurrentActivityDetails(comp.ComputerId);
             if (currentAct == null)
                 return ActivityType.On;
             else
