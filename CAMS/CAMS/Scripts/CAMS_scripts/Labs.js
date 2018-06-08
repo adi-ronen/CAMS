@@ -85,10 +85,11 @@ Delete = function () {
     Search();
 }
 ChangeComputerSize = function (width) {
+    width = parseInt(width);
     $('input[type*="radio"]').each(function () {
         $(this).removeAttr('checked');
     });
-    var font = "'" + ((width / 5) + 4) + "px'";
+    var font =  ((width / 5) + 4) + "px";
     if (width >= 70) {
         $("#Large").attr('checked', 'checked');
     }

@@ -132,6 +132,8 @@ namespace CAMS.Controllers
                     return HttpNotFound();
                 }
                 db.Entry(lab).Collection(e => e.Computers).Load();
+                db.Entry(lab).Reference(e => e.Department).Load();
+
                 ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
                 return View(new LabDetailsViewModel(lab, this));
             }
