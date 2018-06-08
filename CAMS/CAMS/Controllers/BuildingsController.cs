@@ -47,7 +47,21 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            return View(NewName);
+            List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
+            foreach (var lbid in labsId)
+            {
+                UpdateLabBuilding(lbid, NewName);
+            }
+            object buildingName = NewName;
+            //return View(buildingName);
+            return RedirectToAction("Index");
+        }
+
+        private void UpdateLabBuilding(int lbid,string newName)
+        {
+            Lab lab = db.Labs.Find(lbid);
+            lab.Building = newName;
+            db.SaveChanges();
         }
 
         // GET: Buildings/Delete/name
