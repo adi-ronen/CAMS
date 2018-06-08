@@ -25,32 +25,35 @@ namespace CAMS.Controllers
                 searchString = currentFilter;
             }
             ViewBag.CurrentFilter = searchString;
-            var Labs = from l in db.Labs
-                       select l;
-            if (!String.IsNullOrEmpty(searchString))
+            using (var db = new CAMS_DatabaseEntities())
             {
-                Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
-                                       || l.Building.Contains(searchString));
-            }
+                var Labs = from l in db.Labs
+                           select l;
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
+                                           || l.Building.Contains(searchString));
+                }
 
-            switch (sortOrder)
-            {
-                case "dep_desc":
-                    Labs = Labs.OrderByDescending(l => l.Department.DepartmentName);
-                    break;
-                case "Building":
-                    Labs = Labs.OrderBy(l => l.Building);
-                    break;
-                case "building_desc":
-                    Labs = Labs.OrderByDescending(l => l.Building);
-                    break;
-                default:
-                    Labs = Labs.OrderBy(l => l.Department.DepartmentName);
-                    break;
+                switch (sortOrder)
+                {
+                    case "dep_desc":
+                        Labs = Labs.OrderByDescending(l => l.Department.DepartmentName);
+                        break;
+                    case "Building":
+                        Labs = Labs.OrderBy(l => l.Building);
+                        break;
+                    case "building_desc":
+                        Labs = Labs.OrderByDescending(l => l.Building);
+                        break;
+                    default:
+                        Labs = Labs.OrderBy(l => l.Department.DepartmentName);
+                        break;
+                }
+                int pageSize = 8;
+                int pageNumber = (page ?? 1);
+                return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
             }
-            int pageSize = 8;
-            int pageNumber = (page ?? 1);
-            return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize),this));
         }
 
         public ActionResult About()

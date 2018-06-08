@@ -84,7 +84,7 @@ namespace CAMS.Models
                                 try
                                 {
                                 //check for the last activity of the computer
-                                Activity lastAct = _aController.LastActivityDetails(comp.ComputerId);
+                                Activity lastAct = _aController.CurrentActivityDetails(comp.ComputerId);
 
                                 // if the last activity is user activity from the day before- split to two activities for each day
                                 if (lastAct != null && lastAct.Mode.Equals(ActivityType.User) && !lastAct.Login.Date.Equals(DateTime.Now.Date))

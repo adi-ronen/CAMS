@@ -16,7 +16,10 @@ namespace CAMS.Controllers
         // GET: Buildings
         public ActionResult Index()
         {
-            return View(db.Labs.Select(e => e.Building).Distinct().ToList());
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                return View(db.Labs.Select(e => e.Building).Distinct().ToList());
+            }
         }
         
 
@@ -47,21 +50,27 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
-            foreach (var lbid in labsId)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                UpdateLabBuilding(lbid, NewName);
+                List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
+                foreach (var lbid in labsId)
+                {
+                    UpdateLabBuilding(lbid, NewName);
+                }
+                object buildingName = NewName;
+                //return View(buildingName);
+                return RedirectToAction("Index");
             }
-            object buildingName = NewName;
-            //return View(buildingName);
-            return RedirectToAction("Index");
         }
 
         private void UpdateLabBuilding(int lbid,string newName)
         {
-            Lab lab = db.Labs.Find(lbid);
-            lab.Building = newName;
-            db.SaveChanges();
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Lab lab = db.Labs.Find(lbid);
+                lab.Building = newName;
+                db.SaveChanges();
+            }
         }
 
         // GET: Buildings/Delete/name
@@ -76,21 +85,27 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string building)
         {
-            List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
-            foreach (var lbid in labsId)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                DeleteLab(lbid);
+                List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
+                foreach (var lbid in labsId)
+                {
+                    DeleteLab(lbid);
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Dispose();
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
         }
     }
 }
