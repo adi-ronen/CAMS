@@ -104,5 +104,5 @@ ChangeComputerSize = function (width) {
     $('figcaption[class*="sizeable"]').each(function () {
         $(this).css("font-size", font);
     });
-    $("#ComputerSize").val(size);
+    $("#ComputerSize").val(width);
 }
