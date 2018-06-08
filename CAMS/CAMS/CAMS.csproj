@@ -331,7 +331,6 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <EmbeddedResource Include="Images\marcus_map.png" />
     <EmbeddedResource Include="Images\logoHome.png" />
     <Content Include="Images\black.png" />
     <Content Include="Images\clear.png" />
@@ -441,6 +440,7 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
+    <Content Include="Scripts\CAMS_scripts\Users.js" />
     <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\datepicker-he.js" />
     <Content Include="Scripts\esm\popper-utils.js" />

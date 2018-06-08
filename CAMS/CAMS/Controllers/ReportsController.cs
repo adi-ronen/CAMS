@@ -63,6 +63,11 @@ namespace CAMS.Controllers
                 List<int> labsIds =  Request.Form["LabsIds"].Split(',').Select(int.Parse).ToList();
                 bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]); 
                 bool includeAllDay = Convert.ToBoolean(Request.Form["includeAllDay"]);
+                //TBD - DEFRENT REPORTS
+                //bool AverageUsage = Convert.ToBoolean(Request.Form["AverageUsage"]);
+                //bool LabOccupancyReport_hours = Convert.ToBoolean(Request.Form["LabOccupancyReport_hours"]);
+                //bool LabOccupancyReport_days = Convert.ToBoolean(Request.Form[" LabOccupancyReport_days"]);
+                
                 if (includeAllDay)
                 {
                     startDate = new DateTime();
