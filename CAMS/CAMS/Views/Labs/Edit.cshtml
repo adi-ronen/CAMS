@@ -5,7 +5,7 @@
 <h2>עריכה</h2>
 @using (Html.BeginForm())
 {
-    <input type="hidden" value="50" name="ComputerSize"/>@*@Model.Lab.ComputerSize*@
+    <input type="hidden" value="@Model.Lab.ComputerSize" name="ComputerSize" id="ComputerSize"/>
     @Html.AntiForgeryToken()
     <div>
         <h6>בניין:</h6> @Html.DisplayFor(model => model.Lab.Building, new { htmlAttributes = new { @class = "widthinput", id = "Building" } })
