@@ -12,120 +12,158 @@ namespace CAMS.Controllers
 {
     public class BaseController : Controller
     {
+        protected Object syncLock = new Object();
+
         protected CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
         internal List<string> GetBuildings()
         {
-            return db.Labs.Select(x => x.Building).ToList();
+            lock (db)
+            {
+                return db.Labs.Select(x => x.Building).ToList();
+            }
         }
         internal List<Lab> GetLabsOfDepartment(int departmentId)
         {
-            return db.Labs.Where(lab => lab.DepartmentId == departmentId).ToList();
+            lock (db)
+            {
+                return db.Labs.Where(lab => lab.DepartmentId == departmentId).ToList();
+            }
         }
 
         internal List<Lab> GetLabs()
         {
-            return db.Labs.ToList();
+            lock (db)
+            {
+                return db.Labs.ToList();
+            }
         }
 
         internal List<Department> GetDepartments()
         {
-            return db.Departments.ToList();
+            lock (db)
+            {
+                return db.Departments.ToList();
+            }
         }
 
       
         public Lab GetLab(int id)
         {
-            return db.Labs.Find(id);
+            lock (db)
+            {
+                return db.Labs.Find(id);
+            }
         }
      
 
         public Computer GetComputer(int id)
         {
-            return db.Computers.Find(id);
+            lock (db)
+            {
+                return db.Computers.Find(id);
+            }
         }
         public Activity LastActivityDetails(int id)
         {
-            //lock (syncLock)
+            Computer comp;
+            lock (db)
             {
-                Computer computer = db.Computers.Find(id);
-                return LastActivityDetails(computer);
+                comp = db.Computers.Find(id);
             }
-        }
-        public Activity LastActivityDetails(Computer comp)
-        {
+
             if (comp == null)
             {
                 return null;
             }
-            try
-            {
-                // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
-                return comp.Activities.Select(e => e).Where(e => e.Logout.Equals(null)).Last();
-
-            }
-            catch (InvalidOperationException)
-            {
-                //if no element was found that means the cumputer is currently in On state with no user loged in
+            // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
+            List<Activity> activities = comp.Activities.Select(e => e).Where(e => e.Logout.Equals(null)).ToList();
+            if (activities.Count() == 0)
                 return null;
-            }
+            return activities.Last();
+
+
+
         }
 
         public List<User> GetEmailSubscribers(NotificationFrequency frequency)
         {
-            return db.Users.Where(e => e.NotificationFrequency == frequency).ToList(); 
+            lock (db)
+            {
+                return db.Users.Where(e => e.NotificationFrequency == frequency).ToList();
+            }
         }
 
         protected Computer CreateComputer(string computerName, string domain)
         {
             Computer comp = new Computer();
-            using (db)
+
+
+            comp.ComputerName = computerName;
+            lock (db)
             {
-                
-                comp.ComputerName = computerName;
                 comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
-                comp.LocationInLab = "0%,0%";
-                //comp.MAC= findComputerMac(computerName, domain);
+            }
+            comp.LocationInLab = "0%,0%";
+            //comp.MAC= findComputerMac(computerName, domain);
+            lock (db)
+            {
                 db.Computers.Add(comp);
                 db.SaveChanges();
-            }
 
+            }
             return comp;
         }
 
         protected void DeleteLab(int id)
         {
-            Lab lab = db.Labs.Find(id);
+            Lab lab;
+            lock (db)
+            {
+                lab = db.Labs.Find(id);
+            }
             while (lab.Computers.Count > 0)
             {
                 RemoveComputerFromLab(lab.Computers.First().ComputerId, lab.LabId);
             }
-
-            db.Labs.Remove(lab);
-            db.SaveChanges();
+            lock (db)
+            {
+                db.Labs.Remove(lab);
+                db.SaveChanges();
+            }
         }
 
         public void RemoveComputerFromLab(int compId, int labId)
         {
-            Computer comp = db.Computers.Find(compId);
+            Computer comp;
+            lock (db)
+            {
+                comp = db.Computers.Find(compId);
+            }
             //computer not in lab- nothing to update
             if (comp.CurrentLab != labId)
                 return;
             var cList = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).ToList();
             if (cList.Count > 0)
             {
-                ComputerLab cL = db.ComputerLabs.Find(labId, comp.ComputerId, cList.First().Entrance);
-                cL.Exit = DateTime.Now;
-                db.Entry(cL).State = EntityState.Modified;
-                db.SaveChanges();
+                lock (db)
+                {
+                    ComputerLab cL = db.ComputerLabs.Find(labId, comp.ComputerId, cList.First().Entrance);
+                    cL.Exit = DateTime.Now;
+                    db.Entry(cL).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 //db.ComputerLabs.Attach(cL);
 
             }
 
             comp.CurrentLab = null;
             // db.Computers.Attach(comp);
-            db.Entry(comp).State = EntityState.Modified;
-            db.SaveChanges();
+            lock (db)
+            {
+                db.Entry(comp).State = EntityState.Modified;
+                db.SaveChanges();
+            }
 
 
         }
@@ -136,17 +174,21 @@ namespace CAMS.Controllers
         {
             Lab lab = new Lab();
             lab.LabId = id;
-
-            db.Labs.Add(lab);
-            db.SaveChanges();
+            lock (db)
+            {
+                db.Labs.Add(lab);
+                db.SaveChanges();
+            }
         }
         public void testAddComp(int id)
         {
             Computer comp = new Computer();
             comp.ComputerId = id;
-
-            db.Computers.Add(comp);
-            db.SaveChanges();
+            lock (db)
+            {
+                db.Computers.Add(comp);
+                db.SaveChanges();
+            }
         }
         public void testAddCompLab(int compId,int labId,DateTime enter,DateTime? exit)
         {
@@ -155,9 +197,11 @@ namespace CAMS.Controllers
             cL.LabId = labId;
             cL.Entrance = enter;
             cL.Exit = exit;
-
-            db.ComputerLabs.Add(cL);
-            db.SaveChanges();
+            lock (db)
+            {
+                db.ComputerLabs.Add(cL);
+                db.SaveChanges();
+            }
         }
         public void testAddActivity(int compId,DateTime login,DateTime logout,ActivityType Mode)
         {
@@ -166,9 +210,11 @@ namespace CAMS.Controllers
             act.Login = login;
             act.Logout = logout;
             act.Mode = Mode;
-
-            db.Activities.Add(act);
-            db.SaveChanges();
+            lock (db)
+            {
+                db.Activities.Add(act);
+                db.SaveChanges();
+            }
         }
         public void testDeleteLab(int id)
         {

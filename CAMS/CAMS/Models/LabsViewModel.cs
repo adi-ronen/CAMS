@@ -3,6 +3,7 @@ using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using static CAMS.Constant;
@@ -20,19 +21,24 @@ namespace CAMS.Models
             this.Labs = pagedList;
             this._lController = controller;
         }
+
         public int NumberOfAvilableComputers(Lab lab)
         {
             int ans = 0;
             if (IsLabOccupied(lab))
                 return ans;
-            foreach (Computer comp in lab.Computers)
+            List<Task> tasks = new List<Task>();
+            foreach (Computer comp in lab.Computers.ToList())
             {
-                if (_lController.LastActivityDetails(comp.ComputerId) == null)
+                tasks.Add(Task.Run(() =>
                 {
-                    ans++;
-                }
+                    if (_lController.LastActivityDetails(comp.ComputerId) == null)
+                    {
+                        ans++;
+                    }
+                }));
             }
-
+            Task.WaitAll(tasks.ToArray());
             return ans;
         }
 
