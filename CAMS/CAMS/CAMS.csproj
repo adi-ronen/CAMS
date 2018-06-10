@@ -489,6 +489,7 @@
     <Content Include="Scripts\CAMS_scripts\Labs.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jspdf.js" />
     <Content Include="Scripts\multidraggable\jquery-1.4.4.min.js" />
     <Content Include="Scripts\multidraggable\jquery-ui-1.8.8.custom.min.js" />
     <Content Include="Scripts\multidraggable\jquery.ui.multidraggable-1.8.8.js" />

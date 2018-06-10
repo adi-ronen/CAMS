@@ -73,11 +73,11 @@ namespace CAMS.Controllers
                     startDate = new DateTime();
                     endDate = new DateTime().AddTicks(-1);
                 }
-                //List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
-                //return View("Details", new LabsReportViewModel(reports, this));
+                List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
+                return View("Details", new LabsReportViewModel(reports, this));
 
-                List<LabOccupancyReport> reports = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
-                return View("LabOccupancyReport", reports.First());
+                //List<LabOccupancyReport> reports = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
+                //return View("LabOccupancyReport", reports.First());
             }
             catch
             {
