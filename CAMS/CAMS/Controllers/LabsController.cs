@@ -206,7 +206,6 @@ namespace CAMS.Controllers
         }
 
 
-        
         public void AddComputerToLab(int compId, int labId)
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -340,6 +339,28 @@ namespace CAMS.Controllers
 
                 SaveLabEdit(comps, lab.LabId, RoomNumber.Trim(), Convert.ToInt32(ComputerSize));
                 
+                return View(new LabDetailsViewModel(lab, this));
+            }
+
+        }
+        // POST: Labs/Update
+        [HttpPost]
+        public ActionResult Update(string LabId, string RoomNumber, string ComputerSize)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
+                lab.RoomNumber = RoomNumber;
+                lab.ComputerSize = Convert.ToInt32(ComputerSize);
+                var privLabComputers = lab.Computers.Select(e => e.ComputerId).ToList();
+                //remove all computers from lab
+                foreach (var item in privLabComputers)
+                {
+                    RemoveComputerFromLab(item, lab.LabId);
+                }
+                
+                db.Entry(lab).State = EntityState.Modified;
+                db.SaveChanges();
                 return View(new LabDetailsViewModel(lab, this));
             }
 

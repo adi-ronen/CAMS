@@ -95,7 +95,7 @@ namespace CAMS.Controllers
                 comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
                 comp.LocationInLab = "0%,0%";
                 //comp.MAC= findComputerMac(computerName, domain);
-                lock (db)
+              //  lock (db)
                 {
                     db.Computers.Add(comp);
                     db.SaveChanges();
@@ -131,20 +131,29 @@ namespace CAMS.Controllers
                 if (comp.CurrentLab != labId)
                     return;
                 var cList = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).ToList();
-                if (cList.Count > 0)
+                foreach (var item in cList.ToList())
+                {
+                    item.Exit = DateTime.Now;
+                    //ComputerLab cL = new ComputerLab
+                    //{
+                    //    ComputerId = compId,
+                    //    LabId = labId,
+                    //    Entrance = item.Entrance,
+                    //    Exit = DateTime.Now
+                    //};
+                    //db.ComputerLabs.Remove(item);
+                    //db.ComputerLabs.Add(cL);
+                   // db.Entry(item).State = EntityState.Modified;
+                    
+                }
+                comp.CurrentLab = null;
+                try
+                {
+                    db.SaveChanges();
+                }catch(Exception e)
                 {
 
-                    ComputerLab cL = db.ComputerLabs.Find(labId, comp.ComputerId, cList.First().Entrance);
-                    cL.Exit = DateTime.Now;
-                    db.Entry(cL).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    //db.ComputerLabs.Attach(cL);
-                    db.Entry(comp).State = EntityState.Modified;
-                    db.SaveChanges();
                 }
-
-                comp.CurrentLab = null;
             }
             
         }
