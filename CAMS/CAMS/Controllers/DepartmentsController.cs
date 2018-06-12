@@ -55,7 +55,6 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                department.DepartmentId = db.Departments.Max(e => e.DepartmentId) + 1;
                 if (ModelState.IsValid)
                 {
                     db.Departments.Add(department);

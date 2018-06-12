@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 06/12/2018 12:07:28
--- Generated from EDMX file: C:\Users\adiron\Source\Repos\CAMS\CAMS\CAMS\Models\CAMS_DatabaseModel.edmx
+-- Date Created: 06/12/2018 14:12:06
+-- Generated from EDMX file: C:\Users\nasirov\Source\Repos\CAMS\CAMS\CAMS\Models\CAMS_DatabaseModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
@@ -17,11 +17,11 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_Activity	ToComputer]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Activity] DROP CONSTRAINT [FK_Activity	ToComputer];
+IF OBJECT_ID(N'[dbo].[FK_Activity_ToComputer]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Activities] DROP CONSTRAINT [FK_Activity_ToComputer];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Computer_Lab]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Computer] DROP CONSTRAINT [FK_Computer_Lab];
+    ALTER TABLE [dbo].[Computers] DROP CONSTRAINT [FK_Computer_Lab];
 GO
 IF OBJECT_ID(N'[dbo].[FK_ComputerLabs_Computer]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[ComputerLabs] DROP CONSTRAINT [FK_ComputerLabs_Computer];
@@ -30,7 +30,7 @@ IF OBJECT_ID(N'[dbo].[FK_ComputerLabs_Lab]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[ComputerLabs] DROP CONSTRAINT [FK_ComputerLabs_Lab];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Lab_Department]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Lab] DROP CONSTRAINT [FK_Lab_Department];
+    ALTER TABLE [dbo].[Labs] DROP CONSTRAINT [FK_Lab_Department];
 GO
 IF OBJECT_ID(N'[dbo].[FK_UserDepartments_Department]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[UserDepartments] DROP CONSTRAINT [FK_UserDepartments_Department];
@@ -43,23 +43,23 @@ GO
 -- Dropping existing tables
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[Activity]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Activity];
+IF OBJECT_ID(N'[dbo].[Activities]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Activities];
 GO
-IF OBJECT_ID(N'[dbo].[Computer]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Computer];
+IF OBJECT_ID(N'[dbo].[Computers]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Computers];
 GO
 IF OBJECT_ID(N'[dbo].[ComputerLabs]', 'U') IS NOT NULL
     DROP TABLE [dbo].[ComputerLabs];
 GO
-IF OBJECT_ID(N'[dbo].[Department]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Department];
+IF OBJECT_ID(N'[dbo].[Departments]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Departments];
 GO
-IF OBJECT_ID(N'[dbo].[Lab]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Lab];
+IF OBJECT_ID(N'[dbo].[Labs]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Labs];
 GO
-IF OBJECT_ID(N'[dbo].[User]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[User];
+IF OBJECT_ID(N'[dbo].[Users]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Users];
 GO
 IF OBJECT_ID(N'[dbo].[UserDepartments]', 'U') IS NOT NULL
     DROP TABLE [dbo].[UserDepartments];
@@ -82,7 +82,7 @@ GO
 
 -- Creating table 'Computers'
 CREATE TABLE [dbo].[Computers] (
-    [ComputerId] int  NOT NULL,
+    [ComputerId] int IDENTITY(1,1) NOT NULL,
     [ComputerName] nvarchar(50)  NULL,
     [CurrentLab] int  NULL,
     [LocationInLab] nvarchar(50)  NOT NULL
@@ -100,7 +100,7 @@ GO
 
 -- Creating table 'Departments'
 CREATE TABLE [dbo].[Departments] (
-    [DepartmentId] int  NOT NULL,
+    [DepartmentId] int IDENTITY(1,1) NOT NULL,
     [DepartmentName] nvarchar(50)  NULL,
     [Domain] nvarchar(50)  NULL
 );
@@ -108,7 +108,7 @@ GO
 
 -- Creating table 'Labs'
 CREATE TABLE [dbo].[Labs] (
-    [LabId] int  NOT NULL,
+    [LabId] int IDENTITY(1,1) NOT NULL,
     [TodaysClasses] nvarchar(150)  NULL,
     [Building] nvarchar(150)  NULL,
     [RoomNumber] char(15)  NULL,
@@ -119,7 +119,7 @@ GO
 
 -- Creating table 'Users'
 CREATE TABLE [dbo].[Users] (
-    [UserId] int  NOT NULL,
+    [UserId] int IDENTITY(1,1) NOT NULL,
     [Email] nvarchar(50)  NULL,
     [DisconnectedPeriod] int  NULL,
     [NotActivePeriod] int  NULL,

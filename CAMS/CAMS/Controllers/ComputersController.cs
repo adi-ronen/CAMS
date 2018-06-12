@@ -77,7 +77,7 @@ namespace CAMS.Controllers
                 comp.ComputerName = compName;
                 comp.CurrentLab = labId;
                 comp.LocationInLab = "0%,0%";
-                comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
+               // comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
                 db.Computers.Add(comp);
                 db.SaveChanges();
 

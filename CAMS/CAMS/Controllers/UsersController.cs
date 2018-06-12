@@ -21,7 +21,7 @@ namespace CAMS.Controllers
                 ViewBag.byDepartment = byDepartment.Value;
             else
                 ViewBag.byDepartment = false;
-            User user = db.Users.Find(0);
+            User user = db.Users.Find(1);
             return View(new AccessViewModel(user,this, ViewBag.byDepartment));
         }
 
@@ -72,7 +72,7 @@ namespace CAMS.Controllers
         // GET: Users/Create
         public ActionResult Create()
         {
-            User user = db.Users.Find(0);
+            User user = db.Users.Find(1);
             return View(new AccessViewModel(user, this));
         }
 
@@ -96,7 +96,7 @@ namespace CAMS.Controllers
             }
             catch
             {
-                User user = db.Users.Find(0);
+                User user = db.Users.Find(1);
                 return View(new AccessViewModel(user, this));
             }
         }
