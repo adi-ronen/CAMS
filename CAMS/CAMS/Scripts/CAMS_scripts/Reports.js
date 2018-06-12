@@ -3,12 +3,23 @@
     $("#fromDate").datepicker('option',{
         changeMonth: true,
         changeYear: true,
+        onSelect: function (dateText, inst) {
+            $("#toDate").removeAttr('disabled');
+            $("#toDate").datepicker('option', {
+                minDate: dateText
+            })
+        },
         maxDate: 0
     });
     $("#toDate").datepicker('option',{
         changeMonth: true,
         changeYear: true,
         maxDate: 0,
+        onSelect: function (dateText, inst) {
+            $("#fromDate").datepicker('option', {
+                maxDate: dateText
+            })
+        } 
     });
     $("#fromTime").timepicker({ 'timeFormat': 'H:i', 'step': '60'});
     $("#toTime").timepicker({ 'timeFormat': 'H:i', 'step': '60'});
