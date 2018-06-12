@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/09/2018 14:48:11
--- Generated from EDMX file: C:\Users\Olga\Source\Repos\CAMS\CAMS\CAMS\Models\CAMS_DatabaseModel.edmx
+-- Date Created: 06/12/2018 12:07:28
+-- Generated from EDMX file: C:\Users\adiron\Source\Repos\CAMS\CAMS\CAMS\Models\CAMS_DatabaseModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
@@ -17,11 +17,11 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_Activity_ToComputer]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Activities] DROP CONSTRAINT [FK_Activity_ToComputer];
+IF OBJECT_ID(N'[dbo].[FK_Activity	ToComputer]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Activity] DROP CONSTRAINT [FK_Activity	ToComputer];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Computer_Lab]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Computers] DROP CONSTRAINT [FK_Computer_Lab];
+    ALTER TABLE [dbo].[Computer] DROP CONSTRAINT [FK_Computer_Lab];
 GO
 IF OBJECT_ID(N'[dbo].[FK_ComputerLabs_Computer]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[ComputerLabs] DROP CONSTRAINT [FK_ComputerLabs_Computer];
@@ -30,7 +30,7 @@ IF OBJECT_ID(N'[dbo].[FK_ComputerLabs_Lab]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[ComputerLabs] DROP CONSTRAINT [FK_ComputerLabs_Lab];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Lab_Department]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Labs] DROP CONSTRAINT [FK_Lab_Department];
+    ALTER TABLE [dbo].[Lab] DROP CONSTRAINT [FK_Lab_Department];
 GO
 IF OBJECT_ID(N'[dbo].[FK_UserDepartments_Department]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[UserDepartments] DROP CONSTRAINT [FK_UserDepartments_Department];
@@ -43,29 +43,26 @@ GO
 -- Dropping existing tables
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[Activities]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Activities];
+IF OBJECT_ID(N'[dbo].[Activity]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Activity];
 GO
-IF OBJECT_ID(N'[dbo].[Computers]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Computers];
+IF OBJECT_ID(N'[dbo].[Computer]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Computer];
 GO
 IF OBJECT_ID(N'[dbo].[ComputerLabs]', 'U') IS NOT NULL
     DROP TABLE [dbo].[ComputerLabs];
 GO
-IF OBJECT_ID(N'[dbo].[Departments]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Departments];
+IF OBJECT_ID(N'[dbo].[Department]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Department];
 GO
-IF OBJECT_ID(N'[dbo].[Labs]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Labs];
+IF OBJECT_ID(N'[dbo].[Lab]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Lab];
 GO
-IF OBJECT_ID(N'[dbo].[Users]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Users];
+IF OBJECT_ID(N'[dbo].[User]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[User];
 GO
 IF OBJECT_ID(N'[dbo].[UserDepartments]', 'U') IS NOT NULL
     DROP TABLE [dbo].[UserDepartments];
-GO
-IF OBJECT_ID(N'[dbo].[database_firewall_rules]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[database_firewall_rules];
 GO
 
 -- --------------------------------------------------
@@ -86,10 +83,9 @@ GO
 -- Creating table 'Computers'
 CREATE TABLE [dbo].[Computers] (
     [ComputerId] int  NOT NULL,
-    [MAC] char(12)  NULL,
     [ComputerName] nvarchar(50)  NULL,
     [CurrentLab] int  NULL,
-    [LocationInLab] nvarchar(50)  NULL
+    [LocationInLab] nvarchar(50)  NOT NULL
 );
 GO
 
@@ -113,10 +109,11 @@ GO
 -- Creating table 'Labs'
 CREATE TABLE [dbo].[Labs] (
     [LabId] int  NOT NULL,
+    [TodaysClasses] nvarchar(150)  NULL,
     [Building] nvarchar(150)  NULL,
     [RoomNumber] char(15)  NULL,
     [DepartmentId] int  NOT NULL,
-    [TodaysClasses] nvarchar(150)  NULL
+    [ComputerSize] int  NOT NULL
 );
 GO
 
@@ -135,17 +132,6 @@ CREATE TABLE [dbo].[UserDepartments] (
     [UserId] int  NOT NULL,
     [DepartmentId] int  NOT NULL,
     [AccessType] tinyint  NOT NULL
-);
-GO
-
--- Creating table 'database_firewall_rules'
-CREATE TABLE [dbo].[database_firewall_rules] (
-    [id] int IDENTITY(1,1) NOT NULL,
-    [name] nvarchar(128)  NOT NULL,
-    [start_ip_address] varchar(45)  NOT NULL,
-    [end_ip_address] varchar(45)  NOT NULL,
-    [create_date] datetime  NOT NULL,
-    [modify_date] datetime  NOT NULL
 );
 GO
 
@@ -193,12 +179,6 @@ GO
 ALTER TABLE [dbo].[UserDepartments]
 ADD CONSTRAINT [PK_UserDepartments]
     PRIMARY KEY CLUSTERED ([UserId], [DepartmentId] ASC);
-GO
-
--- Creating primary key on [id], [name], [start_ip_address], [end_ip_address], [create_date], [modify_date] in table 'database_firewall_rules'
-ALTER TABLE [dbo].[database_firewall_rules]
-ADD CONSTRAINT [PK_database_firewall_rules]
-    PRIMARY KEY CLUSTERED ([id], [name], [start_ip_address], [end_ip_address], [create_date], [modify_date] ASC);
 GO
 
 -- --------------------------------------------------

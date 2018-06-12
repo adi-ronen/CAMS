@@ -243,9 +243,6 @@
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ComputerReport.cs" />
-    <Compile Include="Models\database_firewall_rules.cs">
-      <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Department.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
