@@ -65,3 +65,13 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+<script>
+    NewBuilding = function () {
+        building = $("#NewBuildingName").val();
+        $("#BuildingsList").append("<option value=\""+building+"\" selected>" + building + "</option>");
+        $("#newBuilding").attr('hidden', 'hidden');
+    }
+    ShowNewBuilding = function () {
+        $('#newBuilding').removeAttr('hidden');
+    }
+</script>

@@ -111,12 +111,3 @@ ChangeComputerSize = function (width) {
     });
     $("#ComputerSize").val(width);
 }
-
-NewUser = function () {
-    building = $("#newBuilding").val();
-    $("#BuildingsList").append("<option selected>" + email + "</option>");
-    $("#newBuilding").attr('hidden', 'hidden');
-}
-ShowNewBuilding = function () {
-    $('#newBuilding').removeAttr('hidden');
-}
