@@ -195,6 +195,41 @@ namespace CAMS.Controllers
             }
         }
 
+        public void CreateNewClassActivity(int labId, DateTime start, DateTime end)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                // Activity act = new Activity();
+                Lab lab = db.Labs.Find(labId);
+                foreach (var item in lab.Computers)
+                {
+                    Activity act = new Activity
+                    {
+                        Mode = ActivityType.Class,
+                        Login = start,
+                        Logout = end,
+                        Weekend = false,
+                        ComputerId = item.ComputerId
+                    };
+                    db.Activities.Add(act);
+                 //   item.Activities.Add(act);
+                 //   db.Entry(comp).State = EntityState.Modified; // is it the way to update? enother option:  db.Set<X>().AddOrUpdate(x);
+                    db.SaveChanges();
+                }
+                
+            }
+        }
+
+        public int FindLabID(string building,string room)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                var labs=db.Labs.Where(e => e.Building.Contains(building) && e.RoomNumber.Remove('-').Contains(room)).ToList();
+                return labs.First().LabId;
+            }
+        }
+
+
         private bool IsWeekend(DayOfWeek dayOfWeek)
         {
             return (dayOfWeek.Equals(DayOfWeek.Friday) || dayOfWeek.Equals(DayOfWeek.Saturday));

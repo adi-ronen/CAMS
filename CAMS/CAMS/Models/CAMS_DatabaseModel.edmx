@@ -59,7 +59,7 @@
     <Key>
       <PropertyRef Name="ComputerId" />
     </Key>
-    <Property Name="ComputerId" Type="int" Nullable="false" />
+    <Property Name="ComputerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="ComputerName" Type="nvarchar" Nullable="true" MaxLength="50" />
     <Property Name="CurrentLab" Type="int" Nullable="true" />
     <Property Name="LocationInLab" Type="nvarchar" Nullable="false" MaxLength="50" />
@@ -79,7 +79,7 @@
     <Key>
       <PropertyRef Name="DepartmentId" />
     </Key>
-    <Property Name="DepartmentId" Type="int" Nullable="false" />
+    <Property Name="DepartmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="DepartmentName" Type="nvarchar" Nullable="true" MaxLength="50" />
     <Property Name="Domain" Type="nvarchar" Nullable="true" MaxLength="50" />
   </EntityType>
@@ -87,7 +87,7 @@
     <Key>
       <PropertyRef Name="LabId" />
     </Key>
-    <Property Name="LabId" Type="int" Nullable="false" />
+    <Property Name="LabId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="TodaysClasses" Type="nvarchar" Nullable="true" MaxLength="150" />
     <Property Name="Building" Type="nvarchar" Nullable="true" MaxLength="150" />
     <Property Name="RoomNumber" Type="char" Nullable="true" MaxLength="15" />
@@ -98,7 +98,7 @@
     <Key>
       <PropertyRef Name="UserId" />
     </Key>
-    <Property Name="UserId" Type="int" Nullable="false" />
+    <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Email" Type="nvarchar" Nullable="true" MaxLength="50" />
     <Property Name="DisconnectedPeriod" Type="int" Nullable="true" />
     <Property Name="NotActivePeriod" Type="int" Nullable="true" />
@@ -273,7 +273,7 @@
           <Key>
             <PropertyRef Name="ComputerId" />
           </Key>
-          <Property Name="ComputerId" Type="Int32" Nullable="false" />
+          <Property Name="ComputerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ComputerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CurrentLab" Type="Int32" />
           <Property Name="LocationInLab" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
@@ -298,7 +298,7 @@
           <Key>
             <PropertyRef Name="DepartmentId" />
           </Key>
-          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="DepartmentName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Domain" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Labs" Relationship="CAMS_DatabaseModel.FK_Lab_Department" FromRole="Department" ToRole="Lab" />
@@ -308,7 +308,7 @@
           <Key>
             <PropertyRef Name="LabId" />
           </Key>
-          <Property Name="LabId" Type="Int32" Nullable="false" />
+          <Property Name="LabId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TodaysClasses" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Building" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="RoomNumber" Type="String" MaxLength="15" FixedLength="true" Unicode="false" />
@@ -322,7 +322,7 @@
           <Key>
             <PropertyRef Name="UserId" />
           </Key>
-          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="DisconnectedPeriod" Type="Int32" />
           <Property Name="NotActivePeriod" Type="Int32" />
@@ -335,7 +335,7 @@
             <PropertyRef Name="DepartmentId" />
           </Key>
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
           <Property Name="AccessType" Type="CAMS_DatabaseModel.AccessType" Nullable="false" />
           <NavigationProperty Name="Department" Relationship="CAMS_DatabaseModel.FK_UserDepartments_Department" FromRole="UserDepartment" ToRole="Department" />
           <NavigationProperty Name="User" Relationship="CAMS_DatabaseModel.FK_UserDepartments_User" FromRole="UserDepartment" ToRole="User" />

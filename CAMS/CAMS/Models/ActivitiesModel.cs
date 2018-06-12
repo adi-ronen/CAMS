@@ -170,7 +170,33 @@ namespace CAMS.Models
 
             foreach (string line in lines)
             {
-                
+                try
+                {
+                    //96-003[0]    11/06/2014[1] 17:00[2] 20:00[3]      
+                    char[] charSeparators = new char[] { ' ' };
+                    string[] location_time = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                    string building = location_time[0].Split('-')[0];
+                    string room = location_time[0].Split('-')[1];
+
+                    DateTime day = DateTime.Parse(location_time[1]);
+
+                    DateTime activityStart = day.AddHours(int.Parse(location_time[2].Split(':')[0]));
+                    DateTime activityEnd = day.AddHours(int.Parse(location_time[3].Split(':')[0]));
+                    try
+                    {
+                        _aController.FindLabID(building, room);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("couldn't find lab " + location_time[0]);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("couldn't pars row :" + line);
+                }
+
             }
 
 

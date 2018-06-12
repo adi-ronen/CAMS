@@ -33,7 +33,7 @@ namespace CAMS
             activitiesModel = new ActivitiesModel(new ActivitiesController());
             RegisterCacheEntry();
             CheckSchedual();
-            CheckComputersActivity();
+          //  CheckComputersActivity();
            // sendReportsToUsers();
         }
 
@@ -89,7 +89,7 @@ namespace CAMS
             //new Thread(() =>
             //{
             //    Thread.CurrentThread.IsBackground = true;
-            //    activitiesModel.GetClassesSchedule();
+                activitiesModel.GetClassesSchedule();
 
             //}).Start();
         }

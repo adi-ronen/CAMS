@@ -103,7 +103,7 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                lab.LabId = db.Labs.Max(e => e.LabId) + 1;
+               // lab.LabId = db.Labs.Max(e => e.LabId) + 1;
                 if (ModelState.IsValid)
                 {
                     db.Labs.Add(lab);
