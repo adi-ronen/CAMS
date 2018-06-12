@@ -167,6 +167,7 @@ namespace CAMS.Models
         {
             List<Lab> labList = GetLabs();
             string[] lines = System.IO.File.ReadAllLines(@"D:\olladi\free_class.txt");
+            Dictionary<string, string> classes = new Dictionary<string, string>();
 
             foreach (string line in lines)
             {
@@ -175,13 +176,16 @@ namespace CAMS.Models
                     //96-003[0]    11/06/2014[1] 17:00[2] 20:00[3]      
                     char[] charSeparators = new char[] { ' ' };
                     string[] location_time = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
-                    string building = location_time[0].Split('-')[0];
-                    string room = location_time[0].Split('-')[1];
+                    string lab = location_time[0];
+                    string building = lab.Split('-')[0];
+                    string room = lab.Split('-')[1];
+                    string date = location_time[1];
+                    string startTime = location_time[2];
+                    string endTime = location_time[3];
 
-                    DateTime day = DateTime.Parse(location_time[1]);
-
-                    DateTime activityStart = day.AddHours(int.Parse(location_time[2].Split(':')[0]));
-                    DateTime activityEnd = day.AddHours(int.Parse(location_time[3].Split(':')[0]));
+                    DateTime day = DateTime.Parse(date);
+                    DateTime activityStart = day.AddHours(int.Parse(startTime.Split(':')[0]));
+                    DateTime activityEnd = day.AddHours(int.Parse(endTime.Split(':')[0]));
                     try
                     {
                         _aController.FindLabID(building, room);
@@ -191,12 +195,35 @@ namespace CAMS.Models
                     {
                         Debug.WriteLine("couldn't find lab " + location_time[0]);
                     }
+                    if (classes.ContainsKey(lab))
+                    {
+                        classes[lab] += "," + startTime + "-" + endTime;
+                    }
+                    else
+                    {
+                        classes[lab] = startTime + "-" + endTime;
+                    }
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine("couldn't pars row :" + line);
                 }
 
+            }
+            _aController.ClearLabsSchedule();
+            //add daily class Schedule for each lab
+            foreach (var item in classes)
+            {
+                try
+                {
+                    string[] building_room = item.Key.Split('-');
+                    int labid=_aController.FindLabID(building_room[0], building_room[1]);
+                    _aController.UpdateLabSchedule(labid, item.Value);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("couldn't find lab " + item.Key);
+                }
             }
 
 

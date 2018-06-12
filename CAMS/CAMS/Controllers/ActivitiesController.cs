@@ -160,10 +160,11 @@ namespace CAMS.Controllers
             }
         }
 
-        internal void UpdateLabSchedule(Lab lab, string classes)
+        internal void UpdateLabSchedule(int labId, string classes)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
+                Lab lab = db.Labs.Find(labId);
                 lab.TodaysClasses = classes;
                 db.Entry(lab).State = EntityState.Modified;
                 db.SaveChanges();
@@ -201,6 +202,7 @@ namespace CAMS.Controllers
             {
                 // Activity act = new Activity();
                 Lab lab = db.Labs.Find(labId);
+                
                 foreach (var item in lab.Computers)
                 {
                     Activity act = new Activity
@@ -273,6 +275,18 @@ namespace CAMS.Controllers
             using (var db = new CAMS_DatabaseEntities())
             {
                 return db.Labs.ToList();
+            }
+        }
+
+        internal void ClearLabsSchedule()
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                foreach (var labId in db.Labs.Select(e=>e.LabId).ToList())
+                {
+                    UpdateLabSchedule(labId, "");
+                }
+                
             }
         }
     }
