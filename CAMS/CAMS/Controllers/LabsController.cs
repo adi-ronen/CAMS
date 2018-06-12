@@ -17,6 +17,7 @@ namespace CAMS.Controllers
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            
             ViewBag.CurrentSort = sortOrder;
             ViewBag.DepSortParm = String.IsNullOrEmpty(sortOrder) ? "dep_desc" : "";
             ViewBag.BuildingSortParm = sortOrder == "Building" ? "building_desc" : "Building";
@@ -103,9 +104,9 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-               // lab.LabId = db.Labs.Max(e => e.LabId) + 1;
                 if (ModelState.IsValid)
                 {
+                    lab.ComputerSize = 50;
                     db.Labs.Add(lab);
                     db.SaveChanges();
                     return RedirectToAction("Index");
@@ -148,15 +149,7 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                if (ModelState.IsValid)
-                {
-                    lab.RoomNumber = lab.RoomNumber.Trim();
-                    db.Entry(lab).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-                return View(lab);
+                return RedirectToAction("Index");
             }
         }
 
@@ -227,6 +220,35 @@ namespace CAMS.Controllers
                 db.SaveChanges();
             }
 
+        }
+        public new void RemoveComputerFromLab(int compId, int labId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Computer comp = db.Computers.Find(compId);
+
+                var cList = comp.ComputerLabs.Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).Select(e=>e.Entrance).ToList();
+                foreach (var item in cList)
+                {
+                    var oldCl = db.ComputerLabs.Find(labId, compId, item);
+                    ComputerLab cL = new ComputerLab
+                    {
+                        ComputerId = compId,
+                        LabId = labId,
+                        Entrance = DateTime.Now,
+                        Exit = item
+                    };
+                    //ComputerLab cL = db.ComputerLabs.Find(labId, compId, item);
+                    db.ComputerLabs.Remove(oldCl);
+                    db.SaveChanges();
+
+                }
+
+                // db.Entry(item).State = EntityState.Modified;
+                comp = db.Computers.Find(compId);
+                comp.CurrentLab = null;
+                db.SaveChanges();
+            }
         }
 
         public bool SaveLabEdit(List<int> comps, int labId, string roomNumber, int ComputerSize)

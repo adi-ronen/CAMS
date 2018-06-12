@@ -173,7 +173,7 @@ namespace CAMS.Models
             {
                 try
                 {
-                    //96-003[0]    11/06/2014[1] 17:00[2] 20:00[3]      
+                    //format: 96-003    11/06/2014 17:00 20:00    
                     char[] charSeparators = new char[] { ' ' };
                     string[] location_time = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
                     string lab = location_time[0];
@@ -188,13 +188,17 @@ namespace CAMS.Models
                     DateTime activityEnd = day.AddHours(int.Parse(endTime.Split(':')[0]));
                     try
                     {
-                        _aController.FindLabID(building, room);
+                        int labid=_aController.FindLabID(building, room);
+                        _aController.CreateNewClassActivity(labid, activityStart, activityEnd);
 
                     }
                     catch (Exception e)
                     {
                         Debug.WriteLine("couldn't find lab " + location_time[0]);
                     }
+
+
+
                     if (classes.ContainsKey(lab))
                     {
                         classes[lab] += "," + startTime + "-" + endTime;
@@ -210,6 +214,7 @@ namespace CAMS.Models
                 }
 
             }
+            //clear old schedule
             _aController.ClearLabsSchedule();
             //add daily class Schedule for each lab
             foreach (var item in classes)
@@ -225,21 +230,7 @@ namespace CAMS.Models
                     Debug.WriteLine("couldn't find lab " + item.Key);
                 }
             }
-
-
-            //open connection with classes pacment system databse
-            foreach (Lab lab in labList)
-            {
-                //get the classes that are plenned in this lab for today
-
-                //string classes = "";
-
-                //_aController.UpdateLabSchedule(lab, classes);
-
-
-
-
-            }
+            
         }
 
         private List<Lab> GetLabs()
