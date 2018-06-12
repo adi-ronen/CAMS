@@ -166,6 +166,14 @@ namespace CAMS.Models
         public void GetClassesSchedule()
         {
             List<Lab> labList = GetLabs();
+            string[] lines = System.IO.File.ReadAllLines(@"D:\olladi\free_class.txt");
+
+            foreach (string line in lines)
+            {
+                
+            }
+
+
             //open connection with classes pacment system databse
             foreach (Lab lab in labList)
             {
