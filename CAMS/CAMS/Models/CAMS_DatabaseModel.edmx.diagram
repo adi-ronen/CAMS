@@ -12,7 +12,6 @@
         <EntityTypeShape EntityType="CAMS_DatabaseModel.Lab" Width="1.5" PointX="2.625" PointY="5.875" />
         <EntityTypeShape EntityType="CAMS_DatabaseModel.User" Width="1.5" PointX="1" PointY="2.75" />
         <EntityTypeShape EntityType="CAMS_DatabaseModel.UserDepartment" Width="1.5" PointX="2.375" PointY="0.5" />
-        <EntityTypeShape EntityType="CAMS_DatabaseModel.database_firewall_rules" Width="1.5" PointX="8.75" PointY="0.5" />
         <AssociationConnector Association="CAMS_DatabaseModel.FK_Activity_ToComputer" />
         <AssociationConnector Association="CAMS_DatabaseModel.FK_Computer_Lab" />
         <AssociationConnector Association="CAMS_DatabaseModel.FK_ComputerLabs_Computer" />

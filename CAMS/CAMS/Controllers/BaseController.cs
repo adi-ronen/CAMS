@@ -160,7 +160,7 @@ namespace CAMS.Controllers
                 cL.Exit = DateTime.Now;
                 try
                 {
-                    db.SaveChanges(true);
+                    db.SaveChanges();
                 }
                 catch (Exception e)
                 {

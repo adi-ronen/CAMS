@@ -22,7 +22,6 @@ namespace CAMS.Models
         }
     
         public int ComputerId { get; set; }
-        public string MAC { get; set; }
         public string ComputerName { get; set; }
         public Nullable<int> CurrentLab { get; set; }
         public string LocationInLab { get; set; }
