@@ -16,39 +16,11 @@ namespace CAMS.Controllers
             model = new ReportModel(this);
         }
 
-        // GET: Reports
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        // GET: Reports/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: Reports/Create
         public ActionResult Create()
         {
             return View(model);
         }
-        public ActionResult CreateReport(DateTime startDate, DateTime? endDate, DateTime? startHour, DateTime endHour, List<int> labsIds, bool weekends, bool allDay)
-        {
-            if (allDay)
-            {
-                startHour = new DateTime();
-                endHour = new DateTime().AddDays(1).AddTicks(-1);
-            }
-            List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds,weekends);
-            return View("Details", new LabsReportViewModel(reports,this));
-        }
-
-        public ActionResult DisplayLabReportDetails(LabReport report)
-        {
-            return View("LabDetails", report);
-        }
-
 
         // POST: Reports/Create
         [HttpPost]
@@ -63,56 +35,34 @@ namespace CAMS.Controllers
                 List<int> labsIds =  Request.Form["LabsIds"].Split(',').Select(int.Parse).ToList();
                 bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]); 
                 bool includeAllDay = Convert.ToBoolean(Request.Form["includeAllDay"]);
-                //TBD - DEFRENT REPORTS
-                //bool AverageUsage = Convert.ToBoolean(Request.Form["AverageUsage"]);
-                //bool LabOccupancyReport_hours = Convert.ToBoolean(Request.Form["LabOccupancyReport_hours"]);
-                //bool LabOccupancyReport_days = Convert.ToBoolean(Request.Form[" LabOccupancyReport_days"]);
-                
+                string reportType = Request.Form["ReportType"];
+                string inclucdeweekends;
+                if (weekends){inclucdeweekends = " כולל סופי שבוע. ";}else{inclucdeweekends = " לא כולל סופי שבוע. ";}
+                string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToShortTimeString() + " עד- " + endHour.ToShortTimeString();
                 if (includeAllDay)
                 {
                     startDate = new DateTime();
                     endDate = new DateTime().AddTicks(-1);
                 }
-                List<LabReport> reports = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
-                return View("Details", new LabsReportViewModel(reports, this));
-
-                //List<LabOccupancyReport> reports = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
-                //return View("LabOccupancyReport", reports.First());
+                switch (reportType)
+                {
+                    case "AverageUsage":
+                        List<LabReport> LabReport = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
+                        return View("AverageUsage", new LabsReportViewModel(LabReport, this, title));
+                    case "LabOccupancyReport_hours":
+                        List<LabOccupancyReport> LabOccupancyReport_hours = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
+                        return View("LabOccupancyReport", LabOccupancyReport_hours);
+                    case "LabOccupancyReport_days":
+                        List<LabOccupancyReport> LabOccupancyReport_days = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
+                        return View("LabOccupancyReport", LabOccupancyReport_days);
+                }
+                return View(new ReportModel(this));
             }
             catch
             {
                 return View(new ReportModel(this));
             }
         }
-
-        // GET: Reports/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Reports/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Reports/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
         internal bool IsComputerOn(int computerId, DateTime time)
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -123,22 +73,5 @@ namespace CAMS.Controllers
                 return (acts.Count > 0);
             }
         }
-
-        // POST: Reports/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-        
     }
 }
