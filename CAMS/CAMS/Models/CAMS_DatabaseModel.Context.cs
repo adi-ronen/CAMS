@@ -11,6 +11,7 @@ namespace CAMS.Models
 {
     using System;
     using System.Data.Entity;
+    using System.Data.Entity.Core.Objects;
     using System.Data.Entity.Infrastructure;
     
     public partial class CAMS_DatabaseEntities : DbContext
@@ -33,5 +34,23 @@ namespace CAMS.Models
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserDepartment> UserDepartments { get; set; }
         public virtual DbSet<database_firewall_rules> database_firewall_rules { get; set; }
+        public int SaveChanges(bool refreshOnConcurrencyException, RefreshMode refreshMode = RefreshMode.ClientWins)
+        {
+            try
+            {
+                return SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                foreach (DbEntityEntry entry in ex.Entries)
+                {
+                    if (refreshMode == RefreshMode.ClientWins)
+                        entry.OriginalValues.SetValues(entry.GetDatabaseValues());
+                    else
+                        entry.Reload();
+                }
+                return SaveChanges();
+            }
+        }
     }
 }

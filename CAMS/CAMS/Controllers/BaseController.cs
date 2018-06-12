@@ -127,39 +127,46 @@ namespace CAMS.Controllers
             using (var db = new CAMS_DatabaseEntities())
             {
                 Computer comp = db.Computers.Find(compId);
-                //computer not in lab- nothing to update
-                if (comp.CurrentLab != labId)
-                    return;
-                var cList = comp.ComputerLabs.Select(e => e).Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).ToList();
-                foreach (var item in cList.ToList())
+
+                var cList = comp.ComputerLabs.Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).Select(e => e.Entrance).ToList();
+                foreach (var item in cList)
                 {
-                    item.Exit = DateTime.Now;
-                    //ComputerLab cL = new ComputerLab
-                    //{
-                    //    ComputerId = compId,
-                    //    LabId = labId,
-                    //    Entrance = item.Entrance,
-                    //    Exit = DateTime.Now
-                    //};
-                    //db.ComputerLabs.Remove(item);
-                    //db.ComputerLabs.Add(cL);
-                   // db.Entry(item).State = EntityState.Modified;
-                    
+                    CloseComputerLab(labId, compId, item);
+
                 }
+                
+                // db.Entry(item).State = EntityState.Modified;
+                comp = db.Computers.Find(compId);
                 comp.CurrentLab = null;
                 try
                 {
                     db.SaveChanges();
-                }catch(Exception e)
+                }
+                catch (Exception e)
+                {
+
+                }
+
+            }
+
+           
+        }
+
+        private void CloseComputerLab(int labId, int compId, DateTime item)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                ComputerLab cL = db.ComputerLabs.Find(labId, compId, item);
+                cL.Exit = DateTime.Now;
+                try
+                {
+                    db.SaveChanges(true);
+                }
+                catch (Exception e)
                 {
 
                 }
             }
-            
         }
-
-      
-
-
     }
 }

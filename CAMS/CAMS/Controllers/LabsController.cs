@@ -319,7 +319,7 @@ namespace CAMS.Controllers
                 foreach (var item in computers)
                 {
                     if (item.Key.Split(',').Length != 2)
-                        break;
+                        continue;
                     Computer computer;
                     //if computer have an id
                     if (int.TryParse(item.Key.Split(',')[1], out int n))
@@ -343,28 +343,7 @@ namespace CAMS.Controllers
             }
 
         }
-        // POST: Labs/Update
-        [HttpPost]
-        public ActionResult Update(string LabId, string RoomNumber, string ComputerSize)
-        {
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                Lab lab = db.Labs.Find(Convert.ToInt32(LabId));
-                lab.RoomNumber = RoomNumber;
-                lab.ComputerSize = Convert.ToInt32(ComputerSize);
-                var privLabComputers = lab.Computers.Select(e => e.ComputerId).ToList();
-                //remove all computers from lab
-                foreach (var item in privLabComputers)
-                {
-                    RemoveComputerFromLab(item, lab.LabId);
-                }
-                
-                db.Entry(lab).State = EntityState.Modified;
-                db.SaveChanges();
-                return View(new LabDetailsViewModel(lab, this));
-            }
-
-        }
+ 
 
 
     }
