@@ -31,7 +31,7 @@
     <div class="form-group">
         @Html.Label("בניין", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <select name="Building" class="form-control widthinput">
+            <select name="Building" id="BuildingsList" class="form-control widthinput">
                 @foreach (var building in ViewBag.Buildings)
                 {
                 <option value="@building">
@@ -39,6 +39,11 @@
                 </option>
                 }
             </select>
+        </div>
+        <div class="col-md-10 btn-link" style="cursor:default" onclick="ShowNewBuilding()">בניין חדש</div>
+        <div class="col-md-10 row" id="newBuilding" hidden>
+            <input type="text" class="form-control" id="NewBuildingName" />
+            <button class="checkbox-margin" type="button" onclick="NewBuilding()">הוסף</button>
         </div>
     </div>
     <div class="form-group">
@@ -60,3 +65,13 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+<script>
+    NewBuilding = function () {
+        building = $("#NewBuildingName").val();
+        $("#BuildingsList").append("<option value=\""+building+"\" selected>" + building + "</option>");
+        $("#newBuilding").attr('hidden', 'hidden');
+    }
+    ShowNewBuilding = function () {
+        $('#newBuilding').removeAttr('hidden');
+    }
+</script>
