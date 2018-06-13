@@ -100,7 +100,8 @@ namespace CAMS.Models
                 SearchBaseDomain[i] = "DC=" + SearchBaseDomain[i];
             }
             string SearchBase = string.Join(",",SearchBaseDomain);
-            return RunScript("Get-ADComputer -Filter * -SearchBase \"DC=campus,DC =ad,DC=bgu,DC=ac,DC=il\" | select-object -expandproperty name");
+
+            return RunScript("Get-ADComputer -Filter * -SearchBase \""+SearchBase+"\" "+ "| select-object -expandproperty name");
         }
 
         public ActivityType GetComputerState(Computer comp)
