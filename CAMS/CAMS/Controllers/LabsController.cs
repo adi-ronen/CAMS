@@ -326,7 +326,10 @@ namespace CAMS.Controllers
                     }
                     else
                     {
-                        computer = CreateComputer(item.Key.Split(',')[0], lab.Department.Domain);
+                        string compName = item.Key.Split(',')[0];
+                        computer= GetComputer(compName);
+                        if(computer==null)
+                            computer = CreateComputer(compName, lab.Department.Domain);
                     }
                     //save computer new location
                     computer.LocationInLab = item.Value;
@@ -341,8 +344,16 @@ namespace CAMS.Controllers
             }
 
         }
- 
 
-
+        private Computer GetComputer(string compName)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<Computer> comps = db.Computers.Where(e => e.ComputerName.Equals(compName)).ToList();
+                if (comps.Count > 0)
+                    return comps.First();
+                return null;
+            }
+        }
     }
 }
