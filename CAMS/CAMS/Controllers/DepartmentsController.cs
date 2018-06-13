@@ -135,7 +135,14 @@ namespace CAMS.Controllers
                     DeleteLab(lbid);
                 }
                 db.Departments.Remove(department);
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch
+                {
+                    return DeleteConfirmed(id);
+                }
                 return RedirectToAction("Index");
             }
         }
