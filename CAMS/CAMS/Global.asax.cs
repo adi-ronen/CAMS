@@ -12,9 +12,9 @@ using System.Web.Caching;
 using System.Diagnostics;
 using CAMS.Controllers;
 using CAMS.Models;
-using System.Threading;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace CAMS
 {
@@ -31,8 +31,9 @@ namespace CAMS
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             activitiesModel = new ActivitiesModel(new ActivitiesController());
-            RegisterCacheEntry();
-            CheckSchedual();
+            activity_Timer();
+            //RegisterCacheEntry();
+           // CheckSchedual();
           //  CheckComputersActivity();
            // sendReportsToUsers();
         }
@@ -40,49 +41,96 @@ namespace CAMS
         private const string collectionCacheItemKey = "collectionCache";
         private const string scheduleCacheItemKey = "classScheduleCache";
         private const string timeOfCollectingSchedule = "00:00";
+        static Timer act_timer,sch_timer;
 
-        private void RegisterCacheEntry()
+        private void Activity_Timer()
         {
-            if (null == HttpContext.Current.Cache[collectionCacheItemKey])
-            {
+            double tickTime = (double)(new TimeSpan(0, 0, 20)).TotalMilliseconds;
+            act_timer = new Timer(tickTime);
+            act_timer.Elapsed += new ElapsedEventHandler(ActivityTimer_Elapsed);
+            act_timer.Start();
 
-                HttpContext.Current.Cache.Add(collectionCacheItemKey, "collection", null,
-                    DateTime.MaxValue, TimeSpan.FromMinutes(3),
-                    CacheItemPriority.Normal,
-                    new CacheItemRemovedCallback(CacheItemRemovedCallback));
-            }
-            if (null == HttpContext.Current.Cache[scheduleCacheItemKey])
-            {
-
-                DateTime onceADay = DateTime.ParseExact(timeOfCollectingSchedule, "H:mm", null, System.Globalization.DateTimeStyles.None);
-                onceADay=onceADay.AddDays(1);
-
-                HttpContext.Current.Cache.Add(scheduleCacheItemKey, "schedule", null,
-                    onceADay, Cache.NoSlidingExpiration,
-                    CacheItemPriority.Normal,
-                    new CacheItemRemovedCallback(CacheItemRemovedCallback));
-            }
         }
+
+        private void ActivityTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Console.WriteLine("### activity Timer Stopped ### \n");
+            act_timer.Stop();
+            Console.WriteLine("### activity Task Started ### \n\n");
+            CheckComputersActivity();
+            Console.WriteLine("### activity Task Finished ### \n\n");
+            Activity_Timer();
+        }
+        private void Schedule_Timer()
+        {
+            Console.WriteLine("### schedule Timer Started ###");
+
+            DateTime nowTime = DateTime.Now;
+            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 4, 0, 0, 0); //Specify your scheduled time HH,MM,SS [8am and 42 minutes]
+            if (nowTime > scheduledTime)
+            {
+                scheduledTime = scheduledTime.AddDays(1);
+            }
+
+            double tickTime = (double)(scheduledTime - DateTime.Now).TotalMilliseconds;
+            sch_timer = new Timer(tickTime);
+            sch_timer.Elapsed += new ElapsedEventHandler(ScheduleTimer_Elapsed);
+            sch_timer.Start();
+
+        }
+
+        private void ScheduleTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Console.WriteLine("### Schedule Timer Stopped ### \n");
+            sch_timer.Stop();
+            Console.WriteLine("### Scheduled Task Started ### \n\n");
+            CheckComputersActivity();
+            Console.WriteLine("### Scheduled Task Finished ### \n\n");
+            Schedule_Timer();
+        }
+
+        //private void RegisterCacheEntry()
+        //{
+        //    if (null == HttpContext.Current.Cache[collectionCacheItemKey])
+        //    {
+
+        //        HttpContext.Current.Cache.Add(collectionCacheItemKey, "collection", null,
+        //            DateTime.MaxValue, TimeSpan.FromMinutes(3),
+        //            CacheItemPriority.Normal,
+        //            new CacheItemRemovedCallback(CacheItemRemovedCallback));
+        //    }
+        //    if (null == HttpContext.Current.Cache[scheduleCacheItemKey])
+        //    {
+
+        //        DateTime onceADay = DateTime.ParseExact(timeOfCollectingSchedule, "H:mm", null, System.Globalization.DateTimeStyles.None);
+        //        onceADay=onceADay.AddDays(1);
+
+        //        HttpContext.Current.Cache.Add(scheduleCacheItemKey, "schedule", null,
+        //            onceADay, Cache.NoSlidingExpiration,
+        //            CacheItemPriority.Normal,
+        //            new CacheItemRemovedCallback(CacheItemRemovedCallback));
+        //    }
+        //}
         // TBD- change url
         private const string DummyPageUrl = "http://localhost:21657/TestCacheTimeout/dummy.aspx";
         private const string Address = "partnermatcheryad2@gmail.com";
 
-        public void CacheItemRemovedCallback(string key,
-            object value, CacheItemRemovedReason reason)
-        {
-            Debug.WriteLine("Cache item " + key + " callback: " + DateTime.Now.ToString());
-            HitPage(DummyPageUrl);
-            switch (key)
-            {
-                case collectionCacheItemKey:
-                    CheckComputersActivity();
-                    break;
-                case scheduleCacheItemKey:
-                    CheckSchedual();
-                    SendReportsToUsers();
-                    break;
-            }
-        }
+        //public void CacheItemRemovedCallback(string key,
+        //    object value, CacheItemRemovedReason reason)
+        //{
+        //    Debug.WriteLine("Cache item " + key + " callback: " + DateTime.Now.ToString());
+        //    HitPage(DummyPageUrl);
+        //    switch (key)
+        //    {
+        //        case collectionCacheItemKey:
+        //            CheckComputersActivity();
+        //            break;
+        //        case scheduleCacheItemKey:
+        //            CheckSchedual();
+        //            SendReportsToUsers();
+        //            break;
+        //    }
+        //}
 
         private void CheckSchedual()
         {
@@ -102,13 +150,13 @@ namespace CAMS
                 try
                 {
                     Debug.WriteLine("start of collecting user acttivities");
-                    Thread.CurrentThread.IsBackground = true;
+                    System.Threading.Thread.CurrentThread.IsBackground = true;
                     activitiesModel.GetComputersActivity();
                     Debug.WriteLine("end of collecting user acttivities");
                 }catch(Exception ex)
                 {
                     Debug.WriteLine("CheckComputersActivity error: " + ex.Message);
-                    HitPage(DummyPageUrl);
+                    //HitPage(DummyPageUrl);
                 }
 
             });
@@ -209,18 +257,18 @@ namespace CAMS
             WebClient client = new WebClient();
             client.DownloadData(url);
         }
-        protected void Application_BeginRequest(Object sender, EventArgs e)
-        {
-            // If the dummy page is hit, then it means we want to add another item
+        //protected void Application_BeginRequest(Object sender, EventArgs e)
+        //{
+        //    // If the dummy page is hit, then it means we want to add another item
 
-            if (HttpContext.Current.Request.Url.ToString() == DummyPageUrl )
-            {
-                // Add the item in cache and when succesful, do the work.
+        //    if (HttpContext.Current.Request.Url.ToString() == DummyPageUrl )
+        //    {
+        //        // Add the item in cache and when succesful, do the work.
 
-                RegisterCacheEntry();
-                Debug.WriteLine("beginRequest " + DateTime.Now.ToString());
-            }
-        }
+        //        RegisterCacheEntry();
+        //        Debug.WriteLine("beginRequest " + DateTime.Now.ToString());
+        //    }
+        //}
 
 
         void Application_AuthenticateRequest(Object sender, EventArgs e)
