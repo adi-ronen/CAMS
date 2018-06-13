@@ -31,11 +31,9 @@ namespace CAMS
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             activitiesModel = new ActivitiesModel(new ActivitiesController());
-            activity_Timer();
-            //RegisterCacheEntry();
-           // CheckSchedual();
-          //  CheckComputersActivity();
-           // sendReportsToUsers();
+            Activity_Timer();
+            Schedule_Timer();
+            // sendReportsToUsers();
         }
 
         private const string collectionCacheItemKey = "collectionCache";
@@ -45,7 +43,7 @@ namespace CAMS
 
         private void Activity_Timer()
         {
-            double tickTime = (double)(new TimeSpan(0, 0, 20)).TotalMilliseconds;
+            double tickTime = (double)(new TimeSpan(0, 3, 0)).TotalMilliseconds;
             act_timer = new Timer(tickTime);
             act_timer.Elapsed += new ElapsedEventHandler(ActivityTimer_Elapsed);
             act_timer.Start();
@@ -89,62 +87,34 @@ namespace CAMS
             Schedule_Timer();
         }
 
-        //private void RegisterCacheEntry()
-        //{
-        //    if (null == HttpContext.Current.Cache[collectionCacheItemKey])
-        //    {
-
-        //        HttpContext.Current.Cache.Add(collectionCacheItemKey, "collection", null,
-        //            DateTime.MaxValue, TimeSpan.FromMinutes(3),
-        //            CacheItemPriority.Normal,
-        //            new CacheItemRemovedCallback(CacheItemRemovedCallback));
-        //    }
-        //    if (null == HttpContext.Current.Cache[scheduleCacheItemKey])
-        //    {
-
-        //        DateTime onceADay = DateTime.ParseExact(timeOfCollectingSchedule, "H:mm", null, System.Globalization.DateTimeStyles.None);
-        //        onceADay=onceADay.AddDays(1);
-
-        //        HttpContext.Current.Cache.Add(scheduleCacheItemKey, "schedule", null,
-        //            onceADay, Cache.NoSlidingExpiration,
-        //            CacheItemPriority.Normal,
-        //            new CacheItemRemovedCallback(CacheItemRemovedCallback));
-        //    }
-        //}
-        // TBD- change url
-        private const string DummyPageUrl = "http://localhost:21657/TestCacheTimeout/dummy.aspx";
+        //TBD- valid email address
         private const string Address = "partnermatcheryad2@gmail.com";
 
-        //public void CacheItemRemovedCallback(string key,
-        //    object value, CacheItemRemovedReason reason)
-        //{
-        //    Debug.WriteLine("Cache item " + key + " callback: " + DateTime.Now.ToString());
-        //    HitPage(DummyPageUrl);
-        //    switch (key)
-        //    {
-        //        case collectionCacheItemKey:
-        //            CheckComputersActivity();
-        //            break;
-        //        case scheduleCacheItemKey:
-        //            CheckSchedual();
-        //            SendReportsToUsers();
-        //            break;
-        //    }
-        //}
+
 
         private void CheckSchedual()
         {
-            //new Thread(() =>
-            //{
-            //    Thread.CurrentThread.IsBackground = true;
-                //activitiesModel.GetClassesSchedule();
+            Task t = Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    Debug.WriteLine("start of updating lab schedual");
+                    System.Threading.Thread.CurrentThread.IsBackground = true;
+                    activitiesModel.GetClassesSchedule();
+                    Debug.WriteLine("end of updating lab schedual");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("GetClassesSchedule error: " + ex.Message);
+                    //HitPage(DummyPageUrl);
+                }
 
-            //}).Start();
+            });
+            Task.WaitAll(new Task[] { t });
         }
 
         private void CheckComputersActivity()
         {
-            //activitiesModel.GetComputersActivity();
             Task t = Task.Factory.StartNew(() =>
             {
                 try
@@ -156,19 +126,11 @@ namespace CAMS
                 }catch(Exception ex)
                 {
                     Debug.WriteLine("CheckComputersActivity error: " + ex.Message);
-                    //HitPage(DummyPageUrl);
                 }
 
             });
             Task.WaitAll(new Task[] { t});
            
-           // t.Start();
-            //new Thread(() =>
-            //{
-            //    Thread.CurrentThread.IsBackground = true;
-            //    activitiesModel.GetComputersActivity();
-
-            //}).Start();
         }
 
         private void SendReportsToUsers()
@@ -251,25 +213,7 @@ namespace CAMS
 
           
         }
-
-        private void HitPage(string url)
-        {
-            WebClient client = new WebClient();
-            client.DownloadData(url);
-        }
-        //protected void Application_BeginRequest(Object sender, EventArgs e)
-        //{
-        //    // If the dummy page is hit, then it means we want to add another item
-
-        //    if (HttpContext.Current.Request.Url.ToString() == DummyPageUrl )
-        //    {
-        //        // Add the item in cache and when succesful, do the work.
-
-        //        RegisterCacheEntry();
-        //        Debug.WriteLine("beginRequest " + DateTime.Now.ToString());
-        //    }
-        //}
-
+        
 
         void Application_AuthenticateRequest(Object sender, EventArgs e)
         {
