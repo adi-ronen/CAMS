@@ -95,6 +95,14 @@ namespace CAMS.Controllers
             }
         }
 
+        internal List<string> ComputersInLabs()
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+               return db.Computers.Where(computer => !computer.CurrentLab.Equals(null)).Select(computer => computer.ComputerName).ToList();
+            }
+        }
+
         // POST: Labs/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.

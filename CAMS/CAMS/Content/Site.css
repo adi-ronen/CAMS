@@ -242,3 +242,7 @@ table {
 #CompSize {
     margin-right: auto;
 }
+
+figcaption {
+    flex: none;
+}
