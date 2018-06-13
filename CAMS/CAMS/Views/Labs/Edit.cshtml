@@ -21,12 +21,10 @@
                 <div id="computers_list">
                     @foreach (var item in Model.ComputersList)
                     {
-                        var comp_name = item.Split(',')[0];
-                        var comp_id = item.Split(',')[1];
-                        <figure draggable="true" ondragstart="drag(event)" class="flex-nowrap draggable-computer-list row computers-list" id="@comp_name">
+                        <figure draggable="true" ondragstart="drag(event)" class="flex-nowrap draggable-computer-list row computers-list" id="@item">
                             <img draggable="false" src="~/Images/clear.png" height="30">
-                            <figcaption class="text-left grab">@comp_name</figcaption>
-                            <a hidden>@comp_id</a>
+                            <figcaption class="text-left grab">@item</figcaption>
+                            <a hidden></a>
                         </figure>
                     }
                 </div>

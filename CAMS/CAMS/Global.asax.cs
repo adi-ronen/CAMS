@@ -89,7 +89,7 @@ namespace CAMS
             //new Thread(() =>
             //{
             //    Thread.CurrentThread.IsBackground = true;
-                activitiesModel.GetClassesSchedule();
+                //activitiesModel.GetClassesSchedule();
 
             //}).Start();
         }
