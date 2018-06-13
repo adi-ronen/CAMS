@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace CAMS
 {
@@ -8,6 +7,7 @@ namespace CAMS
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            BundleTable.EnableOptimizations = false;
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -30,7 +30,6 @@ namespace CAMS
                       "~/Content/bootstrap.css",
                       "~/Content/themes/base/all.css",
                       "~/Content/timepicker.css",
-                      "~/Content/jquery.contextMenu.min.css",
                       "~/Content/Site.css"));
         }
     }

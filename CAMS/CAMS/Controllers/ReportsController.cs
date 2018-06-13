@@ -49,10 +49,10 @@ namespace CAMS.Controllers
                     case "AverageUsage":
                         List<LabReport> LabReport = model.CreateLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
                         return View("AverageUsage", new LabsReportViewModel(LabReport, this, title));
-                    case "LabOccupancyReport_hours":
+                    case "LabOccupancyReport-hours":
                         List<LabOccupancyReport> LabOccupancyReport_hours = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
                         return View("LabOccupancyReport", LabOccupancyReport_hours);
-                    case "LabOccupancyReport_days":
+                    case "LabOccupancyReport-days":
                         List<LabOccupancyReport> LabOccupancyReport_days = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
                         return View("LabOccupancyReport", LabOccupancyReport_days);
                 }
