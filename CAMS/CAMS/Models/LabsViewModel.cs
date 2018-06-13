@@ -106,8 +106,7 @@ namespace CAMS.Models
                 SearchBaseDomain[i] = "DC=" + SearchBaseDomain[i];
             }
             string SearchBase = string.Join(",",SearchBaseDomain);
-            RunScript("Get-ADComputer -Filter * -SearchBase \"DC=campus,DC =ad,DC=bgu,DC=ac,DC=il\" | select-object -expandproperty name");
-            return new List<string>();
+            return RunScript("Get-ADComputer -Filter * -SearchBase \"DC=campus,DC =ad,DC=bgu,DC=ac,DC=il\" | select-object -expandproperty name");
         }
 
         public ActivityType GetComputerState(Computer comp)
@@ -140,7 +139,7 @@ namespace CAMS.Models
 
             return false;
         }
-        private string RunScript(string scriptText)
+        private List<string> RunScript(string scriptText)
         {
             // create Powershell runspace 
             Runspace runspace = RunspaceFactory.CreateRunspace();
@@ -163,16 +162,13 @@ namespace CAMS.Models
             // close the runspace 
             runspace.Close();
 
-            // convert the script result into a single string 
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (PSObject obj in results)
-            {
-                stringBuilder.AppendLine(obj.ToString());
-            }
-
+            //convert to list
+            string[] stringSeparators = new string[] { "\r\n" };
+            string[] computerNames = results[0].ToString().Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+            List<string> ComputerList = computerNames.ToList();
             // return the results of the script that has 
             // now been converted to text 
-            return stringBuilder.ToString();
+            return ComputerList;
         }
 
     }
