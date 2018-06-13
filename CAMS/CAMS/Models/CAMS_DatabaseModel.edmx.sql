@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 06/12/2018 14:12:06
+-- Date Created: 06/13/2018 16:38:52
 -- Generated from EDMX file: C:\Users\nasirov\Source\Repos\CAMS\CAMS\CAMS\Models\CAMS_DatabaseModel.edmx
 -- --------------------------------------------------
 
@@ -236,7 +236,7 @@ ADD CONSTRAINT [FK_ComputerLabs_Lab]
     FOREIGN KEY ([LabId])
     REFERENCES [dbo].[Labs]
         ([LabId])
-    ON DELETE NO ACTION ON UPDATE NO ACTION;
+    ON DELETE CASCADE ON UPDATE NO ACTION;
 GO
 
 -- Creating foreign key on [DepartmentId] in table 'Labs'
@@ -260,7 +260,7 @@ ADD CONSTRAINT [FK_UserDepartments_Department]
     FOREIGN KEY ([DepartmentId])
     REFERENCES [dbo].[Departments]
         ([DepartmentId])
-    ON DELETE NO ACTION ON UPDATE NO ACTION;
+    ON DELETE CASCADE ON UPDATE NO ACTION;
 GO
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_UserDepartments_Department'

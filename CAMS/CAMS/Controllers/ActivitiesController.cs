@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using CAMS.Models;
 using static CAMS.Constant;
+using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace CAMS.Controllers
 {
@@ -280,25 +282,8 @@ namespace CAMS.Controllers
        
         public void CloseActivity(int compId)
         {
-            using (var db = new CAMS_DatabaseEntities())
-            {
-               Activity act = db.Activities.Where(e => e.ComputerId.Equals(compId) && !e.Logout.HasValue).ToList().First();
-                db.Activities.Remove(act);
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch
-                {
-
-                }
-                //foreach (var item in act)
-                //{
-                //    item.Logout = DateTime.Now;
-                //    db.SaveChanges();
-                //}
-                
-            }
+            
+            ExecudeCommand("UPDATE Activities SET Logout = '" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "' WHERE ComputerId = '" + compId + "' AND Logout is null; ");
 
         }
 

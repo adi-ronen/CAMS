@@ -1,8 +1,10 @@
 ﻿using CAMS.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -116,9 +118,9 @@ namespace CAMS.Controllers
             using (var db = new CAMS_DatabaseEntities())
             {
                 lab = db.Labs.Find(id);
-                while (lab.Computers.Count > 0)
+                foreach (var compId in lab.Computers.Select(e=>e.ComputerId).ToList())
                 {
-                    RemoveComputerFromLab(lab.Computers.First().ComputerId, lab.LabId);
+                    RemoveComputerFromLab(compId, lab.LabId);
                 }
                 db.Labs.Remove(lab);
                 db.SaveChanges();
@@ -130,46 +132,32 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
+                ExecudeCommand("UPDATE ComputerLabs SET [Exit] = '" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "' WHERE ComputerId = '" + compId + "' AND [Exit] is null; ");
+
                 Computer comp = db.Computers.Find(compId);
-
-                var cList = comp.ComputerLabs.Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).Select(e => e.Entrance).ToList();
-                foreach (var item in cList)
-                {
-                    CloseComputerLab(labId, compId, item);
-
-                }
-                
-                // db.Entry(item).State = EntityState.Modified;
                 comp = db.Computers.Find(compId);
                 comp.CurrentLab = null;
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (Exception e)
-                {
-
-                }
-
+                db.SaveChanges();
             }
-
-           
         }
+        
 
-        private void CloseComputerLab(int labId, int compId, DateTime item)
+        protected void ExecudeCommand(string query)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            string connectionString = "data source=132.72.223.244;initial catalog=CAMS_Database;user id=CAMS_Admin;password=9O8qAft1;MultipleActiveResultSets=True;";
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                ComputerLab cL = db.ComputerLabs.Find(labId, compId, item);
-                cL.Exit = DateTime.Now;
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch (Exception e)
-                {
+                connection.Open();
 
-                }
+                SqlCommand cmd = new SqlCommand();
+                SqlDataReader reader;
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Connection = connection;
+
+
+                reader = cmd.ExecuteReader();
             }
         }
     }

@@ -171,6 +171,7 @@ namespace CAMS.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
                 Lab lab = db.Labs.Find(id);
+                db.Entry(lab).Reference(e => e.Department).Load();
                 if (lab == null)
                 {
                     return HttpNotFound();
@@ -184,12 +185,8 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                DeleteLab(id);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            DeleteLab(id);
+            return RedirectToAction("Index");
         }
 
         
@@ -229,36 +226,7 @@ namespace CAMS.Controllers
             }
 
         }
-        public new void RemoveComputerFromLab(int compId, int labId)
-        {
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                Computer comp = db.Computers.Find(compId);
-
-                var cList = comp.ComputerLabs.Where(e => e.Exit.Equals(null)).Where(e => e.LabId.Equals(labId)).Select(e=>e.Entrance).ToList();
-                foreach (var item in cList)
-                {
-                    var oldCl = db.ComputerLabs.Find(labId, compId, item);
-                    ComputerLab cL = new ComputerLab
-                    {
-                        ComputerId = compId,
-                        LabId = labId,
-                        Entrance = DateTime.Now,
-                        Exit = item
-                    };
-                    //ComputerLab cL = db.ComputerLabs.Find(labId, compId, item);
-                    db.ComputerLabs.Remove(oldCl);
-                    db.SaveChanges();
-
-                }
-
-                // db.Entry(item).State = EntityState.Modified;
-                comp = db.Computers.Find(compId);
-                comp.CurrentLab = null;
-                db.SaveChanges();
-            }
-        }
-
+       
         public bool SaveLabEdit(List<int> comps, int labId, string roomNumber, int ComputerSize)
         {
 
