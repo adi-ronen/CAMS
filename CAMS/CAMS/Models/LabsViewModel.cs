@@ -82,14 +82,20 @@ namespace CAMS.Models
     {
 
         public Lab Lab;
+        private string domain;
         private LabsController _lController;
-        public List<string> ComputersList;
+        public List<string> ComputersList
+        {
+            get { return GetComputerList(domain); }
+
+        }
+        
 
         public LabDetailsViewModel(Lab lab, LabsController labsController)
         {
             this.Lab = lab;
             this._lController = labsController;
-            ComputersList = GetComputerList(lab.Department.Domain);
+            this.domain = Lab.Department.Domain;
         }
 
         private List<string> GetComputerList(string domain)

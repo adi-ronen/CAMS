@@ -43,7 +43,7 @@ namespace CAMS
 
         private void Activity_Timer()
         {
-            double tickTime = (double)(new TimeSpan(0, 3, 0)).TotalMilliseconds;
+            double tickTime = (double)(new TimeSpan(0, 0, 30)).TotalMilliseconds;
             act_timer = new Timer(tickTime);
             act_timer.Elapsed += new ElapsedEventHandler(ActivityTimer_Elapsed);
             act_timer.Start();
@@ -106,7 +106,6 @@ namespace CAMS
                 catch (Exception ex)
                 {
                     Debug.WriteLine("GetClassesSchedule error: " + ex.Message);
-                    //HitPage(DummyPageUrl);
                 }
 
             });
