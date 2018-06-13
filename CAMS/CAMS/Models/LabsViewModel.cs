@@ -46,8 +46,8 @@ namespace CAMS.Models
 
         private void IsComputerAvilable(int id, List<int> freeComp)
         {
-            Activity act = _lController.CurrentActivityDetails(id);
-            if (act == null || act.Mode==ActivityType.Off)
+            ActivityType act = _lController.CurrentActivityDetails(id);
+            if (act == ActivityType.On || act==ActivityType.Off)
             {
                 lock (freeComp)
                 {
@@ -111,11 +111,8 @@ namespace CAMS.Models
 
         public ActivityType GetComputerState(Computer comp)
         {
-            Activity currentAct = _lController.CurrentActivityDetails(comp.ComputerId);
-            if (currentAct == null)
-                return ActivityType.On;
-            else
-                return currentAct.Mode;
+            return _lController.CurrentActivityDetails(comp.ComputerId);
+            
 
         }
 

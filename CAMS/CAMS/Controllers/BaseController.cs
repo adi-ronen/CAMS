@@ -53,7 +53,7 @@ namespace CAMS.Controllers
         }
      
         
-        public Activity CurrentActivityDetails(int id)
+        public ActivityType CurrentActivityDetails(int id)
         {
             Computer comp;
             using (var db = new CAMS_DatabaseEntities())
@@ -63,7 +63,7 @@ namespace CAMS.Controllers
 
                 if (comp == null)
                 {
-                    return null;
+                    return ActivityType.On;
                 }
                 List<Activity> activities;
                 //  lock (db)
@@ -71,8 +71,8 @@ namespace CAMS.Controllers
                     activities = comp.Activities.Select(e => e).Where(e => e.Logout.Equals(null)).ToList();
                 }
                 if (activities.Count() == 0)
-                    return null;
-                return activities.Last();
+                    return ActivityType.On;
+                return activities.Last().Mode;
 
                 // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
             }

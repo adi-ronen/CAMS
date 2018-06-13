@@ -96,6 +96,14 @@ namespace CAMS.Controllers
             }
         }
 
+        internal List<int> GetLabIds()
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                return db.Labs.Select(e => e.LabId).ToList();
+            }
+        }
+
         internal List<Computer> GetLabComputers(int labId)
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -149,6 +157,19 @@ namespace CAMS.Controllers
                     return HttpNotFound();
                 }
                 return View(activity);
+            }
+        }
+
+        internal string GetCurrentComputerUser(int computerId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<Activity> act = db.Activities.Where(e => e.ComputerId.Equals(computerId) && !e.Logout.HasValue).ToList();
+                if (act.Count > 0)
+                    return act.First().UserName;
+                else
+                    return "";
+
             }
         }
 
@@ -257,34 +278,54 @@ namespace CAMS.Controllers
         }
 
        
-        public void CloseActivity(Activity act)
+        public void CloseActivity(int compId)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                act.Logout = DateTime.Now;
-                db.Entry(act).State = EntityState.Modified; //same as above
-                db.SaveChanges();
+               Activity act = db.Activities.Where(e => e.ComputerId.Equals(compId) && !e.Logout.HasValue).ToList().First();
+                db.Activities.Remove(act);
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch
+                {
+
+                }
+                //foreach (var item in act)
+                //{
+                //    item.Logout = DateTime.Now;
+                //    db.SaveChanges();
+                //}
+                
             }
 
         }
 
-        public Activity SplitActivity(Activity act)
+        public void SplitActivity(int compId)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                act.Logout = DateTime.Now.Date.AddTicks(-1);
-                Activity newAct = new Activity
+                List<Activity> acts = db.Activities.Where(e => e.ComputerId.Equals(compId) && !e.Logout.HasValue).ToList();
+                foreach (var act in acts)
                 {
-                    Login = DateTime.Now.Date
-                };
-                newAct.Weekend = IsWeekend(newAct.Login.DayOfWeek);
-                newAct.ComputerId = act.ComputerId;
-                newAct.Mode = act.Mode;
-                if (act.UserName != null)
-                    act.UserName = act.UserName;
-                db.Activities.Add(newAct);
-                db.SaveChanges();
-                return newAct;
+                    if(!act.Login.Date.Equals(DateTime.Now.Date))
+                    {
+                        act.Logout = DateTime.Now.Date.AddTicks(-1);
+                        Activity newAct = new Activity
+                        {
+                            Login = DateTime.Now.Date
+                        };
+                        newAct.Weekend = IsWeekend(newAct.Login.DayOfWeek);
+                        newAct.ComputerId = act.ComputerId;
+                        newAct.Mode = act.Mode;
+                        if (act.UserName != null)
+                            act.UserName = act.UserName;
+                        db.Activities.Add(newAct);
+                        db.SaveChanges();
+                    }
+                }
+               
             }
         }
 
