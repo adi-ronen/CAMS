@@ -51,7 +51,7 @@ namespace CAMS.Models
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine("faild on lab:" + lab.LabId + " in dep:" + lab.Department.DepartmentName + ". error is:" + ex.Message);
+                                Debug.WriteLine("faild on lab:" + lab.LabId + ". error is:" + ex.Message);
                             }
                         });
                         tasks.Add(t);
