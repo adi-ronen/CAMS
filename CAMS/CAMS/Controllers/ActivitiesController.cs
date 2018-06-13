@@ -96,6 +96,14 @@ namespace CAMS.Controllers
             }
         }
 
+        internal List<Computer> GetLabComputers(int labId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Lab lab = db.Labs.Find(labId);
+                return lab.Computers.ToList();
+            }
+        }
         // POST: Activities/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
@@ -115,6 +123,16 @@ namespace CAMS.Controllers
                 return View(activity);
             }
         }
+
+        internal string GetCompDomain(int computerId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Computer comp = db.Computers.Find(computerId);
+                return comp.Lab.Department.Domain;
+            }
+        }
+        
 
         // GET: Activities/Delete/5
         public ActionResult Delete(DateTime id)
