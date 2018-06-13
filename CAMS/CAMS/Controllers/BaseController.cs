@@ -44,7 +44,11 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                return db.Labs.Find(id);
+                Lab lab = db.Labs.Find(id);
+                db.Entry(lab).Collection(e => e.ComputerLabs).Load();
+                db.Entry(lab).Collection(e => e.Computers).Load();
+                db.Entry(lab).Reference(e => e.Department).Load();
+                return lab;
             }
         }
      

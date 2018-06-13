@@ -31,30 +31,27 @@ namespace CAMS.Models
         public void GetComputersActivity()
         {try
             {
-                List<int> labs = GetLabsIds();
+                List<Lab> labs = GetLabs();
                 //  List<Lab> labs = new List<Lab>();
                 //  labs.Add(_aController.GetLab(53));
                 List<Task> tasks = new List<Task>();
                 try
                 {
-                    foreach (int labId in labs)
+                    foreach (Lab lab in labs)
                     {
                         Task t = Task.Factory.StartNew(() =>
                         {
                             try
                             {
-                               // Debug.WriteLine("start of data collection for lab in: " + lab.Building + ", " + lab.RoomNumber);
-                                Debug.WriteLine("start of data collection for lab : " + labId);
+                                Debug.WriteLine("start of data collection for lab in: " + lab.Building + ", " + lab.RoomNumber);
 
                                 Thread.CurrentThread.IsBackground = true;
-                                GetComputerActivity(labId);
-                                //Debug.WriteLine("end of data collection for lab in: " + lab.Building + ", " + lab.RoomNumber);
-                                Debug.WriteLine("end of data collection for lab : " +labId);
-
+                                GetComputerActivity(lab.Computers);
+                                Debug.WriteLine("end of data collection for lab in: " + lab.Building + ", " + lab.RoomNumber);
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine("faild on lab:" + labId  + ". error is:" + ex.Message);
+                                Debug.WriteLine("faild on lab:" + lab.LabId + " in dep:" + lab.Department.DepartmentName + ". error is:" + ex.Message);
                             }
                         });
                         tasks.Add(t);
@@ -73,12 +70,11 @@ namespace CAMS.Models
             }
         }
 
-        private void GetComputerActivity(int labId )
+        private void GetComputerActivity(ICollection<Computer> compList)
         {
             try
             {
                 List<Task> tasks = new List<Task>();
-                List<Computer> compList = _aController.GetLabComputers(labId);
                 try
                 {
                     foreach (var comp in compList)
@@ -96,24 +92,24 @@ namespace CAMS.Models
                                         lastAct = _aController.SplitActivity(lastAct);
                                     }
 
-                                    string logedOn = IsComputerLogedOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
+                                    string logedOn = IsComputerLogedOn(comp.ComputerName);
                                 // TBD- change the ugly T: isComputerLogedOn should return a boolean (in the func use trim)
                                 if (logedOn.Contains("T"))
                                     {
-                                        String userName = GetUserLogOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
+                                        String userName = GetUserLogOn(comp.ComputerName);
                                         if (!Regex.Replace(userName, @"\s+", "").Equals(""))
                                         {
                                         ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
                                         if (lastAct == null)
                                             {
                                             //create user activity
-                                            AddNewActivity(comp.ComputerId, ActivityType.User, userName);
+                                            AddNewActivity(comp, ActivityType.User, userName);
                                             }
                                             else if (lastAct.UserName != userName)
                                             {
                                             //close current activity and create new user activity
                                             CloseActivity(lastAct);
-                                                AddNewActivity(comp.ComputerId, ActivityType.User, userName);
+                                                AddNewActivity(comp, ActivityType.User, userName);
                                             }
                                         }
                                         else
@@ -132,13 +128,13 @@ namespace CAMS.Models
                                     if (lastAct == null)
                                         {
                                         //create off activity
-                                        AddNewActivity(comp.ComputerId, ActivityType.Off, null);
+                                        AddNewActivity(comp, ActivityType.Off, null);
                                         }
                                         else if (lastAct.Mode != ActivityType.Off)
                                         {
                                         //close current activity and create new off activity
                                         CloseActivity(lastAct);
-                                            AddNewActivity(comp.ComputerId, ActivityType.Off, null);
+                                            AddNewActivity(comp, ActivityType.Off, null);
 
                                         }
                                     // else- it already in off mode- dont change anything 
@@ -146,7 +142,7 @@ namespace CAMS.Models
                                 }
                                 catch (Exception ex)
                                 {
-                                    Debug.WriteLine("faild on computer:" + comp.ComputerName + ". error is:" + ex.Message);
+                                    Debug.WriteLine("faild on computer:" + comp.ComputerName + " in dep:" + comp.Lab.Department.DepartmentName + ". error is:" + ex.Message);
                                 }
 
                             });
@@ -171,29 +167,45 @@ namespace CAMS.Models
         {
             List<Lab> labList = GetLabs();
             string[] lines = System.IO.File.ReadAllLines(@"D:\olladi\free_class.txt");
+            Dictionary<string, string> classes = new Dictionary<string, string>();
 
             foreach (string line in lines)
             {
                 try
                 {
-                    //96-003[0]    11/06/2014[1] 17:00[2] 20:00[3]      
+                    //format: 96-003    11/06/2014 17:00 20:00    
                     char[] charSeparators = new char[] { ' ' };
                     string[] location_time = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
-                    string building = location_time[0].Split('-')[0];
-                    string room = location_time[0].Split('-')[1];
+                    string lab = location_time[0];
+                    string building = lab.Split('-')[0];
+                    string room = lab.Split('-')[1];
+                    string date = location_time[1];
+                    string startTime = location_time[2];
+                    string endTime = location_time[3];
 
-                    DateTime day = DateTime.Parse(location_time[1]);
-
-                    DateTime activityStart = day.AddHours(int.Parse(location_time[2].Split(':')[0]));
-                    DateTime activityEnd = day.AddHours(int.Parse(location_time[3].Split(':')[0]));
+                    DateTime day = DateTime.Parse(date);
+                    DateTime activityStart = day.AddHours(int.Parse(startTime.Split(':')[0]));
+                    DateTime activityEnd = day.AddHours(int.Parse(endTime.Split(':')[0]));
                     try
                     {
-                        _aController.FindLabID(building, room);
+                        int labid=_aController.FindLabID(building, room);
+                        _aController.CreateNewClassActivity(labid, activityStart, activityEnd);
 
                     }
                     catch (Exception e)
                     {
                         Debug.WriteLine("couldn't find lab " + location_time[0]);
+                    }
+
+
+
+                    if (classes.ContainsKey(lab))
+                    {
+                        classes[lab] += "," + startTime + "-" + endTime;
+                    }
+                    else
+                    {
+                        classes[lab] = startTime + "-" + endTime;
                     }
                 }
                 catch (Exception e)
@@ -202,25 +214,37 @@ namespace CAMS.Models
                 }
 
             }
-
+            //clear old schedule
+            _aController.ClearLabsSchedule();
+            //add daily class Schedule for each lab
+            foreach (var item in classes)
+            {
+                try
+                {
+                    string[] building_room = item.Key.Split('-');
+                    int labid=_aController.FindLabID(building_room[0], building_room[1]);
+                    _aController.UpdateLabSchedule(labid, item.Value);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("couldn't find lab " + item.Key);
+                }
+            }
+            
         }
 
         private List<Lab> GetLabs()
         {
             return _aController.GetAllLabs();
         }
-        private List<int> GetLabsIds()
-        {
-            return _aController.GetAllLabs().Select(e => e.LabId).ToList(); ;
-        }
 
-        private string GetUserLogOn(string compNames, string domain)
+        private string GetUserLogOn(string compNames)
         {
-            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + ".).UserName";
+            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + ").UserName";
             String ans = RunScript(script);
             return ans;
         }
-        private string IsComputerLogedOn(String compName,string domain)
+        private string IsComputerLogedOn(String compName)
         {
             String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName + " -Quiet)";
             return RunScript(script);
@@ -232,10 +256,10 @@ namespace CAMS.Models
             _aController.CloseActivity(lastAct);
         }
 
-        private void AddNewActivity(int computerId, ActivityType mode, string userName)
+        private void AddNewActivity(Computer comp, ActivityType mode, string userName)
         {
 
-            _aController.CreateNewActivity(computerId, mode, userName);
+            _aController.CreateNewActivity(comp.ComputerId, mode, userName);
         }
 
 

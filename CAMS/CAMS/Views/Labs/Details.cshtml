@@ -29,28 +29,41 @@
     <hr />
     <div class="row">
         <div class="labs col-sm-10">
-            @foreach (var item in Model.Lab.Computers)
+            @if (Model.IsLabOccupied())
             {
-                string source = "";
-                switch (@Model.GetComputerState(item))
+                foreach (var item in Model.Lab.Computers)
                 {
-
-                    case CAMS.Models.ActivityType.On:
-                        source = "green.png";
-                        break;
-                    case CAMS.Models.ActivityType.Off:
-                        source = "black.png";
-                        break;
-                    case CAMS.Models.ActivityType.Class:
-                        source = "red.png";
-                        break;
-                    case CAMS.Models.ActivityType.User:
-                        source = "red.png";
-                        break;
+                    string source = "red.png";
+                    string top = item.LocationInLab.Split(',')[0];
+                    string left = item.LocationInLab.Split(',')[1];
+                    <img src="~/Images/@source" width="@Model.Lab.ComputerSize" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
                 }
-                string top = item.LocationInLab.Split(',')[0];
-                string left = item.LocationInLab.Split(',')[1];
-                <img src="~/Images/@source" width="@Model.Lab.ComputerSize" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
+            }
+            else
+            {
+                foreach (var item in Model.Lab.Computers)
+                {
+                    string source = "";
+                    switch (@Model.GetComputerState(item))
+                    {
+
+                        case CAMS.Models.ActivityType.On:
+                            source = "green.png";
+                            break;
+                        case CAMS.Models.ActivityType.Off:
+                            source = "black.png";
+                            break;
+                        case CAMS.Models.ActivityType.Class:
+                            source = "red.png";
+                            break;
+                        case CAMS.Models.ActivityType.User:
+                            source = "red.png";
+                            break;
+                    }
+                    string top = item.LocationInLab.Split(',')[0];
+                    string left = item.LocationInLab.Split(',')[1];
+                    <img src="~/Images/@source" width="@Model.Lab.ComputerSize" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
+                }
             }
         </div>
         <div class="col-sm-2 key">

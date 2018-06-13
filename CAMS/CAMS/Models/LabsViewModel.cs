@@ -2,7 +2,11 @@
 using PagedList;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -79,26 +83,26 @@ namespace CAMS.Models
 
         public Lab Lab;
         private LabsController _lController;
-        public List<string> ComputersList = new List<string>();
+        public List<string> ComputersList;
 
         public LabDetailsViewModel(Lab lab, LabsController labsController)
         {
             this.Lab = lab;
             this._lController = labsController;
-            ComputersList.Add("Class004pc05,");
-            ComputersList.Add("Class004pc06,");
-            ComputersList.Add("Class004pc07,");
-            ComputersList.Add("Class004pc08,");
-            ComputersList.Add("Class004pc09,");
-            ComputersList.Add("Class004pc10,");
-            ComputersList.Add("Class004pc11,");
-            ComputersList.Add("Class004pc12,");
-            ComputersList.Add("Class004pc13,");
-            ComputersList.Add("Class004pc14,");
-            ComputersList.Add("Class004pc15,");
-            ComputersList.Add("Class004pc16,");
+            ComputersList = GetComputerList(lab.Department.Domain);
         }
 
+        private List<string> GetComputerList(string domain)
+        {
+            string[] SearchBaseDomain = domain.Split('.');
+            for (int i = 0; i < SearchBaseDomain.Length; i++)
+            {
+                SearchBaseDomain[i] = "DC=" + SearchBaseDomain[i];
+            }
+            string SearchBase = string.Join(",",SearchBaseDomain);
+            RunScript("Get-ADComputer -Filter * -SearchBase \"DC=campus,DC =ad,DC=bgu,DC=ac,DC=il\" | select-object -expandproperty name");
+            return new List<string>();
+        }
 
         public ActivityType GetComputerState(Computer comp)
         {
@@ -129,6 +133,40 @@ namespace CAMS.Models
             }
 
             return false;
+        }
+        private string RunScript(string scriptText)
+        {
+            // create Powershell runspace 
+            Runspace runspace = RunspaceFactory.CreateRunspace();
+
+            // open it 
+            runspace.Open();
+
+            // create a pipeline and feed it the script text 
+            Pipeline pipeline = runspace.CreatePipeline();
+            pipeline.Commands.AddScript(scriptText);
+
+            // add an extra command to transform the script output objects into nicely formatted strings 
+            // remove this line to get the actual objects that the script returns. For example, the script 
+            // "Get-Process" returns a collection of System.Diagnostics.Process instances. 
+            pipeline.Commands.Add("Out-String");
+
+            // execute the script 
+            Collection<PSObject> results = pipeline.Invoke();
+
+            // close the runspace 
+            runspace.Close();
+
+            // convert the script result into a single string 
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (PSObject obj in results)
+            {
+                stringBuilder.AppendLine(obj.ToString());
+            }
+
+            // return the results of the script that has 
+            // now been converted to text 
+            return stringBuilder.ToString();
         }
 
     }

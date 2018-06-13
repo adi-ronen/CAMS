@@ -4,7 +4,7 @@
     ViewBag.Title = "Create";
 }
 
-<h2>דוחות</h2>  @*TBD - Validation of dates and time*@
+<h2>דוחות</h2>  @*TBD - Validation time*@
 @using (Html.BeginForm())
 {
 
@@ -16,9 +16,11 @@
     <div>
         <label>סוג דוח</label>
         <br />
-        <input class="checkbox-margin" type="checkbox" name="AverageUsage" /><label>ממוצע שעות פעילות</label>
-        <input class="checkbox-margin" type="checkbox" name="LabOccupancyReport-hours" /><label>פעילות מחשבים לפי שעות</label>
-        <input class="checkbox-margin" type="checkbox" name="LabOccupancyReport-days" /><label>פעילות מחשבים לפי ימים</label>
+        <select name="ReportType" class="form-control">
+            <option value="AverageUsage">ממוצע שעות פעילות</option>
+            <option value="LabOccupancyReport-hours">פעילות מחשבים לפי שעות</option>
+            <option value="LabOccupancyReport-days">פעילות מחשבים לפי ימים</option>
+        </select>
     </div>
     <div class="form-group">      
         @Html.Label("תאריכים", htmlAttributes: new { @class = "control-label col-md-2" })

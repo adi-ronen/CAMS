@@ -11,12 +11,14 @@ namespace CAMS.Models
 
         public List<LabReport> Reports;
         private ReportsController _lController;
+        public string ReportTitle;
 
 
-        public LabsReportViewModel(List<LabReport> list, ReportsController controller)
+        public LabsReportViewModel(List<LabReport> list, ReportsController controller, string title)
         {
             this.Reports = list;
             this._lController = controller;
+            this.ReportTitle = title;
         }
 
         public ReportsController Controller()
