@@ -17,7 +17,12 @@
     <div class="form-group">
         @Html.Label("דוא''ל", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10" id="Users">
-            @Html.DropDownListFor(model => model.UsersList, Model.UsersList , htmlAttributes: new { @class = "form-control" })
+            <select class="form-control" name="UsersList" id="UsersList">
+                @foreach (var item in Model.UsersList)
+                {
+                    <option>@item</option>
+                }
+            </select>
         </div>
         <div class="col-md-10 btn-link" style="cursor:default" onclick="ShowNewUser()">משתמש חדש</div>
         <div class="col-md-10 row" id="newUser" hidden>

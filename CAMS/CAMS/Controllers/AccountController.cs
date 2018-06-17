@@ -9,6 +9,10 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using CAMS.Models;
+using System.Text;
+using System.Net;
+using System.Xml;
+using System.IO;
 
 namespace CAMS.Controllers
 {
@@ -73,6 +77,9 @@ namespace CAMS.Controllers
                 return View(model);
             }
 
+            bool BGUresult = BGULogin(model.Email,model.Password);
+            
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
@@ -90,6 +97,56 @@ namespace CAMS.Controllers
                     ModelState.AddModelError("", "ניסיון כניסה לא חוקי");
                     return View(model);
             }
+        }
+
+        private bool BGULogin(string username, string password)
+        {
+            //create Soap envalope for the request
+            StringBuilder xml = new StringBuilder();
+            xml.Append(@"<?xml version=""1.0"" encoding=""utf-8""?>");
+            xml.Append(@"<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">");
+            xml.Append("<soap:Body>");
+            xml.Append(@"<validateUser xmlns=""http://bgu-cmsdeploy.bgu.ac.il/"">");
+            xml.Append("<uname>" + username + "</uname>");
+            xml.Append("<pwd>" + password + "</pwd>");
+            xml.Append("</validateUser>");
+            xml.Append("</soap:Body>");
+            xml.Append("</soap:Envelope>");
+
+            return VlidateUser(xml.ToString(), "http://bgu-cc-msdb.bgu.ac.il/BguAuthWebService/AuthenticationProvider.asmx");
+        }
+
+        public bool VlidateUser(string xml, string address)
+        {
+            string result = "";
+            HttpWebRequest request = CreateWebRequest(address);
+            XmlDocument soapEnvelopeXml = new XmlDocument();
+            soapEnvelopeXml.LoadXml(xml);
+
+            using (Stream stream = request.GetRequestStream())
+            {
+                soapEnvelopeXml.Save(stream);
+            }
+
+            using (WebResponse response = request.GetResponse()) // Error occurs here
+            {
+                using (StreamReader rd = new StreamReader(response.GetResponseStream()))
+                {
+                    string soapResult = rd.ReadToEnd();
+                    Console.WriteLine(soapResult);
+                }
+            }
+            return false;
+        }
+
+        public static HttpWebRequest CreateWebRequest(string url)
+        {
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
+            webRequest.Headers.Add("SOAP:Action");
+            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
+            webRequest.Accept = "text/xml";
+            webRequest.Method = "POST";
+            return webRequest;
         }
 
         //
