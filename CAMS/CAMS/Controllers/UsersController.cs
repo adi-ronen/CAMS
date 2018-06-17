@@ -46,7 +46,7 @@ namespace CAMS.Controllers
             List<User> users = db.Users.ToList();
             foreach (User u in users)
             {
-                list.Add(new SelectListItem { Text = u.Email, Value = u.UserId.ToString() });
+                list.Add(new SelectListItem { Text = u.Email });
             }
 
             return list;
