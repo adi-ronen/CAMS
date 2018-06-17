@@ -73,5 +73,30 @@ namespace CAMS.Controllers
                 return (acts.Count > 0);
             }
         }
+
+
+
+        internal List<Activity> GetComputerUserActivityOnDate(int computerId, DateTime date)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Computer comp = db.Computers.Find(computerId);
+                return comp.Activities.Where(e => e.Mode.Equals(ActivityType.User) && (e.Login.Date.Equals(date))).ToList();
+            }
+
+        }
+
+        internal List<Activity> GetComputerActivitiesInDateRange(int computerId, DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour)
+        {
+
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Computer comp = db.Computers.Find(computerId);
+                return comp.Activities.Where(e => (e.Login >= startDate && e.Logout <= endDate) //activities in the report time range
+                                         && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
+                                         && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range;            
+
+            }
+        }
     }
 }

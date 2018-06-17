@@ -119,9 +119,17 @@ namespace CAMS.Models
             return (day == DayOfWeek.Friday || day == DayOfWeek.Saturday);
         }
 
-        private static bool IsComputerActive(DateTime date, int hour, ComputerLab cl)
+        private bool IsComputerActive(DateTime date, int hour, ComputerLab cl)
         {
-            List<Activity> activities = cl.Computer.Activities.Where(e => e.Mode.Equals(ActivityType.User) && (e.Login.Date.Equals(date))).ToList();
+            List<Activity> activities;
+            try
+            {
+                activities = cl.Computer.Activities.Where(e => e.Mode.Equals(ActivityType.User) && (e.Login.Date.Equals(date))).ToList();
+            }
+            catch
+            {
+                activities = _lController.GetComputerUserActivityOnDate(cl.ComputerId, date);
+            }
             //check if the computer had an activity during this hour
             TimeSpan tsStart = new TimeSpan(hour, 0, 0);
             TimeSpan tsEnd= new TimeSpan(hour+1, 0, 0);
@@ -203,24 +211,23 @@ namespace CAMS.Models
             }
 
             DateTime newStartDate = new DateTime(Math.Max(compEnterence.Ticks, startDate.Ticks));
-
-            List<Activity> compAct;
             DateTime newEndDate = new DateTime(Math.Min(compExit.Ticks, endDate.Ticks));
+            List<Activity> compAct;
+            try
+            {
+                compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
+                      && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
+                      && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range;
+            }
+            catch
+            {
+                compAct = _lController.GetComputerActivitiesInDateRange(comp.ComputerId, newStartDate, newEndDate, startHour, endHour);
+            }
             if (!weekends)
             {
-                compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
-                && (e.Mode.Equals(ActivityType.User)|| e.Mode.Equals(ActivityType.Class)) // user or class activity
-                && !(e.Weekend) 
-                && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range
+                compAct = compAct.Where(e => !(e.Weekend)).ToList();
 
             }
-            else
-            {
-                compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
-                && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
-                && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range
-            }
-
             compAct = compAct.OrderBy(e => e.Login).ToList();
             DateTime timePointWithClasses = startDate;
             DateTime timePoint = startDate;
