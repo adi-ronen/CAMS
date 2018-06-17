@@ -149,7 +149,7 @@ namespace CAMS.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch
+                catch (Exception e)
                 {
                     User user = db.Users.Find(2);
                     db.Entry(user).Collection(e => e.UserDepartments).Load();

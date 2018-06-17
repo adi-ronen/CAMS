@@ -43,7 +43,7 @@ namespace CAMS
 
         private void Activity_Timer()
         {
-            double tickTime = (double)(new TimeSpan(0, 0, 30)).TotalMilliseconds;
+            double tickTime = (double)(new TimeSpan(0, 3, 00)).TotalMilliseconds;
             act_timer = new Timer(tickTime);
             act_timer.Elapsed += new ElapsedEventHandler(ActivityTimer_Elapsed);
             act_timer.Start();
