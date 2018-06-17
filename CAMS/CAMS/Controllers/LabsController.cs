@@ -86,21 +86,27 @@ namespace CAMS.Controllers
         // GET: Labs/Create
         public ActionResult Create()
         {
-            using (var db = new CAMS_DatabaseEntities())
+            int userId = GetConnectedUser();
+            if (userId != -1)
             {
-                //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
-                List<Department> departments = db.Departments.ToList();
-                List<Department> userDepartments = new List<Department>();
-                foreach (var item in departments)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    //user can only add labs to the departments he have FULL accsses to.
-                    if (IsFullAccess(item.DepartmentId))
-                        userDepartments.Add(item);
-                }
+                    //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
+                    List<Department> departments = db.Departments.ToList();
+                    List<Department> userDepartments = new List<Department>();
+                    foreach (var item in departments)
+                    {
+                        //user can only add labs to the departments he have FULL accsses to.
+                        if (IsFullAccess(item.DepartmentId))
+                            userDepartments.Add(item);
+                    }
 
-                List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
-                return View(new object[] { userDepartments, buildings });
+                    List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
+                    return View(new object[] { userDepartments, buildings });
+                }
             }
+            return RedirectToAction("Index");
+
         }
 
         /// <summary>
@@ -126,16 +132,23 @@ namespace CAMS.Controllers
             {
                 using (var db = new CAMS_DatabaseEntities())
                 {
-                    if (ModelState.IsValid)
+                    if (IsFullAccess(lab.DepartmentId))
                     {
-                        lab.ComputerSize = 50;
-                        db.Labs.Add(lab);
-                        db.SaveChanges();
-                        return RedirectToAction("Index");
-                    }
+                        if (ModelState.IsValid)
+                        {
+                            lab.ComputerSize = 50;
+                            db.Labs.Add(lab);
+                            db.SaveChanges();
+                            return RedirectToAction("Index");
+                        }
 
-                    ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-                    return View(lab);
+                        ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                        return View(lab);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Login", "Account");
+                    }
                 }
             }
             catch
@@ -160,11 +173,19 @@ namespace CAMS.Controllers
                 {
                     return HttpNotFound();
                 }
-                db.Entry(lab).Collection(e => e.Computers).Load();
-                db.Entry(lab).Reference(e => e.Department).Load();
+                if (IsLimitedAccess(lab.DepartmentId))
+                {
+                    db.Entry(lab).Collection(e => e.Computers).Load();
+                    db.Entry(lab).Reference(e => e.Department).Load();
 
-                ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-                return View(new LabDetailsViewModel(lab, this));
+                    ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                    return View(new LabDetailsViewModel(lab, this));
+                }
+                //user have no access to edit lab
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
         }
 
@@ -191,12 +212,21 @@ namespace CAMS.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
                 Lab lab = db.Labs.Find(id);
-                db.Entry(lab).Reference(e => e.Department).Load();
-                if (lab == null)
+                if (IsFullAccess(lab.DepartmentId))
                 {
-                    return HttpNotFound();
+                    db.Entry(lab).Reference(e => e.Department).Load();
+                    if (lab == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    return View(lab);
                 }
-                return View(lab);
+                //user have no access to delete lab
+                else
+                {
+                    return RedirectToAction("Index");
+                }
+
             }
         }
 

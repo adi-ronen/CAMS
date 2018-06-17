@@ -16,18 +16,15 @@ namespace CAMS.Controllers
         // GET: Departments
         public ActionResult Index()
         {
-            try
+            if (GetConnectedUser()!=-1)
             {
-                int userId = (int)Session["UserId"];
-
                 using (var db = new CAMS_DatabaseEntities())
                 {
                     return View(db.Departments.ToList());
                 }
             }
-            catch {
+            else
                 return RedirectToAction("Login", "Account");
-            }
 
         }
 
@@ -38,16 +35,21 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            using (var db = new CAMS_DatabaseEntities())
+            if (GetConnectedUser() != -1)
             {
-                Department department = db.Departments.Find(id);
-                if (department == null || !IsFullAccess(department.DepartmentId))
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return HttpNotFound();
-                }
-                return View(department);
+                    Department department = db.Departments.Find(id);
+                    if (department == null || !IsFullAccess(department.DepartmentId))
+                    {
+                        return HttpNotFound();
+                    }
+                    return View(department);
 
+                }
             }
+            else
+                return RedirectToAction("Login", "Account");
         }
 
         // GET: Departments/Create
@@ -63,18 +65,17 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "DepartmentName,Domain")] Department department)
         {
-            try
+            if (GetConnectedUser() != -1)
             {
                 using (var db = new CAMS_DatabaseEntities())
                 {
                     if (ModelState.IsValid)
                     {
-                        int userId = (int)Session["UserId"];
                         db.Departments.Add(department);
                         db.SaveChanges();
                         UserDepartment userDepartment = new UserDepartment
                         {
-                            UserId = userId,
+                            UserId = GetConnectedUser(),
                             DepartmentId = department.DepartmentId,
                             AccessType = AccessType.Full
                         };
@@ -87,10 +88,12 @@ namespace CAMS.Controllers
                     return View(department);
                 }
             }
-            catch
+            else
             {
                 return RedirectToAction("Login", "Account");
+
             }
+
         }
 
         // GET: Departments/Edit/5
@@ -102,12 +105,19 @@ namespace CAMS.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Department department = db.Departments.Find(id);
-                if (department == null)
+                if (GetConnectedUser() != -1)
                 {
-                    return HttpNotFound();
+                    Department department = db.Departments.Find(id);
+                    if (department == null || !IsFullAccess(department.DepartmentId))
+                    {
+                        return HttpNotFound();
+                    }
+                    return View(department);
                 }
-                return View(department);
+                else
+                {
+                    return RedirectToAction("Login", "Account");
+                }
             }
         }
 
@@ -139,12 +149,19 @@ namespace CAMS.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Department department = db.Departments.Find(id);
-                if (department == null)
+                if (GetConnectedUser() != -1)
                 {
-                    return HttpNotFound();
+                    Department department = db.Departments.Find(id);
+                    if (department == null || !IsFullAccess(department.DepartmentId))
+                    {
+                        return HttpNotFound();
+                    }
+                    return View(department);
                 }
-                return View(department);
+                else
+                {
+                    return RedirectToAction("Login", "Account");
+                }
             }
         }
 

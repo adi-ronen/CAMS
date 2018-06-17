@@ -21,9 +21,9 @@ namespace CAMS.Controllers
                     ViewBag.byDepartment = byDepartment.Value;
                 else
                     ViewBag.byDepartment = false;
-                try
+                int userId = GetConnectedUser();
+                if (userId != -1)
                 {
-                    int userId = (int)Session["UserId"];
                     User user = db.Users.Find(userId);
                     if (user == null)
                     {
@@ -32,10 +32,7 @@ namespace CAMS.Controllers
                     db.Entry(user).Collection(e => e.UserDepartments).Load();
                     return View(new AccessViewModel(user, this, ViewBag.byDepartment));
                 }
-                catch
-                {
-                    return RedirectToAction("Login", "Account");
-                }
+                return RedirectToAction("Login", "Account");
 
             }
         }
@@ -226,17 +223,22 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            using (var db = new CAMS_DatabaseEntities())
+            //only full access user for department can edit accesses to this departments
+            if (IsFullAccess(depId.Value))
             {
-                UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-                if (userDep == null)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return HttpNotFound();
+                    UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                    if (userDep == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    db.Entry(userDep).Reference(e => e.User).Load();
+                    db.Entry(userDep).Reference(e => e.Department).Load();
+                    return View(userDep);
                 }
-                db.Entry(userDep).Reference(e => e.User).Load();
-                db.Entry(userDep).Reference(e => e.Department).Load();
-                return View(userDep);
             }
+            return RedirectToAction("Index");
         }
 
         // POST: Users/Edit/5
@@ -247,8 +249,12 @@ namespace CAMS.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    db.Entry(UserDepartment).State = EntityState.Modified;
-                    db.SaveChanges();
+                    //only full access user for department can edit accesses to this departments
+                    if (IsFullAccess(UserDepartment.DepartmentId))
+                    {
+                        db.Entry(UserDepartment).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                     return RedirectToAction("Index");
                 }
                 return View(UserDepartment);
@@ -264,14 +270,20 @@ namespace CAMS.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-                if (userDep == null)
+                //only full access user for department can remove accesses to this departments
+                if (IsFullAccess(depId.Value))
                 {
-                    return HttpNotFound();
+                    UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                    if (userDep == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    db.Entry(userDep).Reference(e => e.User).Load();
+                    db.Entry(userDep).Reference(e => e.Department).Load();
+                    return View(userDep);
                 }
-                db.Entry(userDep).Reference(e => e.User).Load();
-                db.Entry(userDep).Reference(e => e.Department).Load();
-                return View(userDep);
+                return RedirectToAction("Index");
+
             }
         }
 
@@ -283,8 +295,12 @@ namespace CAMS.Controllers
             using (var db = new CAMS_DatabaseEntities())
             {
                 UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-                db.UserDepartments.Remove(userDep);
-                db.SaveChanges();
+                //only full access user for department can remove accesses to this departments
+                if (IsFullAccess(depId.Value))
+                {
+                    db.UserDepartments.Remove(userDep);
+                    db.SaveChanges();
+                }
                 return RedirectToAction("Index");
             }
         }
