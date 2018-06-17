@@ -155,16 +155,22 @@ namespace CAMS.Models
             // "Get-Process" returns a collection of System.Diagnostics.Process instances. 
             pipeline.Commands.Add("Out-String");
 
+            List<string> ComputerList = new List<string>();
+            string[] computerNames = new string[] { };
             // execute the script 
-            Collection<PSObject> results = pipeline.Invoke();
+            try
+            {
+                Collection<PSObject> results = pipeline.Invoke();
+                string[] stringSeparators = new string[] { "\r\n" };
+                computerNames = results[0].ToString().Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+            }
+            catch { }
 
             // close the runspace 
             runspace.Close();
 
             //convert to list
-            string[] stringSeparators = new string[] { "\r\n" };
-            string[] computerNames = results[0].ToString().Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
-            List<string> ComputerList = computerNames.ToList();
+            ComputerList = computerNames.ToList();
             // return the results of the script that has 
             // now been converted to text 
             return ComputerList;

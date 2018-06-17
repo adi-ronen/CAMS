@@ -28,8 +28,8 @@ namespace CAMS.Controllers
         {
             try
             {
-                DateTime startDate = Convert.ToDateTime(Request.Form["fromDate"]);
-                DateTime? endDate = Convert.ToDateTime(Request.Form["toDate"]);
+                DateTime startDate = DateTime.ParseExact(Request.Form["fromDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                DateTime? endDate = DateTime.ParseExact(Request.Form["toDate"],"dd/MM/yyyy",System.Globalization.CultureInfo.InvariantCulture);
                 DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
                 DateTime endHour = Convert.ToDateTime(Request.Form["ToTime"]);
                 List<int> labsIds =  Request.Form["LabsIds"].Split(',').Select(int.Parse).ToList();
