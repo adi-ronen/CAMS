@@ -19,7 +19,7 @@ namespace CAMS.Controllers
         // GET: Notifications
         public ActionResult Index()
         {
-            User user = db.Users.Find(1);
+            User user = db.Users.Find(2);
 
             return View(new NotificationViewModel(user, this));
         }
