@@ -65,6 +65,17 @@ namespace CAMS.Controllers
             }
         }
 
+        internal User GetUser(int userId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                User user = db.Users.Find(userId);
+                db.Entry(user).Collection(e => e.UserDepartments).Load();
+                return user;
+
+            }
+        }
+
         internal List<SelectListItem> GetDepartmentsList()
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -77,6 +88,17 @@ namespace CAMS.Controllers
                 }
 
                 return list;
+            }
+        }
+
+        internal Department GetDepartment(int departmentId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                Department dp = db.Departments.Find(departmentId);
+                db.Entry(dp).Collection(e => e.Labs).Load();
+                db.Entry(dp).Collection(e => e.UserDepartments).Load();
+                return dp;
             }
         }
 
@@ -124,30 +146,39 @@ namespace CAMS.Controllers
             {
                 try
                 {
-                    string user_email = Request.Form["UsersList"];
+                    string user_id = Request.Form["UsersList"];
+                    int departmentId = Convert.ToInt32(Request.Form["Departments"].ToString());
+                    AccessType accessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
                     User user;
-                    List<User> userl = db.Users.Where(e => e.Email.Equals(user_email)).ToList();
-                    if (userl.Count > 0)
+                    if (int.TryParse(Request.Form["UsersList"].ToString(), out int n))
                     {
-                        user = userl.First();
+                        user = db.Users.Find(n);
                     }
                     else
                     {
-                        user=AddUser(user_email);
+                        user=AddUser(user_id);
 
                     }
-                    string ll = Request.Form["Departments"].ToString();
-                    int dsl = Convert.ToInt32(Request.Form["Departments"].ToString());
-                    AccessType jld = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
-
-                    UserDepartment userDepartment = new UserDepartment
+                    var accL=db.UserDepartments.Where(e => e.UserId.Equals(user.UserId) && e.DepartmentId.Equals(departmentId)).ToList();
+                    //update access
+                    if (accL.Count > 0)
                     {
-                        UserId = user.UserId,
-                        DepartmentId = Convert.ToInt32(Request.Form["Departments"].ToString()),
-                        AccessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString())
-                    };
-                    db.UserDepartments.Add(userDepartment);
+                        UserDepartment uD = accL.First();
+                        uD.AccessType = accessType;
+                    }
+                    //new access
+                    else
+                    {
+                        UserDepartment userDepartment = new UserDepartment
+                        {
+                            UserId = user.UserId,
+                            DepartmentId = departmentId,
+                            AccessType = accessType
+                        };
+                        db.UserDepartments.Add(userDepartment);
+                    }
                     db.SaveChanges();
+
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)

@@ -28,6 +28,7 @@ namespace CAMS.Models
         public List<LabOccupancyReport> CreateOccupancyLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, List<int> labsIds, bool weekends)
         {
             List<LabOccupancyReport> reports = new List<LabOccupancyReport>();
+            endDate = endDate.AddDays(1);
 
             foreach (var id in labsIds)
             {
@@ -147,7 +148,7 @@ namespace CAMS.Models
         public List<LabReport> CreateLabReport(DateTime startDate,DateTime endDate,DateTime startHour, DateTime endHour, List<int> labsIds,bool weekends)
         {
             List<LabReport> reports = new List<LabReport>();
-
+            endDate = endDate.AddDays(1);
             foreach (var id in labsIds)
             {
                 LabReport labReport = CreateLabReport(startDate, endDate, startHour, endHour, id, weekends);
@@ -215,7 +216,7 @@ namespace CAMS.Models
             List<Activity> compAct;
             try
             {
-                compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && e.Logout <= newEndDate) //activities in the report time range
+                compAct = comp.Computer.Activities.Where(e => (e.Login >= newStartDate && (e.Logout <= endDate || !e.Logout.HasValue)) //activities in the report time range
                       && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
                       && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range;
             }
@@ -234,7 +235,6 @@ namespace CAMS.Models
 
             foreach (var act in compAct)
             {
-
                 DateTime endOfActivity = DateTime.Now;
                 if (act.Logout.HasValue) endOfActivity = act.Logout.Value;
 
