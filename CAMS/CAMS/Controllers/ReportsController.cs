@@ -92,7 +92,7 @@ namespace CAMS.Controllers
             using (var db = new CAMS_DatabaseEntities())
             {
                 Computer comp = db.Computers.Find(computerId);
-                return comp.Activities.Where(e => (e.Login >= startDate && e.Logout <= endDate) //activities in the report time range
+                return comp.Activities.Where(e => (e.Login >= startDate && (e.Logout <= endDate ||!e.Logout.HasValue)) //activities in the report time range
                                          && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
                                          && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range;            
 
