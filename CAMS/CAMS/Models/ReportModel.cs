@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using static CAMS.Constant;
 
@@ -148,13 +149,19 @@ namespace CAMS.Models
         public List<LabReport> CreateLabReport(DateTime startDate,DateTime endDate,DateTime startHour, DateTime endHour, List<int> labsIds,bool weekends)
         {
             List<LabReport> reports = new List<LabReport>();
+            List<Task> tasks = new List<Task>();
+
             endDate = endDate.AddDays(1);
             foreach (var id in labsIds)
             {
-                LabReport labReport = CreateLabReport(startDate, endDate, startHour, endHour, id, weekends);
-                reports.Add(labReport);
+                Task t = Task.Factory.StartNew(() =>
+                    {
+                        LabReport labReport = CreateLabReport(startDate, endDate, startHour, endHour, id, weekends);
+                        reports.Add(labReport);
+                    });
+                tasks.Add(t);
             }
-            
+            Task.WaitAll(tasks.ToArray());
             return reports;
         }
 
@@ -164,26 +171,31 @@ namespace CAMS.Models
             return CreateLabReport(startDate, endDate, startHour, endHour, lab,weekends);
             
         }
-        
+        private Object reportLock = new Object();
+
         public LabReport CreateLabReport (DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, Lab lab, bool weekends)
         {
             LabReport labReport = new LabReport(lab);
-
-            TimeSpan labTotalActiveTime = TimeSpan.Zero;
-
+            List<Task> tasks = new List<Task>();
             List<ComputerLab> cL = getComputerInLab(lab, startDate, endDate);
             foreach (var item in cL)
             {
-                
-                ComputerReport cR = CreateComputerInLabReport(startDate, endDate, startHour, endHour, item,weekends);
+                Task t = Task.Factory.StartNew(() =>
+                {
+                    ComputerReport cR = CreateComputerInLabReport(startDate, endDate, startHour, endHour, item, weekends);
 
-                //add data to labreport
-                labReport.ComputersReport.Add(cR);
-                labReport.AddToLabTotalActivityTime(cR.GetComputerTotalActiveTime());
-                labReport.AddToLabTotalActivityTimeWithClasses(cR.GetComputerTotalActiveTimeWithClasses());
-                labReport.AddToLabTotalHours(cR.GetComputerTotalTime());
-
+                    //add data to labreport
+                    lock (reportLock)
+                    {
+                        labReport.ComputersReport.Add(cR);
+                        labReport.AddToLabTotalActivityTime(cR.GetComputerTotalActiveTime());
+                        labReport.AddToLabTotalActivityTimeWithClasses(cR.GetComputerTotalActiveTimeWithClasses());
+                        labReport.AddToLabTotalHours(cR.GetComputerTotalTime());
+                    }
+                });
+                tasks.Add(t);
             }
+            Task.WaitAll(tasks.ToArray());
 
             return labReport;
         }
