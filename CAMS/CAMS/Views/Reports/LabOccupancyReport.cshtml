@@ -37,6 +37,9 @@
     <canvas id="@item.Lab.LabId" width="800" height="400" hidden></canvas>
     <script>
         var hours = ViewBag.XHours;
+        var min = @item.GetHoursMin();
+        var avrg = @item.GetHoursAvg();
+        var max = @item.GetHoursMax();
     var config = {
         type: 'line',
         data: {
@@ -45,20 +48,20 @@
                 label: 'מנימום',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
-                data: @item.GetHoursMin();
+                data: min,
                 fill: false,
             }, {
                 label: 'ממוצע',
                 fill: false,
                 backgroundColor: 'rgb(54, 162, 235)',
                 borderColor: 'rgb(54, 162, 235)',
-                data: @item.GetHoursAvg(),
+                data: avrg,
             }, {
                 label: 'מקסימום',
                 fill: false,
                 backgroundColor: 'rgb(255, 205, 86)',
                 borderColor: 'rgb(255, 205, 86)',
-                data:  @item.GetHoursMax(),
+                data:  max,
             }]
         },
         options: {
@@ -93,11 +96,15 @@
                 }]
             }
         }
-    };
+        };
+
+        DisplayLabGraph = function (lab_id) {
+            $("#" + lab_id).removeAttr('hidden');
+        }
     window.onload = function () {
         var ctx = document.getElementById(@item.Lab.LabId).getContext('2d');
         window.myLine = new Chart(ctx, config);
-    };
+        };
     </script>
 }
 <p>
