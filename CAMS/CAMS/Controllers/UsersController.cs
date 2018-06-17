@@ -10,7 +10,7 @@ using CAMS.Models;
 
 namespace CAMS.Controllers
 {
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
 
