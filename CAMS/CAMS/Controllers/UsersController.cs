@@ -94,6 +94,7 @@ namespace CAMS.Controllers
                     Email = email
                 };
                 db.Users.Add(u);
+                db.SaveChanges();
                 return u;
             }
         }
@@ -149,7 +150,7 @@ namespace CAMS.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     User user = db.Users.Find(2);
                     db.Entry(user).Collection(e => e.UserDepartments).Load();
