@@ -251,7 +251,6 @@
     <Compile Include="Models\LabReport.cs" />
     <Compile Include="Models\LabsReportViewModel.cs" />
     <Compile Include="Models\LabsViewModel.cs" />
-    <Compile Include="Models\LdapAuthentication.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\NotificationFrequency.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
