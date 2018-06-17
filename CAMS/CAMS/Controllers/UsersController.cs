@@ -66,7 +66,6 @@ namespace CAMS.Controllers
 
         internal void AddUser(string v)
         {
-            //TBD - create a new user with this mail. check if user already exists 
         }
 
         // GET: Users/Create
@@ -84,6 +83,11 @@ namespace CAMS.Controllers
         {
             try
             {
+                string user_id = Request.Form["UsersList"];
+                if (user_id == string.Empty)
+                {
+                    AddUser(user_id);
+                }
                 UserDepartment userDepartment = new UserDepartment
                 {
                     UserId = Convert.ToInt32(Request.Form["UsersList"].ToString()),
