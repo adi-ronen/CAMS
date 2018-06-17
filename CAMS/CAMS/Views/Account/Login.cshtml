@@ -15,14 +15,13 @@
                 <div class="form-group">
                     @Html.Label("שם משתמש", new { @class = "col-md-2 control-label" })
                     <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @style = "direction:ltr" })
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @style = "direction:ltr" })
                     </div>
                 </div>
                 <div class="form-group">
                     @Html.Label("סיסמא", new { @class = "col-md-2 control-label" })
                     <div class="col-md-10">
                         @Html.PasswordFor(m => m.Password, new { @class = "form-control", @style = "direction:ltr" })
-                        @*@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })*@
                     </div>
                 </div>
                 <div class="form-group">

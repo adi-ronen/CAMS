@@ -13,6 +13,7 @@ using System.Text;
 using System.Net;
 using System.Xml;
 using System.IO;
+using System.Collections.Generic;
 
 namespace CAMS.Controllers
 {
@@ -23,8 +24,7 @@ namespace CAMS.Controllers
         private ApplicationUserManager _userManager;
         
         public AccountController()
-        {
-        }
+        {}
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
@@ -70,33 +70,66 @@ namespace CAMS.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public ActionResult Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            bool BGUresult = BGULogin(model.Email,model.Password);
-            
-
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
+            bool BGUresult = BGULogin(model.UserName,model.Password);
+            if (BGUresult)
             {
-                case SignInStatus.Success:
-                    //TBD - add dictionart or somting to hold <lab id, users' access type>
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "ניסיון כניסה לא חוקי");
-                    return View(model);
+                CreateSessionProperties(model.UserName);
+                return RedirectToAction("Index", "Labs");
             }
+            else
+            {
+                ModelState.AddModelError("", "ניסיון כניסה לא חוקי");
+                return View(model);
+            }
+        }
+
+        private void CreateSessionProperties(string userName)
+        {
+            Dictionary<int, AccessType> Accesses = new Dictionary<int, AccessType>();
+            User user;
+            int user_id = 0;
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                try
+                {
+                    user = db.Users.Where(u => u.Email.StartsWith(userName + "@")).First();
+                    foreach (UserDepartment dep in user.UserDepartments)
+                    {
+                        Accesses.Add(dep.DepartmentId, dep.AccessType);
+                    }
+                    user_id = user.UserId;
+                }
+                catch {
+                    System.Diagnostics.Debug.WriteLine("Cant fined user");
+                }
+            }
+
+            Session["UserId"] = user_id;
+            Session["Accesses"] = Accesses;
+            Session["SupperUser"] = IsSupprUser(userName);
+        }
+
+        private bool IsSupprUser(string userName)
+        {
+            string SupperUsers = System.Configuration.ConfigurationManager.AppSettings["SupperUsers"];
+            if (SupperUsers != null)
+            {
+                foreach (string user in SupperUsers.ToString().Split(','))
+                {
+                    if (user == userName)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private bool BGULogin(string username, string password)
@@ -112,31 +145,39 @@ namespace CAMS.Controllers
             xml.Append("</validateUser>");
             xml.Append("</soap:Body>");
             xml.Append("</soap:Envelope>");
-
+            //BGU Authentication service
             return VlidateUser(xml.ToString(), "http://bgu-cc-msdb.bgu.ac.il/BguAuthWebService/AuthenticationProvider.asmx");
         }
 
         public bool VlidateUser(string xml, string address)
         {
-            string result = "";
-            HttpWebRequest request = CreateWebRequest(address);
-            XmlDocument soapEnvelopeXml = new XmlDocument();
-            soapEnvelopeXml.LoadXml(xml);
-
-            using (Stream stream = request.GetRequestStream())
+            try
             {
-                soapEnvelopeXml.Save(stream);
-            }
+                HttpWebRequest request = CreateWebRequest(address);
+                XmlDocument soapEnvelopeXml = new XmlDocument();
+                soapEnvelopeXml.LoadXml(xml);
 
-            using (WebResponse response = request.GetResponse()) // Error occurs here
-            {
-                using (StreamReader rd = new StreamReader(response.GetResponseStream()))
+                using (Stream stream = request.GetRequestStream())
                 {
-                    string soapResult = rd.ReadToEnd();
-                    Console.WriteLine(soapResult);
+                    soapEnvelopeXml.Save(stream);
+                }
+
+                using (WebResponse response = request.GetResponse()) // Error occurs here
+                {
+                    using (StreamReader rd = new StreamReader(response.GetResponseStream()))
+                    {
+                        string soapResult = rd.ReadToEnd();
+                        int start_index = soapResult.IndexOf("<validateUserResult>") + 20; //strat index of result
+                        int end_index = soapResult.IndexOf("</validateUserResult>"); // end index of result
+                        string ans = soapResult.Substring(start_index, end_index - start_index); //answer is between <validateUserResult>true/false</validateUserResult>
+                        return bool.Parse(ans);
+                    }
                 }
             }
-            return false;
+            catch
+            {
+                return false;
+            }
         }
 
         public static HttpWebRequest CreateWebRequest(string url)
@@ -147,163 +188,6 @@ namespace CAMS.Controllers
             webRequest.Accept = "text/xml";
             webRequest.Method = "POST";
             return webRequest;
-        }
-
-        //
-        // GET: /Account/VerifyCode
-        [AllowAnonymous]
-        public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
-        {
-            // Require that the user has already logged in via username/password or external login
-            if (!await SignInManager.HasBeenVerifiedAsync())
-            {
-                return View("Error");
-            }
-            return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        }
-
-        //
-        // POST: /Account/VerifyCode
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // The following code protects for brute force attacks against the two factor codes. 
-            // If a user enters incorrect codes for a specified amount of time then the user account 
-            // will be locked out for a specified amount of time. 
-            // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    return RedirectToLocal(model.ReturnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid code.");
-                    return View(model);
-            }
-        }
-
-        //
-        // POST: /Account/ExternalLogin
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult ExternalLogin(string provider, string returnUrl)
-        {
-            // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
-        }
-
-        //
-        // GET: /Account/SendCode
-        [AllowAnonymous]
-        public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
-        {
-            var userId = await SignInManager.GetVerifiedUserIdAsync();
-            if (userId == null)
-            {
-                return View("Error");
-            }
-            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        }
-
-        //
-        // POST: /Account/SendCode
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SendCode(SendCodeViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-
-            // Generate the token and send it
-            if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
-            {
-                return View("Error");
-            }
-            return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
-        }
-
-        //
-        // GET: /Account/ExternalLoginCallback
-        [AllowAnonymous]
-        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
-        {
-            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-            if (loginInfo == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            // Sign in the user with this external login provider if the user already has a login
-            var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
-                case SignInStatus.Failure:
-                default:
-                    // If the user does not have an account, then prompt the user to create an account
-                    ViewBag.ReturnUrl = returnUrl;
-                    ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
-            }
-        }
-
-        //
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Manage");
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Get the information about the user from the external login provider
-                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    return View("ExternalLoginFailure");
-                }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
-                    {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToLocal(returnUrl);
-                    }
-                }
-                AddErrors(result);
-            }
-
-            ViewBag.ReturnUrl = returnUrl;
-            return View(model);
         }
 
         //
