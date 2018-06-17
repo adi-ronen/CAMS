@@ -14,15 +14,20 @@
     <div class="navbar navbar-fixed-top mynavbar" style="box-shadow: 0 8px 6px -6px #999; padding:0">
         <div class="container">
             <img src="~/Images/logoHome.png" alt="אוניברסיטת בן גוריון">
-            @*TBD -show only when logged in (else add padding)*@
-            <div class="nav navbar-nav navbar-right menubar navbar-collapse">
-                <a href="~/Reports/Create">דוחות</a>
-                <a href="~/Labs/Index">כיתות מחשוב</a>
-                <a href="~/Notifications/Index">התראות</a>@*TBD REPLACE 1 WITH USERS ID*@
-                <a href="~/Users/Index">הרשאות</a>
-                <a href="~/Departments/Index">מחלקות</a>
-                <a href="~/Buildings/Index">בניינים</a>
-            </div>
+            @if (Session["UserId"] != null && (int)Session["UserId"] != 0) // if userid = 0 its a student with no permissions
+            {
+                <div class="nav navbar-nav navbar-right menubar navbar-collapse">
+                    <a href="~/Reports/Create">דוחות</a>
+                    <a href="~/Labs/Index">כיתות מחשוב</a>
+                    <a href="~/Notifications/Index">התראות</a>
+                    <a href="~/Users/Index">הרשאות</a>
+                    @if ((bool)Session["SupperUser"])
+                    {
+                    <a href="~/Departments/Index">מחלקות</a>
+                    <a href="~/Buildings/Index">בניינים</a>
+                    }
+                </div>
+            }
         </div>
     </div>
     <div class="container body-content">

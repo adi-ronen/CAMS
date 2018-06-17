@@ -13,6 +13,7 @@ using System.Text;
 using System.Net;
 using System.Xml;
 using System.IO;
+using System.Collections.Generic;
 
 namespace CAMS.Controllers
 {
@@ -23,8 +24,7 @@ namespace CAMS.Controllers
         private ApplicationUserManager _userManager;
         
         public AccountController()
-        {
-        }
+        {}
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
@@ -80,6 +80,7 @@ namespace CAMS.Controllers
             bool BGUresult = BGULogin(model.UserName,model.Password);
             if (BGUresult)
             {
+                CreateSessionProperties(model.UserName);
                 return RedirectToAction("Index", "Labs");
             }
             else
@@ -87,6 +88,48 @@ namespace CAMS.Controllers
                 ModelState.AddModelError("", "ניסיון כניסה לא חוקי");
                 return View(model);
             }
+        }
+
+        private void CreateSessionProperties(string userName)
+        {
+            Dictionary<int, AccessType> Accesses = new Dictionary<int, AccessType>();
+            User user;
+            int user_id = 0;
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                try
+                {
+                    user = db.Users.Where(u => u.Email.StartsWith(userName + "@")).First();
+                    foreach (UserDepartment dep in user.UserDepartments)
+                    {
+                        Accesses.Add(dep.DepartmentId, dep.AccessType);
+                    }
+                    user_id = user.UserId;
+                }
+                catch {
+                    System.Diagnostics.Debug.WriteLine("Cant fined user");
+                }
+            }
+
+            Session["UserId"] = user_id;
+            Session["Accesses"] = Accesses;
+            Session["SupperUser"] = IsSupprUser(userName);
+        }
+
+        private bool IsSupprUser(string userName)
+        {
+            string SupperUsers = System.Configuration.ConfigurationManager.AppSettings["SupperUsers"];
+            if (SupperUsers != null)
+            {
+                foreach (string user in SupperUsers.ToString().Split(','))
+                {
+                    if (user == userName)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private bool BGULogin(string username, string password)
@@ -102,7 +145,7 @@ namespace CAMS.Controllers
             xml.Append("</validateUser>");
             xml.Append("</soap:Body>");
             xml.Append("</soap:Envelope>");
-
+            //BGU Authentication service
             return VlidateUser(xml.ToString(), "http://bgu-cc-msdb.bgu.ac.il/BguAuthWebService/AuthenticationProvider.asmx");
         }
 
@@ -110,7 +153,6 @@ namespace CAMS.Controllers
         {
             try
             {
-
                 HttpWebRequest request = CreateWebRequest(address);
                 XmlDocument soapEnvelopeXml = new XmlDocument();
                 soapEnvelopeXml.LoadXml(xml);
