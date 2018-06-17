@@ -12,17 +12,23 @@ namespace CAMS.Controllers
 {
     public class UsersController : BaseController
     {
-        private CAMS_DatabaseEntities db = new CAMS_DatabaseEntities();
-
         // GET: Users
         public ActionResult Index(bool? byDepartment)
         {
-            if (byDepartment.HasValue)
-                ViewBag.byDepartment = byDepartment.Value;
-            else
-                ViewBag.byDepartment = false;
-            User user = db.Users.Find(1);
-            return View(new AccessViewModel(user,this, ViewBag.byDepartment));
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                if (byDepartment.HasValue)
+                    ViewBag.byDepartment = byDepartment.Value;
+                else
+                    ViewBag.byDepartment = false;
+                User user = db.Users.Find(2);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+                db.Entry(user).Collection(e => e.UserDepartments).Load();
+                return View(new AccessViewModel(user, this, ViewBag.byDepartment));
+            }
         }
 
         // GET: Users/Details/5
@@ -32,47 +38,79 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
-            if (user == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                User user = db.Users.Find(id);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+                db.Entry(user).Collection(e => e.UserDepartments).Load();
+                return View(user);
             }
-            return View(user);
         }
 
         internal List<SelectListItem> GetUsers()
         {
-            List<SelectListItem> list = new List<SelectListItem>();
-            List<User> users = db.Users.ToList();
-            foreach (User u in users)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                list.Add(new SelectListItem { Text = u.Email, Value = u.UserId.ToString() });
-            }
+                List<SelectListItem> list = new List<SelectListItem>();
+                List<User> users = db.Users.ToList();
+                foreach (User u in users)
+                {
+                    list.Add(new SelectListItem { Text = u.Email, Value = u.UserId.ToString() });
+                }
 
-            return list;
+                return list;
+            }
         }
 
         internal List<SelectListItem> GetDepartmentsList()
         {
-            List<SelectListItem> list = new List<SelectListItem>();
-            List<Department> departments = db.Departments.ToList();
-            foreach (Department d in departments)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                list.Add(new SelectListItem { Text = d.DepartmentName, Value = d.DepartmentId.ToString() });
-            }
+                List<SelectListItem> list = new List<SelectListItem>();
+                List<Department> departments = db.Departments.ToList();
+                foreach (Department d in departments)
+                {
+                    list.Add(new SelectListItem { Text = d.DepartmentName, Value = d.DepartmentId.ToString() });
+                }
 
-            return list;
+                return list;
+            }
         }
 
-        internal void AddUser(string v)
+        internal User AddUser(string email)
         {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<User> userl = db.Users.Where(e => e.Email.Equals(email)).ToList();
+                if (userl.Count > 0)
+                {
+                    return userl.First();
+                }
+                User u = new User
+                {
+                    Email = email
+                };
+                db.Users.Add(u);
+                return u;
+            }
         }
 
         // GET: Users/Create
         public ActionResult Create()
         {
-            User user = db.Users.Find(1);
-            return View(new AccessViewModel(user, this));
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                User user = db.Users.Find(2);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+                db.Entry(user).Collection(e => e.UserDepartments).Load();
+                return View(new AccessViewModel(user, this));
+            }
         }
 
         // POST: Users/Create
@@ -81,27 +119,42 @@ namespace CAMS.Controllers
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
-            try
+            using (var db = new CAMS_DatabaseEntities())
             {
-                string user_id = Request.Form["UsersList"];
-                if (user_id == string.Empty)
+                try
                 {
-                    AddUser(user_id);
+                    string user_email = Request.Form["UsersList"];
+                    User user;
+                    List<User> userl = db.Users.Where(e => e.Email.Equals(user_email)).ToList();
+                    if (userl.Count > 0)
+                    {
+                        user = userl.First();
+                    }
+                    else
+                    {
+                        user=AddUser(user_email);
+
+                    }
+                    string ll = Request.Form["Departments"].ToString();
+                    int dsl = Convert.ToInt32(Request.Form["Departments"].ToString());
+                    AccessType jld = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
+
+                    UserDepartment userDepartment = new UserDepartment
+                    {
+                        UserId = user.UserId,
+                        DepartmentId = Convert.ToInt32(Request.Form["Departments"].ToString()),
+                        AccessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString())
+                    };
+                    db.UserDepartments.Add(userDepartment);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
                 }
-                UserDepartment userDepartment = new UserDepartment
+                catch
                 {
-                    UserId = Convert.ToInt32(Request.Form["UsersList"].ToString()),
-                    DepartmentId = Convert.ToInt32(Request.Form["Departments"].ToString()),
-                    AccessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString())
-                };
-                db.UserDepartments.Add(userDepartment);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                User user = db.Users.Find(1);
-                return View(new AccessViewModel(user, this));
+                    User user = db.Users.Find(2);
+                    db.Entry(user).Collection(e => e.UserDepartments).Load();
+                    return View(new AccessViewModel(user, this));
+                }
             }
         }
 
@@ -112,40 +165,53 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-            if (userDep == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return HttpNotFound();
+                UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                if (userDep == null)
+                {
+                    return HttpNotFound();
+                }
+                db.Entry(userDep).Reference(e => e.User).Load();
+                db.Entry(userDep).Reference(e => e.Department).Load();
+                return View(userDep);
             }
-            return View(userDep);
         }
 
         // POST: Users/Edit/5
         [HttpPost]
         public ActionResult Edit([Bind(Include = "UserId, DepartmentId, AccessType")] UserDepartment UserDepartment)
         {
-            if (ModelState.IsValid)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Entry(UserDepartment).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(UserDepartment).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                return View(UserDepartment);
             }
-            return View(UserDepartment);
         }
 
         // GET: Users/Delete/5
         public ActionResult Delete(int? userId, int? depId)
         {
-            if (userId == null || depId == null)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (userId == null || depId == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                if (userDep == null)
+                {
+                    return HttpNotFound();
+                }
+                db.Entry(userDep).Reference(e => e.User).Load();
+                db.Entry(userDep).Reference(e => e.Department).Load();
+                return View(userDep);
             }
-            UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-            if (userDep == null)
-            {
-                return HttpNotFound();
-            }
-            return View(userDep);
         }
 
         // POST: Users/Delete/5
@@ -153,19 +219,25 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int? userId, int? depId)
         {
-            UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-            db.UserDepartments.Remove(userDep);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                db.UserDepartments.Remove(userDep);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            using (var db = new CAMS_DatabaseEntities())
             {
-                db.Dispose();
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
         }
     }
 }
