@@ -94,6 +94,7 @@ namespace CAMS.Controllers
                     Email = email
                 };
                 db.Users.Add(u);
+                db.SaveChanges();
                 return u;
             }
         }
