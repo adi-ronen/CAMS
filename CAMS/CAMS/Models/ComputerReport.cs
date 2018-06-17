@@ -10,7 +10,7 @@ namespace CAMS.Models
             get
             {
                 if (computerTotaHours == 0) return 0;
-                return (computerTotalActiveTime.TotalHours / computerTotaHours) * 100;
+                return Math.Round((computerTotalActiveTime.TotalHours / computerTotaHours) * 100,2);
             }
         }
         public double ScheduleAverageUsage
@@ -18,7 +18,7 @@ namespace CAMS.Models
             get
             {
                 if (computerTotaHours == 0) return 0;
-                return (computerTotalActiveTimeWithClasses.TotalHours / computerTotaHours) * 100;
+                return Math.Round((computerTotalActiveTimeWithClasses.TotalHours / computerTotaHours) * 100,2);
             }
         }
         private TimeSpan computerTotalActiveTime;

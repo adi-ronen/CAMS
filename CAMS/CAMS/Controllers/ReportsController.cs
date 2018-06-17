@@ -19,7 +19,14 @@ namespace CAMS.Controllers
         // GET: Reports/Create
         public ActionResult Create()
         {
-            return View(model);
+            if (IsViewAccessUser())
+            {
+                return View(model);
+            }
+            //user have no access to departments
+            return RedirectToAction("Login", "Account");
+
+
         }
 
         // POST: Reports/Create
@@ -29,15 +36,15 @@ namespace CAMS.Controllers
             try
             {
                 DateTime startDate = DateTime.ParseExact(Request.Form["fromDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-                DateTime? endDate = DateTime.ParseExact(Request.Form["toDate"],"dd/MM/yyyy",System.Globalization.CultureInfo.InvariantCulture);
+                DateTime? endDate = DateTime.ParseExact(Request.Form["toDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
                 DateTime endHour = Convert.ToDateTime(Request.Form["ToTime"]);
-                List<int> labsIds =  Request.Form["LabsIds"].Split(',').Select(int.Parse).ToList();
-                bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]); 
+                List<int> labsIds = Request.Form["LabsIds"].Split(',').Select(int.Parse).ToList();
+                bool weekends = Convert.ToBoolean(Request.Form["includeWeekends"]);
                 bool includeAllDay = Convert.ToBoolean(Request.Form["includeAllDay"]);
                 string reportType = Request.Form["ReportType"];
                 string inclucdeweekends;
-                if (weekends){inclucdeweekends = " כולל סופי שבוע. ";}else{inclucdeweekends = " לא כולל סופי שבוע. ";}
+                if (weekends) { inclucdeweekends = " כולל סופי שבוע. "; } else { inclucdeweekends = " לא כולל סופי שבוע. "; }
                 string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToShortTimeString() + " עד- " + endHour.ToShortTimeString();
                 if (includeAllDay)
                 {
@@ -63,6 +70,23 @@ namespace CAMS.Controllers
                 return View(new ReportModel(this));
             }
         }
+
+        internal List<Department> GetUserViewDepartments()
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<Department> departments = db.Departments.ToList();
+                List<Department> userDepartments = new List<Department>();
+                foreach (var item in departments)
+                {
+                    //user can only add labs to the departments he have FULL accsses to.
+                    if (IsViewAccess(item.DepartmentId))
+                        userDepartments.Add(item);
+                }
+                return userDepartments;
+            }
+        }
+
         internal bool IsComputerOn(int computerId, DateTime time)
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -85,18 +109,30 @@ namespace CAMS.Controllers
             }
 
         }
+        private Object reportLock = new Object();
 
         internal List<Activity> GetComputerActivitiesInDateRange(int computerId, DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour)
         {
+            lock (reportLock)
+            {
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    Computer comp = db.Computers.Find(computerId);
+                    return comp.Activities.Where(e => (e.Login >= startDate && (e.Logout <= endDate || !e.Logout.HasValue)) //activities in the report time range
+                                             && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
+                                             && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range;            
 
+                }
+            }
+        }
+
+        internal Computer GetComputer(int computerId)
+        {
             using (var db = new CAMS_DatabaseEntities())
             {
-                Computer comp = db.Computers.Find(computerId);
-                return comp.Activities.Where(e => (e.Login >= startDate && (e.Logout <= endDate ||!e.Logout.HasValue)) //activities in the report time range
-                                         && (e.Mode.Equals(ActivityType.User) || e.Mode.Equals(ActivityType.Class)) // user or class activity
-                                         && !((e.Login.TimeOfDay >= endHour.TimeOfDay) || (e.Logout.HasValue && e.Logout.Value.TimeOfDay <= startHour.TimeOfDay))).ToList(); //hour range;            
-
+                return db.Computers.Find(computerId);
             }
+
         }
     }
 }

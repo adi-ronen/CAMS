@@ -91,6 +91,48 @@ namespace CAMS.Controllers
             }
         }
 
+        internal bool IsFullAccess(int depId)
+        {
+            Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
+            if (acDic != null && acDic.ContainsKey(depId) && acDic[depId] == AccessType.Full)
+                return true;
+            return false;
+
+        }
+
+        internal bool IsFullAccessUser()
+        {
+            Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
+            if (acDic!=null && acDic.ContainsValue(AccessType.Full))
+                return true;
+            return false;
+        }
+        internal bool IsViewAccessUser()
+        {
+            Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
+            if (acDic != null && acDic.Keys.Count>0)
+                return true;
+            return false;
+        }
+
+        internal bool IsLimitedAccess(int depId)
+        {
+            Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
+            if (acDic!=null && acDic.ContainsKey(depId) && (acDic[depId] == AccessType.Limited || acDic[depId] == AccessType.Full))
+                return true;
+            return false;
+
+        }
+        internal bool IsViewAccess(int depId)
+        {
+            Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
+            if (acDic != null && acDic.ContainsKey(depId))
+                return true;
+            return false;
+
+        }
+        
+
         protected Computer CreateComputer(string computerName, string domain)
         {
             

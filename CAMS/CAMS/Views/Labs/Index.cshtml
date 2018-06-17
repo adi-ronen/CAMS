@@ -8,8 +8,10 @@
 <h2 class="text-right">כיתות מחשוב</h2>
 
 <p>
-    @*if have limitted acsses or full conrol*@
-    @Html.ActionLink("צור חדש", "Create")
+    @if (Model.IsFullAccessUser())
+    {
+        @Html.ActionLink("צור חדש", "Create")
+    }
 </p>
 @using (Html.BeginForm("Index", "Labs", FormMethod.Get))
 {
@@ -55,11 +57,16 @@
             <td>
                 @Model.NumberOfAvilableComputers(item)/@item.Computers.Count
             </td>
-            <td>
+            <td nowrap>
                 @*TBD -  only full control can delete and only limited can edit*@
-                @Html.ActionLink("עריכה", "Edit", new { id = item.LabId }) |
-                @Html.ActionLink("תפוסה נוכחית", "Details", new { id = item.LabId }, new { @class = "action-link" })
-                |@Html.ActionLink("מחיקה", "Delete", new { id = item.LabId })
+                @if (Model.IsLimitedAccess(item.DepartmentId)) {
+                    @Html.ActionLink("עריכה", "Edit", new { id = item.LabId })
+                }
+                |@Html.ActionLink("תפוסה נוכחית", "Details", new { id = item.LabId }, new { @class = "action-link" })|
+                @if (Model.IsFullAccess(item.DepartmentId))
+                { 
+                    @Html.ActionLink("מחיקה", "Delete", new { id = item.LabId })
+                }
             </td>
         </tr>
     }

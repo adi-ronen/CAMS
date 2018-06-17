@@ -56,7 +56,6 @@ namespace CAMS.Models
 
             }
         }
-
         public bool IsLabOccupied(Lab lab)
         {
             if (lab.TodaysClasses == null)
@@ -76,6 +75,19 @@ namespace CAMS.Models
             }
 
             return false;
+        }
+        public bool IsFullAccess(int depId)
+        {
+            return _lController.IsFullAccess(depId);
+        }
+        public bool IsLimitedAccess(int depId)
+        {
+            return _lController.IsLimitedAccess(depId);
+        }
+        public bool IsFullAccessUser()
+        {
+            return _lController.IsFullAccessUser();
+
         }
     }
     public class LabDetailsViewModel
@@ -108,6 +120,7 @@ namespace CAMS.Models
             string SearchBase = string.Join(",",SearchBaseDomain);
             List<string> ComputerList = RunScript("Get-ADComputer -Filter * -SearchBase \"" + SearchBase + "\" " + "| select-object -expandproperty name");
             List<string> ComputersInLabs = _lController.ComputersInLabs();
+            ComputerList = ComputerList.Except(ComputersInLabs).ToList();
             return ComputerList;
         }
 

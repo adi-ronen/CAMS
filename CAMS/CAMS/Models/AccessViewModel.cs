@@ -47,7 +47,7 @@ namespace CAMS.Models
 
         public List<SelectListItem> GetUsers()
         {
-            return _usersController.GetUsers();
+            return _usersController.GetUsersExcept(_user.UserId);
         }
 
         public List<SelectListItem> GetDepartmentsList()

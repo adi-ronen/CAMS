@@ -18,7 +18,7 @@ namespace CAMS.Models
             {
                 if (labTotalHours == 0) return 0;
 
-                return (labTotalActiveTime.TotalHours / labTotalHours) * 100;
+                return Math.Round((labTotalActiveTime.TotalHours / labTotalHours) * 100, 2); 
             }
         }
         public double ScheduleAverageUsage
@@ -27,7 +27,7 @@ namespace CAMS.Models
             {
                 if (labTotalHours == 0) return 0;
 
-                return (labTotalActiveTimeWithClasses.TotalHours / labTotalHours) * 100;
+                return Math.Round((labTotalActiveTimeWithClasses.TotalHours / labTotalHours) * 100,2);
             }
         }
 

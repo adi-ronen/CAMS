@@ -16,10 +16,19 @@ namespace CAMS.Controllers
         // GET: Departments
         public ActionResult Index()
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                return View(db.Departments.ToList());
+                int userId = (int)Session["UserId"];
+
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    return View(db.Departments.ToList());
+                }
             }
+            catch {
+                return RedirectToAction("Login", "Account");
+            }
+
         }
 
         // GET: Departments/Details/5
@@ -32,11 +41,12 @@ namespace CAMS.Controllers
             using (var db = new CAMS_DatabaseEntities())
             {
                 Department department = db.Departments.Find(id);
-                if (department == null)
+                if (department == null || !IsFullAccess(department.DepartmentId))
                 {
                     return HttpNotFound();
                 }
                 return View(department);
+
             }
         }
 
@@ -53,16 +63,33 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "DepartmentName,Domain")] Department department)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (ModelState.IsValid)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    db.Departments.Add(department);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+                    if (ModelState.IsValid)
+                    {
+                        int userId = (int)Session["UserId"];
+                        db.Departments.Add(department);
+                        db.SaveChanges();
+                        UserDepartment userDepartment = new UserDepartment
+                        {
+                            UserId = userId,
+                            DepartmentId = department.DepartmentId,
+                            AccessType = AccessType.Full
+                        };
+                        db.UserDepartments.Add(userDepartment);
+                        db.SaveChanges();
+                        ((Dictionary<int, AccessType>)Session["Accesses"]).Add(userDepartment.DepartmentId, userDepartment.AccessType);
+                        return RedirectToAction("Index");
+                    }
 
-                return View(department);
+                    return View(department);
+                }
+            }
+            catch
+            {
+                return RedirectToAction("Login", "Account");
             }
         }
 

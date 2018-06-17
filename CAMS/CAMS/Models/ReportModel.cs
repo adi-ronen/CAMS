@@ -23,7 +23,7 @@ namespace CAMS.Models
         }
         public List<Department> GetDepartments()
         {
-            return _lController.GetDepartments();
+            return _lController.GetUserViewDepartments();
         }
 
         public List<LabOccupancyReport> CreateOccupancyLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, List<int> labsIds, bool weekends)
@@ -180,8 +180,8 @@ namespace CAMS.Models
             List<ComputerLab> cL = getComputerInLab(lab, startDate, endDate);
             foreach (var item in cL)
             {
-                Task t = Task.Factory.StartNew(() =>
-                {
+              //  Task t = Task.Factory.StartNew(() =>
+              //  {
                     ComputerReport cR = CreateComputerInLabReport(startDate, endDate, startHour, endHour, item, weekends);
 
                     //add data to labreport
@@ -192,8 +192,8 @@ namespace CAMS.Models
                         labReport.AddToLabTotalActivityTimeWithClasses(cR.GetComputerTotalActiveTimeWithClasses());
                         labReport.AddToLabTotalHours(cR.GetComputerTotalTime());
                     }
-                });
-                tasks.Add(t);
+              //  });
+              //  tasks.Add(t);
             }
             Task.WaitAll(tasks.ToArray());
 
@@ -273,11 +273,15 @@ namespace CAMS.Models
                 
 
             }
-            
+            Computer computer = comp.Computer;
 
+            if (computer == null)
+            {
+                computer = _lController.GetComputer(comp.ComputerId);
+            }
             // number of hours the computer was in the lab (during the report duration)
             double computerInLabTime = CalculateHoursInReportForComputer(newStartDate, newEndDate, startHour, endHour,weekends);
-            ComputerReport cR = new ComputerReport(comp.Computer, computerTotalActiveTime,computerTotalActiveTimeWithClasses, computerInLabTime);
+            ComputerReport cR = new ComputerReport(computer, computerTotalActiveTime,computerTotalActiveTimeWithClasses, computerInLabTime);
             return cR;
         }
 

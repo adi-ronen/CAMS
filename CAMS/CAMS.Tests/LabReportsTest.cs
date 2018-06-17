@@ -136,9 +136,9 @@ namespace CAMS.Tests
                 Assert.AreEqual(4, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
                 Assert.AreEqual(60, item.GetComputerTotalTime(), msg + ": computer total time");
 
-                Assert.AreEqual(((double)4/60)*100, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(Math.Round(((double)4/60)*100,2), item.AverageUsage, msg + "- avarageUsage of comp ");
             }
-            Assert.AreEqual(((double)4 / 60) * 100, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(Math.Round(((double)4 / 60) * 100,2), lr.AverageUsage, msg + "- avarageUsage of lab ");
             //
             msg = "activity in weekend-week report disclude weekend";
             lr = model.CreateLabReport(startDate, endDate, startHour, endHour, lab, false);
@@ -252,9 +252,9 @@ namespace CAMS.Tests
                 Assert.AreEqual(8, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
                 Assert.AreEqual(52, item.GetComputerTotalTime(), msg + ": computer total time");
 
-                Assert.AreEqual(((double)8 /52)*100, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(Math.Round(((double)8 /52)*100,2), item.AverageUsage, msg + "- avarageUsage of comp ");
             }
-            Assert.AreEqual(((double)8 / 52) * 100, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(Math.Round(((double)8 / 52) * 100, 2), lr.AverageUsage, msg + "- avarageUsage of lab ");
 
         }
 
@@ -425,9 +425,9 @@ namespace CAMS.Tests
                 Assert.AreEqual(2, item.GetComputerTotalActiveTime().Hours, msg + ": computer total activity time ");
                 Assert.AreEqual(3, item.GetComputerTotalTime(), msg + ": computer total time");
 
-                Assert.AreEqual(((double)2/3)*100, item.AverageUsage, msg + "- avarageUsage of comp ");
+                Assert.AreEqual(Math.Round(((double)2 / 3) * 100, 2), item.AverageUsage, msg + "- avarageUsage of comp ");
             }
-            Assert.AreEqual(((double)2 / 3) * 100, lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(Math.Round(((double)2 / 3) * 100,2), lr.AverageUsage, msg + "- avarageUsage of lab ");
 
             //
             msg = "no activities should be included in the report out of 20 hours";
@@ -750,8 +750,8 @@ namespace CAMS.Tests
 
                 Assert.AreEqual(3, item.GetComputerTotalTime(), msg + ": computer total time");
             }
-            Assert.AreEqual(((double)2 / 3) * 100, lr.AverageUsage, msg + "- avarageUsage of lab ");
-            Assert.AreEqual(((double)2.5 / 3) * 100, lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
+            Assert.AreEqual(Math.Round(((double)2 / 3) * 100,2), lr.AverageUsage, msg + "- avarageUsage of lab ");
+            Assert.AreEqual(Math.Round(((double)2.5 / 3) * 100, 2), lr.ScheduleAverageUsage, msg + "- ScheduleAverageUsage of lab ");
 
             //
             msg = "no activities should be included in the report out of 20 hours";

@@ -199,7 +199,6 @@
     <Compile Include="Controllers\DepartmentsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LabsController.cs" />
-    <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -243,7 +242,6 @@
     <Compile Include="Models\Department.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Lab.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>
@@ -251,7 +249,6 @@
     <Compile Include="Models\LabReport.cs" />
     <Compile Include="Models\LabsReportViewModel.cs" />
     <Compile Include="Models\LabsViewModel.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\NotificationFrequency.cs">
       <DependentUpon>CAMS_DatabaseModel.tt</DependentUpon>
     </Compile>

@@ -21,13 +21,22 @@ namespace CAMS.Controllers
                     ViewBag.byDepartment = byDepartment.Value;
                 else
                     ViewBag.byDepartment = false;
-                User user = db.Users.Find(2);
-                if (user == null)
+                try
                 {
-                    return HttpNotFound();
+                    int userId = (int)Session["UserId"];
+                    User user = db.Users.Find(userId);
+                    if (user == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    db.Entry(user).Collection(e => e.UserDepartments).Load();
+                    return View(new AccessViewModel(user, this, ViewBag.byDepartment));
                 }
-                db.Entry(user).Collection(e => e.UserDepartments).Load();
-                return View(new AccessViewModel(user, this, ViewBag.byDepartment));
+                catch
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
             }
         }
 
@@ -50,7 +59,7 @@ namespace CAMS.Controllers
             }
         }
 
-        internal List<SelectListItem> GetUsers()
+        internal List<SelectListItem> GetUsersExcept(int userId)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
@@ -58,7 +67,10 @@ namespace CAMS.Controllers
                 List<User> users = db.Users.ToList();
                 foreach (User u in users)
                 {
-                    list.Add(new SelectListItem { Text = u.Email, Value = u.UserId.ToString() });
+                    if (u.UserId != userId)
+                    {
+                        list.Add(new SelectListItem { Text = u.Email, Value = u.UserId.ToString() });
+                    }
                 }
 
                 return list;
@@ -124,15 +136,23 @@ namespace CAMS.Controllers
         // GET: Users/Create
         public ActionResult Create()
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                User user = db.Users.Find(2);
-                if (user == null)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return HttpNotFound();
+                    int userId = (int)Session["UserId"];
+                    User user = db.Users.Find(userId);
+                    if (user == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    db.Entry(user).Collection(e => e.UserDepartments).Load();
+                    return View(new AccessViewModel(user, this));
                 }
-                db.Entry(user).Collection(e => e.UserDepartments).Load();
-                return View(new AccessViewModel(user, this));
+            }catch
+            {
+                return RedirectToAction("Login", "Account");
+
             }
         }
 
@@ -183,9 +203,18 @@ namespace CAMS.Controllers
                 }
                 catch (Exception ex)
                 {
-                    User user = db.Users.Find(2);
-                    db.Entry(user).Collection(e => e.UserDepartments).Load();
-                    return View(new AccessViewModel(user, this));
+                    try
+                    {
+                        int userId = (int)Session["UserId"];
+                        User user = db.Users.Find(userId);
+                        db.Entry(user).Collection(e => e.UserDepartments).Load();
+                        return View(new AccessViewModel(user, this));
+                    }
+                    catch
+                    {
+                        return RedirectToAction("Login", "Account");
+
+                    }
                 }
             }
         }

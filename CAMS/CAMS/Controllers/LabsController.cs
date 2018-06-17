@@ -90,11 +90,23 @@ namespace CAMS.Controllers
             {
                 //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
                 List<Department> departments = db.Departments.ToList();
+                List<Department> userDepartments = new List<Department>();
+                foreach (var item in departments)
+                {
+                    //user can only add labs to the departments he have FULL accsses to.
+                    if (IsFullAccess(item.DepartmentId))
+                        userDepartments.Add(item);
+                }
+
                 List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
-                return View(new object[] { departments, buildings });
+                return View(new object[] { userDepartments, buildings });
             }
         }
 
+        /// <summary>
+        /// list of computers name that are allready in labs
+        /// </summary>
+        /// <returns></returns>
         internal List<string> ComputersInLabs()
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -110,18 +122,26 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Building,RoomNumber,DepartmentId")] Lab lab)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (ModelState.IsValid)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    lab.ComputerSize = 50;
-                    db.Labs.Add(lab);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+                    if (ModelState.IsValid)
+                    {
+                        lab.ComputerSize = 50;
+                        db.Labs.Add(lab);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
 
-                ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-                return View(lab);
+                    ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                    return View(lab);
+                }
+            }
+            catch
+            {
+                //TBD-maybe throw message something went wrong? 
+                return RedirectToAction("Create");
             }
         }
 

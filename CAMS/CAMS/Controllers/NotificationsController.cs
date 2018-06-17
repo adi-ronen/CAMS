@@ -19,9 +19,21 @@ namespace CAMS.Controllers
         // GET: Notifications
         public ActionResult Index()
         {
-            User user = db.Users.Find(2);
+            try
+            {
+                int userId = (int)Session["UserId"];
+                User user = db.Users.Find(userId);
+                if (user != null)
+                {
+                    return View(new NotificationViewModel(user, this));
+                }
+                return RedirectToAction("Login", "Account");
+            }
+            catch
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            return View(new NotificationViewModel(user, this));
         }
 
         // GET: Notifications/Details/5
