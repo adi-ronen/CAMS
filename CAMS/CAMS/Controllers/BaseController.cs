@@ -138,7 +138,11 @@ namespace CAMS.Controllers
             return false;
 
         }
-        
+        internal bool IsSuperUser()
+        {
+            return Session["SupperUser"]!=null && (bool)Session["SupperUser"];
+        }
+
 
         protected Computer CreateComputer(string computerName, string domain)
         {

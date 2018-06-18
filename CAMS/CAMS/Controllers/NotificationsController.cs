@@ -36,8 +36,8 @@ namespace CAMS.Controllers
 
         }
 
-        // GET: Notifications/Edit/5
-        public ActionResult Edit(int id)
+        // GET: Notifications/Edit
+        public ActionResult Edit()
         {
             int userId = GetConnectedUser();
             if (userId != -1)
@@ -50,14 +50,14 @@ namespace CAMS.Controllers
 
         // POST: Notifications/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(FormCollection collection)
         {
             try
             {
                 int userId = GetConnectedUser();
-                if (userId != -1 && userId == id)
+                if (userId != -1)
                 {
-                    User user = db.Users.Find(id);
+                    User user = db.Users.Find(userId);
                     user.DisconnectedPeriod = Convert.ToInt32(Request["DisconnectedPeriod"].ToString());
                     user.NotActivePeriod = Convert.ToInt32(Request["NotActivePeriod"].ToString());
                     user.NotificationFrequency = (NotificationFrequency)Convert.ToByte(Request["NotificationFrequency"].ToString());
@@ -69,7 +69,7 @@ namespace CAMS.Controllers
             }
             catch
             {
-                return View(db.Users.Find(id));
+                return RedirectToAction("Index");
             }
         }
     }

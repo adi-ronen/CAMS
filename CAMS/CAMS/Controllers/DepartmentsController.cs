@@ -16,7 +16,7 @@ namespace CAMS.Controllers
         // GET: Departments
         public ActionResult Index()
         {
-            if (GetConnectedUser()!=-1)
+            if (IsSuperUser())
             {
                 using (var db = new CAMS_DatabaseEntities())
                 {
@@ -24,7 +24,7 @@ namespace CAMS.Controllers
                 }
             }
             else
-                return RedirectToAction("Login", "Account");
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
         }
 
@@ -35,7 +35,7 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            if (GetConnectedUser() != -1)
+            if (IsSuperUser())
             {
                 using (var db = new CAMS_DatabaseEntities())
                 {
@@ -65,7 +65,7 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "DepartmentName,Domain")] Department department)
         {
-            if (GetConnectedUser() != -1)
+            if (IsSuperUser())
             {
                 using (var db = new CAMS_DatabaseEntities())
                 {
@@ -105,7 +105,7 @@ namespace CAMS.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                if (GetConnectedUser() != -1)
+                if (IsSuperUser())
                 {
                     Department department = db.Departments.Find(id);
                     if (department == null || !IsFullAccess(department.DepartmentId))
@@ -149,7 +149,7 @@ namespace CAMS.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                if (GetConnectedUser() != -1)
+                if (IsSuperUser())
                 {
                     Department department = db.Departments.Find(id);
                     if (department == null || !IsFullAccess(department.DepartmentId))
