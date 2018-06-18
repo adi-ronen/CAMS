@@ -16,16 +16,21 @@ namespace CAMS.Controllers
         // GET: Departments
         public ActionResult Index()
         {
-            if (IsSuperUser())
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                //only super user can view departments
+                if (IsSuperUser())
                 {
-                    return View(db.Departments.ToList());
+                    using (var db = new CAMS_DatabaseEntities())
+                    {
+                        return View(db.Departments.ToList());
+                    }
                 }
-            }
-            else
-            {
                 return RedirectAcordingToLogin();
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
         }
@@ -33,26 +38,31 @@ namespace CAMS.Controllers
         // GET: Departments/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            try
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                //only super user can view departments
+                if (IsSuperUser())
+                {
+                    using (var db = new CAMS_DatabaseEntities())
+                    {
+                        Department department = db.Departments.Find(id);
+                        if (department == null || !IsFullAccess(department.DepartmentId))
+                        {
+                            return HttpNotFound();
+                        }
+                        return View(department);
+
+                    }
+                }
+                return RedirectAcordingToLogin();
+            }
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            if (IsSuperUser())
-            {
-                using (var db = new CAMS_DatabaseEntities())
-                {
-                    Department department = db.Departments.Find(id);
-                    if (department == null || !IsFullAccess(department.DepartmentId))
-                    {
-                        return HttpNotFound();
-                    }
-                    return View(department);
-
-                }
-            }
-            else
-            {
-                return RedirectAcordingToLogin();
             }
         }
         
@@ -70,32 +80,37 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "DepartmentName,Domain")] Department department)
         {
-            if (IsSuperUser())
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                //only super user can create departments
+                if (IsSuperUser())
                 {
-                    if (ModelState.IsValid)
+                    using (var db = new CAMS_DatabaseEntities())
                     {
-                        db.Departments.Add(department);
-                        db.SaveChanges();
-                        UserDepartment userDepartment = new UserDepartment
+                        if (ModelState.IsValid)
                         {
-                            UserId = GetConnectedUser(),
-                            DepartmentId = department.DepartmentId,
-                            AccessType = AccessType.Full
-                        };
-                        db.UserDepartments.Add(userDepartment);
-                        db.SaveChanges();
-                        ((Dictionary<int, AccessType>)Session["Accesses"]).Add(userDepartment.DepartmentId, userDepartment.AccessType);
-                        return RedirectToAction("Index");
-                    }
+                            db.Departments.Add(department);
+                            db.SaveChanges();
+                            UserDepartment userDepartment = new UserDepartment
+                            {
+                                UserId = GetConnectedUser(),
+                                DepartmentId = department.DepartmentId,
+                                AccessType = AccessType.Full
+                            };
+                            db.UserDepartments.Add(userDepartment);
+                            db.SaveChanges();
+                            ((Dictionary<int, AccessType>)Session["Accesses"]).Add(userDepartment.DepartmentId, userDepartment.AccessType);
+                            return RedirectToAction("Index");
+                        }
 
-                    return View(department);
+                        return View(department);
+                    }
                 }
-            }
-            else
-            {
                 return RedirectAcordingToLogin();
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
         }
@@ -103,25 +118,30 @@ namespace CAMS.Controllers
         // GET: Departments/Edit/5
         public ActionResult Edit(int? id)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (id == null)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                if (IsSuperUser())
-                {
-                    Department department = db.Departments.Find(id);
-                    if (department == null || !IsFullAccess(department.DepartmentId))
+                    if (id == null)
                     {
-                        return HttpNotFound();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                     }
-                    return View(department);
-                }
-                else
-                {
+                    //only super user can edit departments
+                    if (IsSuperUser())
+                    {
+                        Department department = db.Departments.Find(id);
+                        if (department == null || !IsFullAccess(department.DepartmentId))
+                        {
+                            return HttpNotFound();
+                        }
+                        return View(department);
+                    }
                     return RedirectAcordingToLogin();
                 }
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -132,47 +152,57 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "DepartmentId,DepartmentName,Domain")] Department department)
         {
-            if (IsSuperUser())
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                //only super user can edit departments
+                if (IsSuperUser())
                 {
-                    if (ModelState.IsValid)
+                    using (var db = new CAMS_DatabaseEntities())
                     {
-                        db.Entry(department).State = EntityState.Modified;
-                        db.SaveChanges();
-                        return RedirectToAction("Index");
+                        if (ModelState.IsValid)
+                        {
+                            db.Entry(department).State = EntityState.Modified;
+                            db.SaveChanges();
+                            return RedirectToAction("Index");
+                        }
+                        return View(department);
                     }
-                    return View(department);
                 }
-            }
-            else
-            {
                 return RedirectAcordingToLogin();
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
         // GET: Departments/Delete/5
         public ActionResult Delete(int? id)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (id == null)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                if (IsSuperUser())
-                {
-                    Department department = db.Departments.Find(id);
-                    if (department == null || !IsFullAccess(department.DepartmentId))
+                    if (id == null)
                     {
-                        return HttpNotFound();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                     }
-                    return View(department);
-                }
-                else
-                {
+                    //only super user can delete departments
+                    if (IsSuperUser())
+                    {
+                        Department department = db.Departments.Find(id);
+                        if (department == null || !IsFullAccess(department.DepartmentId))
+                        {
+                            return HttpNotFound();
+                        }
+                        return View(department);
+                    }
                     return RedirectAcordingToLogin();
                 }
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -181,31 +211,36 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (IsSuperUser())
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                //only super user can delete departments
+                if (IsSuperUser())
                 {
-                    Department department = db.Departments.Find(id);
-                    List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
-                    foreach (var lbid in labsId)
+                    using (var db = new CAMS_DatabaseEntities())
                     {
-                        DeleteLab(lbid);
+                        Department department = db.Departments.Find(id);
+                        List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
+                        foreach (var lbid in labsId)
+                        {
+                            DeleteLab(lbid);
+                        }
+                        db.Departments.Remove(department);
+                        try
+                        {
+                            db.SaveChanges();
+                        }
+                        catch
+                        {
+                            return DeleteConfirmed(id);
+                        }
+                        return RedirectToAction("Index");
                     }
-                    db.Departments.Remove(department);
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch
-                    {
-                        return DeleteConfirmed(id);
-                    }
-                    return RedirectToAction("Index");
                 }
-            }
-            else
-            {
                 return RedirectAcordingToLogin();
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 

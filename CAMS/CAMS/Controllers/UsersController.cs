@@ -152,50 +152,57 @@ namespace CAMS.Controllers
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
-            if (IsFullAccessUser())
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                if (IsFullAccessUser())
                 {
+                    using (var db = new CAMS_DatabaseEntities())
+                    {
 
-                    string user_id = Request.Form["UsersList"];
-                    int departmentId = Convert.ToInt32(Request.Form["Departments"].ToString());
-                    AccessType accessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
-                    User user;
-                    if (int.TryParse(Request.Form["UsersList"].ToString(), out int n))
-                    {
-                        user = db.Users.Find(n);
-                    }
-                    else
-                    {
-                        user = AddUser(user_id);
-
-                    }
-                    var accL = db.UserDepartments.Where(e => e.UserId.Equals(user.UserId) && e.DepartmentId.Equals(departmentId)).ToList();
-                    //update access
-                    if (accL.Count > 0)
-                    {
-                        UserDepartment uD = accL.First();
-                        uD.AccessType = accessType;
-                    }
-                    //new access
-                    else
-                    {
-                        UserDepartment userDepartment = new UserDepartment
+                        string user_id = Request.Form["UsersList"];
+                        int departmentId = Convert.ToInt32(Request.Form["Departments"].ToString());
+                        AccessType accessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
+                        User user;
+                        if (int.TryParse(Request.Form["UsersList"].ToString(), out int n))
                         {
-                            UserId = user.UserId,
-                            DepartmentId = departmentId,
-                            AccessType = accessType
-                        };
-                        db.UserDepartments.Add(userDepartment);
+                            user = db.Users.Find(n);
+                        }
+                        else
+                        {
+                            user = AddUser(user_id);
+
+                        }
+                        var accL = db.UserDepartments.Where(e => e.UserId.Equals(user.UserId) && e.DepartmentId.Equals(departmentId)).ToList();
+                        //update access
+                        if (accL.Count > 0)
+                        {
+                            UserDepartment uD = accL.First();
+                            uD.AccessType = accessType;
+                        }
+                        //new access
+                        else
+                        {
+                            UserDepartment userDepartment = new UserDepartment
+                            {
+                                UserId = user.UserId,
+                                DepartmentId = departmentId,
+                                AccessType = accessType
+                            };
+                            db.UserDepartments.Add(userDepartment);
+                        }
+                        db.SaveChanges();
+
+                        return RedirectToAction("Index");
                     }
-                    db.SaveChanges();
-
-                    return RedirectToAction("Index");
-
-
                 }
+
+                return RedirectAcordingToLogin();
             }
-            return RedirectAcordingToLogin();
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            }
 
         }
 
@@ -223,7 +230,8 @@ namespace CAMS.Controllers
                         return View(userDep);
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectAcordingToLogin();
+
             }
             catch
             {
@@ -246,8 +254,10 @@ namespace CAMS.Controllers
                         {
                             db.Entry(UserDepartment).State = EntityState.Modified;
                             db.SaveChanges();
+                            return RedirectToAction("Index");
                         }
-                        return RedirectToAction("Index");
+                        return RedirectAcordingToLogin();
+
                     }
                     return View(UserDepartment);
                 }
@@ -281,7 +291,7 @@ namespace CAMS.Controllers
                         db.Entry(userDep).Reference(e => e.Department).Load();
                         return View(userDep);
                     }
-                    return RedirectToAction("Index");
+                    return RedirectAcordingToLogin();
 
                 }
             }
@@ -307,7 +317,7 @@ namespace CAMS.Controllers
                         db.UserDepartments.Remove(userDep);
                         db.SaveChanges();
                     }
-                    return RedirectToAction("Index");
+                    return RedirectAcordingToLogin();
                 }
             }
             catch
