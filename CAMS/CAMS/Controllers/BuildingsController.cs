@@ -16,16 +16,21 @@ namespace CAMS.Controllers
         // GET: Buildings
         public ActionResult Index()
         {
-            if (IsSuperUser())
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                //only super user can view buildings
+                if (IsSuperUser())
                 {
-                    return View(db.Labs.Select(e => e.Building).Distinct().ToList());
+                    using (var db = new CAMS_DatabaseEntities())
+                    {
+                        return View(db.Labs.Select(e => e.Building).Distinct().ToList());
+                    }
                 }
-            }
-            else
-            {
                 return RedirectAcordingToLogin();
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
         
@@ -33,18 +38,23 @@ namespace CAMS.Controllers
         // GET: Buildings/Edit/building name
         public ActionResult Edit(string building)
         {
-            if (building == null || building == string.Empty)
+            try
+            {
+                if (building == null || building == string.Empty)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                //only super user can view buildings
+                if (IsSuperUser())
+                {
+                    object buildingName = building;
+                    return View(buildingName);
+                }
+                return RedirectAcordingToLogin();
+            }
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            if (IsSuperUser())
-            {
-                object buildingName = building;
-                return View(buildingName);
-            }
-            else
-            {
-                return RedirectAcordingToLogin();
             }
         }
 
@@ -55,27 +65,32 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(string NewName, string OldName)
         {
-            if (NewName == null|| NewName == string.Empty || OldName == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                if (IsSuperUser())
+                if (NewName == null || NewName == string.Empty || OldName == null)
                 {
-                    List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
-                    foreach (var lbid in labsId)
-                    {
-                        UpdateLabBuilding(lbid, NewName);
-                    }
-                    object buildingName = NewName;
-                    return RedirectToAction("Index");
-
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                else
+                using (var db = new CAMS_DatabaseEntities())
                 {
+                    //only super user can edit buildings
+                    if (IsSuperUser())
+                    {
+                        List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
+                        foreach (var lbid in labsId)
+                        {
+                            UpdateLabBuilding(lbid, NewName);
+                        }
+                        object buildingName = NewName;
+                        return RedirectToAction("Index");
+
+                    }
                     return RedirectAcordingToLogin();
                 }
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -92,14 +107,19 @@ namespace CAMS.Controllers
         // GET: Buildings/Delete/name
         public ActionResult Delete(string building)
         {
-            if (IsSuperUser())
+            try
             {
-                object buildingName = building;
-                return View(buildingName);
-            }
-            else
-            {
+                //only super user can delete buildings
+                if (IsSuperUser())
+                {
+                    object buildingName = building;
+                    return View(buildingName);
+                }
                 return RedirectAcordingToLogin();
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
         }
@@ -109,21 +129,26 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string building)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (IsSuperUser())
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
-                    foreach (var lbid in labsId)
+                    //only super user can delete buildings
+                    if (IsSuperUser())
                     {
-                        DeleteLab(lbid);
+                        List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
+                        foreach (var lbid in labsId)
+                        {
+                            DeleteLab(lbid);
+                        }
+                        return RedirectToAction("Index");
                     }
-                    return RedirectToAction("Index");
-                }
-                else
-                {
                     return RedirectAcordingToLogin();
                 }
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
