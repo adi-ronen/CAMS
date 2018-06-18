@@ -19,9 +19,9 @@ namespace CAMS.Controllers
         // GET: Notifications
         public ActionResult Index()
         {
-            try
+            int userId = GetConnectedUser();
+            if (userId != -1)
             {
-                int userId = (int)Session["UserId"];
                 User user = db.Users.Find(userId);
                 if (user != null)
                 {
@@ -29,47 +29,23 @@ namespace CAMS.Controllers
                 }
                 return RedirectToAction("Login", "Account");
             }
-            catch
+            else
             {
                 return RedirectToAction("Login", "Account");
             }
 
         }
 
-        // GET: Notifications/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Notifications/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Notifications/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-       
-
         // GET: Notifications/Edit/5
         public ActionResult Edit(int id)
         {
-            return View(db.Users.Find(id));
+            int userId = GetConnectedUser();
+            if (userId != -1)
+            {
+                return View(db.Users.Find(userId));
+            }
+            return RedirectToAction("Index");
+
         }
 
         // POST: Notifications/Edit/5
@@ -78,53 +54,23 @@ namespace CAMS.Controllers
         {
             try
             {
-                User user = db.Users.Find(id);
-                user.DisconnectedPeriod = Convert.ToInt32(Request["DisconnectedPeriod"].ToString());
-                user.NotActivePeriod = Convert.ToInt32(Request["NotActivePeriod"].ToString());
-                user.NotificationFrequency = (NotificationFrequency)Convert.ToByte(Request["NotificationFrequency"].ToString());
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
+                int userId = GetConnectedUser();
+                if (userId != -1 && userId == id)
+                {
+                    User user = db.Users.Find(id);
+                    user.DisconnectedPeriod = Convert.ToInt32(Request["DisconnectedPeriod"].ToString());
+                    user.NotActivePeriod = Convert.ToInt32(Request["NotActivePeriod"].ToString());
+                    user.NotificationFrequency = (NotificationFrequency)Convert.ToByte(Request["NotificationFrequency"].ToString());
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 return RedirectToAction("Index");
+
             }
             catch
             {
                 return View(db.Users.Find(id));
             }
-        }
-
-        // GET: Notifications/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Notifications/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        public ActionResult Chart()
-        { //TBD - CHNGE CHART
-            var key = new Chart(width: 300, height: 300)
-                .AddTitle("Employee Chart")
-                .AddSeries(
-                chartType: "Bubble",
-                name: "Employee",
-                xValue: new[] { "Peter", "Andrew", "Julie", "Dave" },
-                yValues: new[] { "2", "7", "5", "3" });
-
-            return File(key.ToWebImage().GetBytes(), "image/jpeg");
         }
     }
 }

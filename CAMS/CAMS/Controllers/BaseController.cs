@@ -31,7 +31,14 @@ namespace CAMS.Controllers
             }
         }
 
-        
+        internal int GetConnectedUser()
+        {
+            if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out int userId))
+            {
+                return userId;
+            }
+            return -1;
+        }
 
         internal List<Department> GetDepartments()
         {
@@ -156,16 +163,19 @@ namespace CAMS.Controllers
 
         protected void DeleteLab(int id)
         {
-            Lab lab;
             using (var db = new CAMS_DatabaseEntities())
             {
-                lab = db.Labs.Find(id);
-                foreach (var compId in lab.Computers.Select(e=>e.ComputerId).ToList())
+                Lab lab = db.Labs.Find(id);
+                //delete only if user have full access to lab
+                if (IsFullAccess(lab.DepartmentId))
                 {
-                    RemoveComputerFromLab(compId, lab.LabId);
+                    foreach (var compId in lab.Computers.Select(e => e.ComputerId).ToList())
+                    {
+                        RemoveComputerFromLab(compId, lab.LabId);
+                    }
+                    db.Labs.Remove(lab);
+                    db.SaveChanges();
                 }
-                db.Labs.Remove(lab);
-                db.SaveChanges();
             }
             
         }
