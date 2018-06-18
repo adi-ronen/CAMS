@@ -195,9 +195,7 @@
     <Compile Include="Controllers\ActivitiesController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\BuildingsController.cs" />
-    <Compile Include="Controllers\ComputersController.cs" />
     <Compile Include="Controllers\DepartmentsController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LabsController.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
