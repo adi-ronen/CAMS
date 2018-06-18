@@ -112,12 +112,12 @@ namespace CAMS.Models
 
         private List<string> GetComputerList(string domain)
         {
-            string[] SearchBaseDomain = domain.Split('.');
-            for (int i = 0; i < SearchBaseDomain.Length; i++)
-            {
-                SearchBaseDomain[i] = "DC=" + SearchBaseDomain[i];
-            }
-            string SearchBase = string.Join(",",SearchBaseDomain);
+            //string[] SearchBaseDomain = domain.Split('.');
+            //for (int i = 0; i < SearchBaseDomain.Length; i++)
+            //{
+            //    SearchBaseDomain[i] = "DC=" + SearchBaseDomain[i];
+            //}
+            string SearchBase = "DC=" + domain + ",DC=ad,DC=bgu,DC=ac,DC=il";
             List<string> ComputerList = RunScript("Get-ADComputer -Filter * -SearchBase \"" + SearchBase + "\" " + "| select-object -expandproperty name");
             List<string> ComputersInLabs = _lController.ComputersInLabs();
             ComputerList = ComputerList.Except(ComputersInLabs).ToList();
