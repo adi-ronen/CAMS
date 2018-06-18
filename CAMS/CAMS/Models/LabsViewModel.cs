@@ -101,7 +101,11 @@ namespace CAMS.Models
             get { return GetComputerList(domain); }
 
         }
-        
+        public bool IsLimitedAccess(int depId) 
+        {
+            return _lController.IsLimitedAccess(depId);
+
+        }
 
         public LabDetailsViewModel(Lab lab, LabsController labsController)
         {

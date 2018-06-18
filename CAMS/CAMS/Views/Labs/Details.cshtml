@@ -88,8 +88,11 @@
 </div>
 @*<input type="button" value="PFD" onclick="savePDF()"/>*@
 <p>
-    @Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId }) |
-    @Html.ActionLink("חזרה לרשימה", "Index")
+    @if (Model.IsLimitedAccess(Model.Lab.DepartmentId))
+    {
+    @Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId }) 
+    }
+    |@Html.ActionLink("חזרה לרשימה", "Index")
 </p>
 @*<script>
     savePDF = function () {

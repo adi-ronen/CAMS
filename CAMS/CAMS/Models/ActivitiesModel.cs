@@ -93,7 +93,7 @@ namespace CAMS.Models
                                     ActivityType lastAct = _aController.CurrentActivityDetails(comp.ComputerId);
 
                                     // if the last activity is user activity from the day before- split to two activities for each day
-                                    if (lastAct.Equals(ActivityType.User))
+                                    if (!lastAct.Equals(ActivityType.On))
                                     {
                                        _aController.SplitActivity(comp.ComputerId);
                                     }
@@ -251,13 +251,13 @@ namespace CAMS.Models
 
         private string GetUserLogOn(string compNames, string domain)
         {
-            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + "."+domain+").UserName";
+            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + "."+domain+ ".ad.bgu.ac.il).UserName";
             String ans = RunScript(script);
             return ans;
         }
         private string IsComputerLogedOn(String compName, string domain)
         {
-            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName +"." + domain + " -Quiet)";
+            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName +"." + domain + ".ad.bgu.ac.il -Quiet)";
             return RunScript(script);
         }
 
