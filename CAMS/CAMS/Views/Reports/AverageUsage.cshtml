@@ -32,10 +32,10 @@
                     @item.Lab.Computers.Count
                 </td>
                 <td>
-                    @item.AverageUsage
+                    @item.AverageUsage%
                 </td>
                 <td>
-                    @item.ScheduleAverageUsage
+                    @item.ScheduleAverageUsage%
                 </td>
                 <td>
                     <a href="javascript:DisplayLabReportDetails(@item.Lab.LabId)">פירוט עמדות</a>
@@ -66,10 +66,10 @@
                     @Html.DisplayFor(modelItem => computer.Computer.ComputerName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => computer.AverageUsage)
+                    @Html.DisplayFor(modelItem => computer.AverageUsage)%
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => computer.ScheduleAverageUsage)
+                    @Html.DisplayFor(modelItem => computer.ScheduleAverageUsage)%
                 </td>
             </tr>
         }

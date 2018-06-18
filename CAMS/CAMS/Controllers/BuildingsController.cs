@@ -16,10 +16,15 @@ namespace CAMS.Controllers
         // GET: Buildings
         public ActionResult Index()
         {
-            using (var db = new CAMS_DatabaseEntities())
+            if (IsSuperUser())
             {
-                return View(db.Labs.Select(e => e.Building).Distinct().ToList());
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    return View(db.Labs.Select(e => e.Building).Distinct().ToList());
+                }
             }
+            else
+                return RedirectToAction("Login", "Account");
         }
         
 
@@ -30,13 +35,15 @@ namespace CAMS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //Department department = db.Departments.Find(id);
-            //if (department == null)
-            //{
-            //    return HttpNotFound();
-            //}
-            object buildingName = building;
-            return View(buildingName);
+            if (IsSuperUser())
+            {
+                object buildingName = building;
+                return View(buildingName);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Account");
+            }
         }
 
         // POST: Buildings/Edit/5
@@ -52,12 +59,15 @@ namespace CAMS.Controllers
             }
             using (var db = new CAMS_DatabaseEntities())
             {
-                List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
-                foreach (var lbid in labsId)
+                if (IsSuperUser())
                 {
-                    UpdateLabBuilding(lbid, NewName);
+                    List<int> labsId = db.Labs.Where(e => e.Building.Equals(OldName)).Select(e => e.LabId).ToList();
+                    foreach (var lbid in labsId)
+                    {
+                        UpdateLabBuilding(lbid, NewName);
+                    }
+                    object buildingName = NewName;
                 }
-                object buildingName = NewName;
                 //return View(buildingName);
                 return RedirectToAction("Index");
             }
@@ -76,8 +86,13 @@ namespace CAMS.Controllers
         // GET: Buildings/Delete/name
         public ActionResult Delete(string building)
         {
-            object buildingName = building;
-            return View(buildingName);
+            if (IsSuperUser())
+            {
+                object buildingName = building;
+                return View(buildingName);
+            }
+            return RedirectToAction("Login", "Account");
+
         }
 
         // POST: Buildings/Delete/name
@@ -87,10 +102,13 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
-                foreach (var lbid in labsId)
+                if (IsSuperUser())
                 {
-                    DeleteLab(lbid);
+                    List<int> labsId = db.Labs.Where(e => e.Building.Equals(building)).Select(e => e.LabId).ToList();
+                    foreach (var lbid in labsId)
+                    {
+                        DeleteLab(lbid);
+                    }
                 }
                 return RedirectToAction("Index");
             }
