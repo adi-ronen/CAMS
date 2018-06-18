@@ -15,44 +15,32 @@ namespace CAMS.Controllers
         // GET: Users
         public ActionResult Index(bool? byDepartment)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (byDepartment.HasValue)
-                    ViewBag.byDepartment = byDepartment.Value;
-                else
-                    ViewBag.byDepartment = false;
-                int userId = GetConnectedUser();
-                if (userId != -1)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    User user = db.Users.Find(userId);
-                    if (user == null)
+                    if (byDepartment.HasValue)
+                        ViewBag.byDepartment = byDepartment.Value;
+                    else
+                        ViewBag.byDepartment = false;
+                    int userId = GetConnectedUser();
+                    if (userId != -1)
                     {
-                        return HttpNotFound();
+                        User user = db.Users.Find(userId);
+                        if (user == null)
+                        {
+                            return HttpNotFound();
+                        }
+                        db.Entry(user).Collection(e => e.UserDepartments).Load();
+                        return View(new AccessViewModel(user, this, ViewBag.byDepartment));
                     }
-                    db.Entry(user).Collection(e => e.UserDepartments).Load();
-                    return View(new AccessViewModel(user, this, ViewBag.byDepartment));
+                    return RedirectAcordingToLogin();
+
                 }
-                return RedirectToAction("Login", "Account");
-
             }
-        }
-
-        // GET: Users/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                User user = db.Users.Find(id);
-                if (user == null)
-                {
-                    return HttpNotFound();
-                }
-                db.Entry(user).Collection(e => e.UserDepartments).Load();
-                return View(user);
             }
         }
 
@@ -135,20 +123,25 @@ namespace CAMS.Controllers
         {
             try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                if (IsFullAccessUser())
                 {
-                    int userId = (int)Session["UserId"];
-                    User user = db.Users.Find(userId);
-                    if (user == null)
+                    using (var db = new CAMS_DatabaseEntities())
                     {
-                        return HttpNotFound();
+                        int userId = (int)Session["UserId"];
+                        User user = db.Users.Find(userId);
+                        if (user == null)
+                        {
+                            return HttpNotFound();
+                        }
+                        db.Entry(user).Collection(e => e.UserDepartments).Load();
+                        return View(new AccessViewModel(user, this));
                     }
-                    db.Entry(user).Collection(e => e.UserDepartments).Load();
-                    return View(new AccessViewModel(user, this));
                 }
-            }catch
+                return RedirectAcordingToLogin();
+            }
+            catch
             {
-                return RedirectToAction("Login", "Account");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             }
         }
@@ -159,10 +152,11 @@ namespace CAMS.Controllers
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            if (IsFullAccessUser())
             {
-                try
+                using (var db = new CAMS_DatabaseEntities())
                 {
+
                     string user_id = Request.Form["UsersList"];
                     int departmentId = Convert.ToInt32(Request.Form["Departments"].ToString());
                     AccessType accessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
@@ -173,10 +167,10 @@ namespace CAMS.Controllers
                     }
                     else
                     {
-                        user=AddUser(user_id);
+                        user = AddUser(user_id);
 
                     }
-                    var accL=db.UserDepartments.Where(e => e.UserId.Equals(user.UserId) && e.DepartmentId.Equals(departmentId)).ToList();
+                    var accL = db.UserDepartments.Where(e => e.UserId.Equals(user.UserId) && e.DepartmentId.Equals(departmentId)).ToList();
                     //update access
                     if (accL.Count > 0)
                     {
@@ -197,93 +191,103 @@ namespace CAMS.Controllers
                     db.SaveChanges();
 
                     return RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        int userId = (int)Session["UserId"];
-                        User user = db.Users.Find(userId);
-                        db.Entry(user).Collection(e => e.UserDepartments).Load();
-                        return View(new AccessViewModel(user, this));
-                    }
-                    catch
-                    {
-                        return RedirectToAction("Login", "Account");
 
-                    }
+
                 }
             }
+            return RedirectAcordingToLogin();
+
         }
 
         // GET: Users/Edit/5
         public ActionResult Edit(int? userId, int? depId)
         {
-            if (userId == null || depId == null)
+            try
+            {
+                if (userId == null || depId == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                //only full access user for department can edit accesses to this departments
+                if (IsFullAccess(depId.Value))
+                {
+                    using (var db = new CAMS_DatabaseEntities())
+                    {
+                        UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                        if (userDep == null)
+                        {
+                            return HttpNotFound();
+                        }
+                        db.Entry(userDep).Reference(e => e.User).Load();
+                        db.Entry(userDep).Reference(e => e.Department).Load();
+                        return View(userDep);
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //only full access user for department can edit accesses to this departments
-            if (IsFullAccess(depId.Value))
-            {
-                using (var db = new CAMS_DatabaseEntities())
-                {
-                    UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-                    if (userDep == null)
-                    {
-                        return HttpNotFound();
-                    }
-                    db.Entry(userDep).Reference(e => e.User).Load();
-                    db.Entry(userDep).Reference(e => e.Department).Load();
-                    return View(userDep);
-                }
-            }
-            return RedirectToAction("Index");
         }
 
         // POST: Users/Edit/5
         [HttpPost]
         public ActionResult Edit([Bind(Include = "UserId, DepartmentId, AccessType")] UserDepartment UserDepartment)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (ModelState.IsValid)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    //only full access user for department can edit accesses to this departments
-                    if (IsFullAccess(UserDepartment.DepartmentId))
+                    if (ModelState.IsValid)
                     {
-                        db.Entry(UserDepartment).State = EntityState.Modified;
-                        db.SaveChanges();
+                        //only full access user for department can edit accesses to this departments
+                        if (IsFullAccess(UserDepartment.DepartmentId))
+                        {
+                            db.Entry(UserDepartment).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        return RedirectToAction("Index");
                     }
-                    return RedirectToAction("Index");
+                    return View(UserDepartment);
                 }
-                return View(UserDepartment);
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
         // GET: Users/Delete/5
         public ActionResult Delete(int? userId, int? depId)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (userId == null || depId == null)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                //only full access user for department can remove accesses to this departments
-                if (IsFullAccess(depId.Value))
-                {
-                    UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-                    if (userDep == null)
+                    if (userId == null || depId == null)
                     {
-                        return HttpNotFound();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                     }
-                    db.Entry(userDep).Reference(e => e.User).Load();
-                    db.Entry(userDep).Reference(e => e.Department).Load();
-                    return View(userDep);
-                }
-                return RedirectToAction("Index");
+                    //only full access user for department can remove accesses to this departments
+                    if (IsFullAccess(depId.Value))
+                    {
+                        UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                        if (userDep == null)
+                        {
+                            return HttpNotFound();
+                        }
+                        db.Entry(userDep).Reference(e => e.User).Load();
+                        db.Entry(userDep).Reference(e => e.Department).Load();
+                        return View(userDep);
+                    }
+                    return RedirectToAction("Index");
 
+                }
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -292,16 +296,23 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int? userId, int? depId)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
-                //only full access user for department can remove accesses to this departments
-                if (IsFullAccess(depId.Value))
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    db.UserDepartments.Remove(userDep);
-                    db.SaveChanges();
+                    UserDepartment userDep = db.UserDepartments.Where(x => x.DepartmentId == depId && x.UserId == userId).ToList().First();
+                    //only full access user for department can remove accesses to this departments
+                    if (IsFullAccess(depId.Value))
+                    {
+                        db.UserDepartments.Remove(userDep);
+                        db.SaveChanges();
+                    }
+                    return RedirectToAction("Index");
                 }
-                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 

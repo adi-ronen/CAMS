@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using static CAMS.Constant;
@@ -141,6 +142,13 @@ namespace CAMS.Controllers
         internal bool IsSuperUser()
         {
             return Session["SupperUser"]!=null && (bool)Session["SupperUser"];
+        }
+        protected ActionResult RedirectAcordingToLogin()
+        {
+            if (GetConnectedUser() == -1)
+                return RedirectToAction("Login", "Account");
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
         }
 
 

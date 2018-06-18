@@ -24,7 +24,9 @@ namespace CAMS.Controllers
                 }
             }
             else
-                return RedirectToAction("Login", "Account");
+            {
+                return RedirectAcordingToLogin();
+            }
         }
         
 
@@ -42,7 +44,7 @@ namespace CAMS.Controllers
             }
             else
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectAcordingToLogin();
             }
         }
 
@@ -67,9 +69,13 @@ namespace CAMS.Controllers
                         UpdateLabBuilding(lbid, NewName);
                     }
                     object buildingName = NewName;
+                    return RedirectToAction("Index");
+
                 }
-                //return View(buildingName);
-                return RedirectToAction("Index");
+                else
+                {
+                    return RedirectAcordingToLogin();
+                }
             }
         }
 
@@ -91,7 +97,10 @@ namespace CAMS.Controllers
                 object buildingName = building;
                 return View(buildingName);
             }
-            return RedirectToAction("Login", "Account");
+            else
+            {
+                return RedirectAcordingToLogin();
+            }
 
         }
 
@@ -109,8 +118,12 @@ namespace CAMS.Controllers
                     {
                         DeleteLab(lbid);
                     }
+                    return RedirectToAction("Index");
                 }
-                return RedirectToAction("Index");
+                else
+                {
+                    return RedirectAcordingToLogin();
+                }
             }
         }
 

@@ -24,7 +24,9 @@ namespace CAMS.Controllers
                 }
             }
             else
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            {
+                return RedirectAcordingToLogin();
+            }
 
         }
 
@@ -49,8 +51,11 @@ namespace CAMS.Controllers
                 }
             }
             else
-                return RedirectToAction("Login", "Account");
+            {
+                return RedirectAcordingToLogin();
+            }
         }
+        
 
         // GET: Departments/Create
         public ActionResult Create()
@@ -90,8 +95,7 @@ namespace CAMS.Controllers
             }
             else
             {
-                return RedirectToAction("Login", "Account");
-
+                return RedirectAcordingToLogin();
             }
 
         }
@@ -116,7 +120,7 @@ namespace CAMS.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Login", "Account");
+                    return RedirectAcordingToLogin();
                 }
             }
         }
@@ -128,15 +132,22 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "DepartmentId,DepartmentName,Domain")] Department department)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            if (IsSuperUser())
             {
-                if (ModelState.IsValid)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    db.Entry(department).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                    if (ModelState.IsValid)
+                    {
+                        db.Entry(department).State = EntityState.Modified;
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+                    return View(department);
                 }
-                return View(department);
+            }
+            else
+            {
+                return RedirectAcordingToLogin();
             }
         }
 
@@ -160,7 +171,7 @@ namespace CAMS.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Login", "Account");
+                    return RedirectAcordingToLogin();
                 }
             }
         }
@@ -170,24 +181,31 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            if (IsSuperUser())
             {
-                Department department = db.Departments.Find(id);
-                List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
-                foreach (var lbid in labsId)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    DeleteLab(lbid);
+                    Department department = db.Departments.Find(id);
+                    List<int> labsId = department.Labs.Select(e => e.LabId).ToList();
+                    foreach (var lbid in labsId)
+                    {
+                        DeleteLab(lbid);
+                    }
+                    db.Departments.Remove(department);
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch
+                    {
+                        return DeleteConfirmed(id);
+                    }
+                    return RedirectToAction("Index");
                 }
-                db.Departments.Remove(department);
-                try
-                {
-                    db.SaveChanges();
-                }
-                catch
-                {
-                    return DeleteConfirmed(id);
-                }
-                return RedirectToAction("Index");
+            }
+            else
+            {
+                return RedirectAcordingToLogin();
             }
         }
 

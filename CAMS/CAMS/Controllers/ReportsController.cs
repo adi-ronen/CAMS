@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -9,22 +10,27 @@ namespace CAMS.Controllers
 {
     public class ReportsController : BaseController
     {
-        ReportModel model;
 
         public ReportsController()
         {
-            model = new ReportModel(this);
         }
 
         // GET: Reports/Create
         public ActionResult Create()
         {
-            if (IsViewAccessUser())
+            try
             {
-                return View(model);
+                if (IsViewAccessUser())
+                {
+                    return View(new ReportModel(this));
+                }
+                //user have no access to departments
+                return RedirectAcordingToLogin();
             }
-            //user have no access to departments
-            return RedirectToAction("Login", "Account");
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
 
         }
@@ -35,6 +41,7 @@ namespace CAMS.Controllers
         {
             try
             {
+                ReportModel model = new ReportModel(this);
                 DateTime startDate = DateTime.ParseExact(Request.Form["fromDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 DateTime? endDate = DateTime.ParseExact(Request.Form["toDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
@@ -63,11 +70,11 @@ namespace CAMS.Controllers
                         List<LabOccupancyReport> LabOccupancyReport_days = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
                         return View("LabOccupancyReport", LabOccupancyReport_days);
                 }
-                return View(new ReportModel(this));
+                return View(model);
             }
             catch
             {
-                return View(new ReportModel(this));
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 

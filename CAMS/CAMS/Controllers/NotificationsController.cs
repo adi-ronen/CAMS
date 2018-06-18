@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using CAMS.Models;
+using System.Net;
 
 namespace CAMS.Controllers
 {
@@ -19,19 +20,26 @@ namespace CAMS.Controllers
         // GET: Notifications
         public ActionResult Index()
         {
-            int userId = GetConnectedUser();
-            if (userId != -1)
+            try
             {
-                User user = db.Users.Find(userId);
-                if (user != null)
+                int userId = GetConnectedUser();
+                if (userId != -1)
                 {
-                    return View(new NotificationViewModel(user, this));
+                    User user = db.Users.Find(userId);
+                    if (user != null)
+                    {
+                        return View(new NotificationViewModel(user, this));
+                    }
+                    return RedirectToAction("Login", "Account");
                 }
-                return RedirectToAction("Login", "Account");
+                else
+                {
+                    return RedirectAcordingToLogin();
+                }
             }
-            else
+            catch
             {
-                return RedirectToAction("Login", "Account");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
         }
@@ -39,16 +47,22 @@ namespace CAMS.Controllers
         // GET: Notifications/Edit
         public ActionResult Edit()
         {
-            int userId = GetConnectedUser();
-            if (userId != -1)
+            try
             {
-                return View(db.Users.Find(userId));
+                int userId = GetConnectedUser();
+                if (userId != -1)
+                {
+                    return View(db.Users.Find(userId));
+                }
+                return RedirectAcordingToLogin();
             }
-            return RedirectToAction("Index");
-
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
-        // POST: Notifications/Edit/5
+        // POST: Notifications/Edit
         [HttpPost]
         public ActionResult Edit(FormCollection collection)
         {
@@ -64,12 +78,11 @@ namespace CAMS.Controllers
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();
                 }
-                return RedirectToAction("Index");
-
+                return RedirectAcordingToLogin();
             }
             catch
             {
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
     }

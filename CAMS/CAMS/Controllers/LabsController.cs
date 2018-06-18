@@ -17,47 +17,53 @@ namespace CAMS.Controllers
         // GET: Labs
         public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.DepSortParm = String.IsNullOrEmpty(sortOrder) ? "dep_desc" : "";
-            ViewBag.BuildingSortParm = sortOrder == "Building" ? "building_desc" : "Building";
-            if (searchString != null)
+            try
             {
-                page = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-            ViewBag.CurrentFilter = searchString;
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                var Labs = db.Labs.Include(e => e.Department).Include(e=>e.Computers);
-                if (!String.IsNullOrEmpty(searchString))
+                ViewBag.CurrentSort = sortOrder;
+                ViewBag.DepSortParm = String.IsNullOrEmpty(sortOrder) ? "dep_desc" : "";
+                ViewBag.BuildingSortParm = sortOrder == "Building" ? "building_desc" : "Building";
+                if (searchString != null)
                 {
-                    Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
-                                           || l.Building.Contains(searchString));
+                    page = 1;
                 }
+                else
+                {
+                    searchString = currentFilter;
+                }
+                ViewBag.CurrentFilter = searchString;
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    var Labs = db.Labs.Include(e => e.Department).Include(e => e.Computers);
+                    if (!String.IsNullOrEmpty(searchString))
+                    {
+                        Labs = Labs.Where(l => l.Department.DepartmentName.Contains(searchString)
+                                               || l.Building.Contains(searchString));
+                    }
 
-                switch (sortOrder)
-                {
-                    case "dep_desc":
-                        Labs = Labs.OrderByDescending(l => l.Department.DepartmentName);
-                        break;
-                    case "Building":
-                        Labs = Labs.OrderBy(l => l.Building);
-                        break;
-                    case "building_desc":
-                        Labs = Labs.OrderByDescending(l => l.Building);
-                        break;
-                    default:
-                        Labs = Labs.OrderBy(l => l.Department.DepartmentName);
-                        break;
+                    switch (sortOrder)
+                    {
+                        case "dep_desc":
+                            Labs = Labs.OrderByDescending(l => l.Department.DepartmentName);
+                            break;
+                        case "Building":
+                            Labs = Labs.OrderBy(l => l.Building);
+                            break;
+                        case "building_desc":
+                            Labs = Labs.OrderByDescending(l => l.Building);
+                            break;
+                        default:
+                            Labs = Labs.OrderBy(l => l.Department.DepartmentName);
+                            break;
+                    }
+                    int pageSize = 8;
+                    int pageNumber = (page ?? 1);
+                    //return View(Labs.ToPagedList(pageNumber, pageSize));
+                    return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
                 }
-                int pageSize = 8;
-                int pageNumber = (page ?? 1);
-                //return View(Labs.ToPagedList(pageNumber, pageSize));
-                return View(new LabsViewModel(Labs.ToPagedList(pageNumber, pageSize), this));
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -67,45 +73,61 @@ namespace CAMS.Controllers
         // GET: Labs/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            try
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    Lab lab = db.Labs.Find(id);
+                    db.Entry(lab).Collection(e => e.Computers).Load();
+                    if (lab == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    return View(new LabDetailsViewModel(lab, this));
+                }
+            }
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                Lab lab = db.Labs.Find(id);
-                db.Entry(lab).Collection(e=>e.Computers).Load();
-                if (lab == null)
-                {
-                    return HttpNotFound();
-                }
-                return View(new LabDetailsViewModel(lab, this));
             }
         }
 
         // GET: Labs/Create
         public ActionResult Create()
         {
-            int userId = GetConnectedUser();
-            if (userId != -1)
+            try
             {
-                using (var db = new CAMS_DatabaseEntities())
+                if (IsFullAccessUser())
                 {
-                    //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
-                    List<Department> departments = db.Departments.ToList();
-                    List<Department> userDepartments = new List<Department>();
-                    foreach (var item in departments)
+                    using (var db = new CAMS_DatabaseEntities())
                     {
-                        //user can only add labs to the departments he have FULL accsses to.
-                        if (IsFullAccess(item.DepartmentId))
-                            userDepartments.Add(item);
-                    }
+                        //Tuple<List<Department>, List<string>> DepartmentsAndBuildings;
+                        List<Department> departments = db.Departments.ToList();
+                        List<Department> userDepartments = new List<Department>();
+                        foreach (var item in departments)
+                        {
+                            //user can only add labs to the departments he have FULL accsses to.
+                            if (IsFullAccess(item.DepartmentId))
+                                userDepartments.Add(item);
+                        }
 
-                    List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
-                    return View(new object[] { userDepartments, buildings });
+                        List<string> buildings = db.Labs.Select(lab => lab.Building).Distinct().ToList();
+                        return View(new object[] { userDepartments, buildings });
+                    }
+                }
+                else
+                {
+                    return RedirectAcordingToLogin();
                 }
             }
-            return RedirectToAction("Index");
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
         }
 
@@ -147,45 +169,50 @@ namespace CAMS.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Login", "Account");
+                        return RedirectAcordingToLogin();
                     }
                 }
             }
             catch
             {
-                //TBD-maybe throw message something went wrong? 
-                return RedirectToAction("Create");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
         // GET: Labs/Edit/5
         public ActionResult Edit(int? id)
         {
+            try
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                using (var db = new CAMS_DatabaseEntities())
+                {
+                    Lab lab = db.Labs.Find(id);
+                    if (lab == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    if (IsLimitedAccess(lab.DepartmentId))
+                    {
+                        db.Entry(lab).Collection(e => e.Computers).Load();
+                        db.Entry(lab).Reference(e => e.Department).Load();
 
-            if (id == null)
+                        ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
+                        return View(new LabDetailsViewModel(lab, this));
+                    }
+                    //user have no access to edit lab
+                    else
+                    {
+                        return RedirectAcordingToLogin();
+                    }
+                }
+            }
+            catch
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                Lab lab = db.Labs.Find(id);
-                if (lab == null)
-                {
-                    return HttpNotFound();
-                }
-                if (IsLimitedAccess(lab.DepartmentId))
-                {
-                    db.Entry(lab).Collection(e => e.Computers).Load();
-                    db.Entry(lab).Reference(e => e.Department).Load();
-
-                    ViewBag.DepartmentId = new SelectList(db.Departments, "DepartmentId", "DepartmentName", lab.DepartmentId);
-                    return View(new LabDetailsViewModel(lab, this));
-                }
-                //user have no access to edit lab
-                else
-                {
-                    return RedirectToAction("Index");
-                }
             }
         }
 
@@ -205,28 +232,34 @@ namespace CAMS.Controllers
         // GET: Labs/Delete/5
         public ActionResult Delete(int? id)
         {
-            using (var db = new CAMS_DatabaseEntities())
+            try
             {
-                if (id == null)
+                using (var db = new CAMS_DatabaseEntities())
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                Lab lab = db.Labs.Find(id);
-                if (IsFullAccess(lab.DepartmentId))
-                {
-                    db.Entry(lab).Reference(e => e.Department).Load();
-                    if (lab == null)
+                    if (id == null)
                     {
-                        return HttpNotFound();
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                     }
-                    return View(lab);
+                    Lab lab = db.Labs.Find(id);
+                    if (IsFullAccess(lab.DepartmentId))
+                    {
+                        db.Entry(lab).Reference(e => e.Department).Load();
+                        if (lab == null)
+                        {
+                            return HttpNotFound();
+                        }
+                        return View(lab);
+                    }
+                    //user have no access to delete lab
+                    else
+                    {
+                        return RedirectAcordingToLogin();
+                    }
                 }
-                //user have no access to delete lab
-                else
-                {
-                    return RedirectToAction("Index");
-                }
-
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 
@@ -235,8 +268,24 @@ namespace CAMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DeleteLab(id);
-            return RedirectToAction("Index");
+            try
+            {
+                Lab lab = GetLab(id);
+                if (IsFullAccess(lab.DepartmentId))
+                {
+                    DeleteLab(id);
+                    return RedirectToAction("Index");
+                }
+                //user have no access to delete lab
+                else
+                {
+                    return RedirectAcordingToLogin();
+                }
+            }
+            catch
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
         
