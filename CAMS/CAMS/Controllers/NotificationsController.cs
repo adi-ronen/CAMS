@@ -77,6 +77,8 @@ namespace CAMS.Controllers
                     user.NotificationFrequency = (NotificationFrequency)Convert.ToByte(Request["NotificationFrequency"].ToString());
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();
+                    return RedirectToAction("Index");
+
                 }
                 return RedirectAcordingToLogin();
             }

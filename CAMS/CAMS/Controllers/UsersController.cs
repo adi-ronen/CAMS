@@ -316,6 +316,7 @@ namespace CAMS.Controllers
                     {
                         db.UserDepartments.Remove(userDep);
                         db.SaveChanges();
+                        return RedirectToAction("Index");
                     }
                     return RedirectAcordingToLogin();
                 }
