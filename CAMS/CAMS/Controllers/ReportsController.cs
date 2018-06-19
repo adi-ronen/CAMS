@@ -55,8 +55,8 @@ namespace CAMS.Controllers
                 if (weekends) { inclucdeweekends = " כולל סופי שבוע. "; } else { inclucdeweekends = " לא כולל סופי שבוע. "; }
                 if (includeAllDay)
                 {
-                    startHour = new DateTime();
-                    endHour = new DateTime().AddHours(-1);
+                    startHour = startDate.Date;
+                    endHour = startDate.Date.AddHours(-1);
                 }
                 if (startHour.Value.Hour >= endHour.Hour)
                     throw new Exception();
