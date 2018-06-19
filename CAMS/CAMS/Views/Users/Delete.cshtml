@@ -32,7 +32,18 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.AccessType)
+            @switch (Model.AccessType)
+                    {
+                        case CAMS.Models.AccessType.Full:
+                            @Html.Raw("מלאה")
+                            break;
+                        case CAMS.Models.AccessType.Limited:
+                            @Html.Raw("חלקית")
+                            break;
+                        case CAMS.Models.AccessType.View:
+                            @Html.Raw("צפיה")
+                            break;
+                    }
         </dd>
 
     </dl>
