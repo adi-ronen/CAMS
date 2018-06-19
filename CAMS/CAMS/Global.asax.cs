@@ -31,8 +31,8 @@ namespace CAMS
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             activitiesModel = new ActivitiesModel(new ActivitiesController());
-            Activity_Timer();
-            Schedule_Timer();
+            //Activity_Timer();
+            //Schedule_Timer();
             // sendReportsToUsers();
         }
 
