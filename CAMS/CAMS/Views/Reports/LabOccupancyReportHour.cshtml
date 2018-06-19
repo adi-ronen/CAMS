@@ -1,42 +1,11 @@
-﻿@model IEnumerable<CAMS.Models.LabOccupancyReport>
-
+﻿@*@model IEnumerable<CAMS.Models.LabOccupancyReport>*@
+@model object[]
 @{
-    ViewBag.Title = "LabOccupancyReport";
-    ViewBag.XHours = Model.First().GetHours();
+    ViewBag.Title = "LabOccupancyReportHour";
+    ViewBag.Reports = (IEnumerable<CAMS.Models.LabOccupancyReport>)Model[0];
 }
 <h2>דוח פעילות מחשבים לפי שעות</h2>
-<div id="LabReportDiv">
-    <table class="table table-bordered table-condensed text-right">
-        <tr>
-            <td>מחלקה</td>
-            <td>בניין</td>
-            <td>כיתה</td>
-            <th></th>
-        </tr>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lab.Building)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lab.RoomNumber)
-                </td>
-                <td>
-                    <a href="javascript:DisplayLabGraph(@item.Lab.LabId)">צפה בגרף</a>
-                </td>
-            </tr>
-        }
-    </table>
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval");
-    <script type="text/javascript" src="~/Scripts/Chart.js"></script>
-}
+<h4>@Model[1]</h4>
 <script>
     var configs = {};
     window.onload = function () {
@@ -44,17 +13,14 @@
             var ctx = document.getElementById(index).getContext('2d');
             window.myLine = new Chart(ctx, configs[index]);
         }
-
     };
-    DisplayLabGraph = function (LabId) {
-        $("#" + LabId).removeAttr("hidden");
-        $("#LabReportDiv").attr('hidden', 'hidden');
-    }
 </script>
-
-@foreach (var item in Model)
+@foreach (CAMS.Models.LabOccupancyReport item in ViewBag.Reports)
 {
-    <canvas id="@item.Lab.LabId" width="800" height="400" hidden></canvas>
+    <div>
+        <h5>מחלקה: @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName), בניין: @Html.DisplayFor(modelItem => item.Lab.Building), כיתה: @Html.DisplayFor(modelItem => item.Lab.RoomNumber)</h5>
+    </div>
+    <canvas id="@item.Lab.LabId" width="800" height="400"></canvas>
     <script>
         var hArr =[]
         @foreach(var s in @item.GetHours())
@@ -76,8 +42,6 @@
         {
             @:avgArr.push("@s");
         }
-
-        
         var config = {
         type: 'line',
         data: {
@@ -136,12 +100,10 @@
         }
         };
         configs[@item.Lab.LabId] = config;
-
-        DisplayLabGraph = function (lab_id) {
-            $("#" + lab_id).removeAttr('hidden');
-        }
-
-</script>
+    </script>
+}
+@section PreloadScripts{
+<script type="text/javascript" src="~/Scripts/Chart.js"></script>
 }
 <p>
     @Html.ActionLink("צור דוח חדש", "Create")

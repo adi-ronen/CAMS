@@ -11,6 +11,7 @@ namespace CAMS.Models
         public List<LabHourOccupancyReport> ByHours;
         public List<LabDayOfWeekReport> ByDay;
 
+
         public LabOccupancyReport(Lab lab)
         {
             Lab = lab;
@@ -89,7 +90,7 @@ namespace CAMS.Models
             int i = 0;
             foreach (var item in ByDay)
             {
-                max[i] = String.Format("{0:P2}", item.MaxOccupancy);
+                max[i] = String.Format("{0:P2}", item.MaxOccupancy).Replace("%", "").Trim(); ;
                 i++;
             }
             return max;
@@ -98,9 +99,9 @@ namespace CAMS.Models
         {
             string[] min = new string[ByDay.Count];
             int i = 0;
-            foreach (var item in ByHours)
+            foreach (var item in ByDay)
             {
-                min[i] = String.Format("{0:P2}", item.MinOccupancy);
+                min[i] = String.Format("{0:P2}", item.MinOccupancy).Replace("%", "").Trim(); ;
                 i++;
             }
             return min;
@@ -111,7 +112,7 @@ namespace CAMS.Models
             int i = 0;
             foreach (var item in ByDay)
             {
-                avg[i] = String.Format("{0:P2}", item.AvgOccupancy);
+                avg[i] = String.Format("{0:P2}", item.AvgOccupancy).Replace("%", "").Trim(); ;
                 i++;
             }
             return avg;

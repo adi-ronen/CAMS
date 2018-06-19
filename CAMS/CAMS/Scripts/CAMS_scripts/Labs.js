@@ -20,8 +20,6 @@ SaveComputersLocations = function () {
         let New_Computer_Left = Math.round(Computer_Position.left * 100 / Div_Width);
         coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
     });
-
-
     $.ajax({
         url: "/Labs/Update",
         type: 'post',
