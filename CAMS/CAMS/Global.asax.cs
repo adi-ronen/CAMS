@@ -15,6 +15,7 @@ using CAMS.Models;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Timers;
+using System.IO;
 
 namespace CAMS
 {
@@ -34,8 +35,9 @@ namespace CAMS
             //Activity_Timer();
             //Schedule_Timer();
             // sendReportsToUsers();
-        }
+           
 
+        }
         private const string collectionCacheItemKey = "collectionCache";
         private const string scheduleCacheItemKey = "classScheduleCache";
         private const string timeOfCollectingSchedule = "00:00";

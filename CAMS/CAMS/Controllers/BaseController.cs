@@ -32,6 +32,14 @@ namespace CAMS.Controllers
             }
         }
 
+        public int GetComputerId(string v)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                return db.Computers.Where(e => e.ComputerName.ToLower() == v.ToLower()).Select(e => e.ComputerId).FirstOrDefault();
+            }
+        }
+
         internal int GetConnectedUser()
         {
             if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out int userId))
@@ -61,8 +69,17 @@ namespace CAMS.Controllers
                 return lab;
             }
         }
-     
-        
+
+        public void AddComputerLab(ComputerLab cl)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                db.ComputerLabs.Add(cl);
+                db.SaveChanges();
+            }
+
+        }
+
         public ActivityType CurrentActivityDetails(int id)
         {
             Computer comp;
@@ -89,6 +106,15 @@ namespace CAMS.Controllers
 
 
 
+        }
+
+        public void AddActivity(Activity act)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                db.Activities.Add(act);
+                db.SaveChanges();
+            }
         }
 
         public List<User> GetEmailSubscribers(NotificationFrequency frequency)
