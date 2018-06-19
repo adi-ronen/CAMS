@@ -12,7 +12,6 @@ namespace CAMS.Models
     {
         private ReportsController _lController;
 
-
         public ReportModel(ReportsController controller)
         {
             this._lController = controller;

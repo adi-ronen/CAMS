@@ -39,9 +39,10 @@ namespace CAMS.Controllers
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
+            ReportModel model = new ReportModel(this);
             try
             {
-                ReportModel model = new ReportModel(this);
+                
                 DateTime startDate = DateTime.ParseExact(Request.Form["fromDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 DateTime? endDate = DateTime.ParseExact(Request.Form["toDate"], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 DateTime? startHour = Convert.ToDateTime(Request.Form["fromTime"]);
@@ -52,7 +53,6 @@ namespace CAMS.Controllers
                 string reportType = Request.Form["ReportType"];
                 string inclucdeweekends;
                 if (weekends) { inclucdeweekends = " כולל סופי שבוע. "; } else { inclucdeweekends = " לא כולל סופי שבוע. "; }
-                string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToShortTimeString() + " עד- " + endHour.ToShortTimeString();
                 if (includeAllDay)
                 {
                     startHour = startDate.Date;
@@ -60,7 +60,7 @@ namespace CAMS.Controllers
                 }
                 if (startHour.Value.Hour >= endHour.Hour)
                     throw new Exception();
-
+                string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToString("HH:mm") + " עד- " + endHour.ToString("HH:mm");   
                 switch (reportType)
                 {
                     case "AverageUsage":
@@ -68,16 +68,16 @@ namespace CAMS.Controllers
                         return View("AverageUsage", new LabsReportViewModel(LabReport, this, title));
                     case "LabOccupancyReport-hours":
                         List<LabOccupancyReport> LabOccupancyReport_hours = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
-                        return View("LabOccupancyReport", LabOccupancyReport_hours);
+                        return View("LabOccupancyReportHour", new object[] { LabOccupancyReport_hours, title });
                     case "LabOccupancyReport-days":
                         List<LabOccupancyReport> LabOccupancyReport_days = model.CreateOccupancyLabReport(startDate, endDate.Value, startHour.Value, endHour, labsIds, weekends);
-                        return View("LabOccupancyReport", LabOccupancyReport_days);
+                        return View("LabOccupancyReportDay", new object[] { LabOccupancyReport_days, title });
                 }
                 return View(model);
             }
             catch
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View(model);
             }
         }
 
