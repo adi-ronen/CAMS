@@ -21,7 +21,7 @@
     @foreach (var item in Model.Accesses)
     {
 
-        if (ViewBag.Last == null || ( ViewBag.byDepartment == false && ViewBag.Last != item.User.UserId) || (ViewBag.byDepartment == true && ViewBag.Last != item.Department.DepartmentId))
+        if (ViewBag.Last == null || (ViewBag.byDepartment == false && ViewBag.Last != item.User.UserId) || (ViewBag.byDepartment == true && ViewBag.Last != item.Department.DepartmentId))
         {
             <tr>
                 <td>
@@ -31,13 +31,26 @@
                     @Html.DisplayFor(modelItem => item.Department.DepartmentName) @*TBD - for all departments*@
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.AccessType)
-                </td>
-                <td>
-                    @Html.ActionLink("ערוך", "/../Users/Edit", new { userId = item.User.UserId, depId = item.Department.DepartmentId }) |
-                    @Html.ActionLink("מחק", "/../Users/Delete", new { userId = item.User.UserId, depId = item.Department.DepartmentId })
-                </td>
-            </tr>
+                    @switch (item.AccessType)
+                    {
+                        case CAMS.Models.AccessType.Full:
+                            @Html.Raw("מלאה")
+                            break;
+                        case CAMS.Models.AccessType.Limited:
+                            @Html.Raw("חלקית")
+                            break;
+                        case CAMS.Models.AccessType.View:
+                            @Html.Raw("צפיה")
+                            break;
+                    }
+                        </td>
+                        <td>
+                            @Html.ActionLink("ערוך", "/../Users/Edit", new { userId = item.User.UserId, depId = item.Department.DepartmentId }) |
+                            @Html.ActionLink("מחק", "/../Users/Delete", new { userId = item.User.UserId, depId = item.Department.DepartmentId })
+                        </td>
+
+
+                    </tr>
             if (ViewBag.byDepartment == false)
             {
                 ViewBag.Last = item.User.UserId;
@@ -60,15 +73,15 @@
                     @Html.DisplayFor(modelItem => item.Department.DepartmentName)
                 </td>
                 }
-                @if (ViewBag.byDepartment == true)
-                {
+                            @if (ViewBag.byDepartment == true)
+                            {
                 <td>
                     @Html.DisplayFor(modelItem => item.User.Email)
                 </td>
                 <td>
                     @Html.HiddenFor(modelItem => item.Department.DepartmentName)
                 </td>
-                }
+                            }
                 <td>
                     @Html.DisplayFor(modelItem => item.AccessType)
                 </td>

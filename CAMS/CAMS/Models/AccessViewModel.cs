@@ -52,7 +52,7 @@ namespace CAMS.Models
 
         public List<SelectListItem> GetDepartmentsList()
         {
-            return _usersController.GetDepartmentsList();
+            return _usersController.GetUserDepartmentsListFull(_user.UserId);
         }
 
         public void AddUser()
