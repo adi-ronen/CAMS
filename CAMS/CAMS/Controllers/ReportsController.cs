@@ -55,9 +55,12 @@ namespace CAMS.Controllers
                 string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToShortTimeString() + " עד- " + endHour.ToShortTimeString();
                 if (includeAllDay)
                 {
-                    startDate = new DateTime();
-                    endDate = new DateTime().AddTicks(-1);
+                    startHour = new DateTime();
+                    endHour = new DateTime().AddHours(-1);
                 }
+                if (startHour.Value.Hour >= endHour.Hour)
+                    throw new Exception();
+
                 switch (reportType)
                 {
                     case "AverageUsage":
