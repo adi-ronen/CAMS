@@ -17,7 +17,9 @@ SaveComputersLocations = function () {
         let Div_Height = parseFloat($(this).parent().css("height"));
         let Div_Width = parseFloat($(this).parent().css("width"));
         let New_Computer_Top = Math.round(Computer_Position.top * 100 / Div_Height);
+        New_Computer_Top = Math.ceil(New_Computer_Top / 5) * 5;
         let New_Computer_Left = Math.round(Computer_Position.left * 100 / Div_Width);
+        New_Computer_Left = Math.ceil(New_Computer_Left / 5) * 5;
         coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
     });
     $.ajax({
