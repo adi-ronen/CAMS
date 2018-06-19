@@ -60,11 +60,11 @@ namespace CAMS.Models
                             //if there is no user connected rigth now
                             if (userAct.Count == 0)
                             {
-                                //find the last time user loged out
+                                //find the last time a user loged out
                                 DateTime? lastLogout = comp.Activities.Where(e => e.Mode == ActivityType.User).Max(e => e.Logout);
                                 if (lastLogout == null)
                                 {
-                                    ComputerLab cl = comp.ComputerLabs.Where(e => e.LabId == lab.LabId && !e.Exit.HasValue).ToList().First();
+                                    ComputerLab cl = comp.ComputerLabs.Where(e => e.LabId == lab.LabId && !e.Exit.HasValue).ToList().FirstOrDefault();
                                     if (cl != null)
                                     {
                                         //time from computer enterance to lab
