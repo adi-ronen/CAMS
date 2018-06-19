@@ -29,14 +29,19 @@ namespace CAMS.Models
         public List<LabOccupancyReport> CreateOccupancyLabReport(DateTime startDate, DateTime endDate, DateTime startHour, DateTime endHour, List<int> labsIds, bool weekends)
         {
             List<LabOccupancyReport> reports = new List<LabOccupancyReport>();
+            List<Task> tasks = new List<Task>();
             endDate = endDate.AddDays(1);
-
+            
             foreach (var id in labsIds)
             {
-                LabOccupancyReport labReport = CreateOccupancyLabReport(startDate, endDate, startHour, endHour, id, weekends);
-                reports.Add(labReport);
+                Task t = Task.Factory.StartNew(() =>
+                {
+                    LabOccupancyReport labReport = CreateOccupancyLabReport(startDate, endDate, startHour, endHour, id, weekends);
+                    reports.Add(labReport);
+                });
+                tasks.Add(t);
             }
-
+            Task.WaitAll(tasks.ToArray());
             return reports;
         }
 
