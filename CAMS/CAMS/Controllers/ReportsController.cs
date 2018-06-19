@@ -55,8 +55,8 @@ namespace CAMS.Controllers
                 string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToShortTimeString() + " עד- " + endHour.ToShortTimeString();
                 if (includeAllDay)
                 {
-                    startHour = new DateTime();
-                    endHour = new DateTime().AddHours(-1);
+                    startHour = startDate.Date;
+                    endHour = startDate.Date.AddHours(-1);
                 }
                 if (startHour.Value.Hour >= endHour.Hour)
                     throw new Exception();
