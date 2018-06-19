@@ -32,36 +32,74 @@
         }
     </table>
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval");
+    <script type="text/javascript" src="~/Scripts/Chart.js"></script>
+}
+<script>
+    var configs = {};
+    window.onload = function () {
+        for (var index in configs) {
+            var ctx = document.getElementById(index).getContext('2d');
+            window.myLine = new Chart(ctx, configs[index]);
+        }
+
+    };
+    DisplayLabGraph = function (LabId) {
+        $("#" + LabId).removeAttr("hidden");
+        $("#LabReportDiv").attr('hidden', 'hidden');
+    }
+</script>
+
 @foreach (var item in Model)
 {
     <canvas id="@item.Lab.LabId" width="800" height="400" hidden></canvas>
     <script>
-        var hours = ViewBag.XHours;
-        var min = @item.GetHoursMin();
-        var avrg = @item.GetHoursAvg();
-        var max = @item.GetHoursMax();
+        var hArr =[]
+        @foreach(var s in @item.GetHours())
+        {
+            @:hArr.push("@s");
+        }
+         var minArr =[]
+        @foreach(var s in @item.GetHoursMin())
+        {
+            @:minArr.push("@s");
+        }
+         var maxArr =[]
+        @foreach(var s in @item.GetHoursMax())
+        {
+            @:maxArr.push("@s");
+        }
+         var avgArr =[]
+        @foreach(var s in @item.GetHoursAvg())
+        {
+            @:avgArr.push("@s");
+        }
+
+        
         var config = {
         type: 'line',
         data: {
-        labels: hours,
+            labels: hArr,
             datasets: [{
             label: 'מנימום',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
-                data: min,
+                data: minArr,
                 fill: false,
             }, {
                 label: 'ממוצע',
                 fill: false,
                 backgroundColor: 'rgb(54, 162, 235)',
                 borderColor: 'rgb(54, 162, 235)',
-                data: avrg,
+                data: avgArr,
             }, {
                 label: 'מקסימום',
                 fill: false,
                 backgroundColor: 'rgb(255, 205, 86)',
                 borderColor: 'rgb(255, 205, 86)',
-                data:  max,
+                data: maxArr,
             }]
         },
         options: {
@@ -97,20 +135,15 @@
             }
         }
         };
+        configs[@item.Lab.LabId] = config;
 
         DisplayLabGraph = function (lab_id) {
             $("#" + lab_id).removeAttr('hidden');
         }
-    window.onload = function () {
-        var ctx = document.getElementById(@item.Lab.LabId).getContext('2d');
-        window.myLine = new Chart(ctx, config);
-        };
-    </script>
+
+</script>
 }
 <p>
     @Html.ActionLink("צור דוח חדש", "Create")
 </p>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval");
-    <script type="text/javascript" src="~/Scripts/Chart.js"></script>
-}
+

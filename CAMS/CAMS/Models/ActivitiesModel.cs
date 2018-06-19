@@ -103,11 +103,8 @@ namespace CAMS.Models
                                     if (logedOn.Contains("T"))
                                     {
                                         String userName = "";
-                                        try
-                                        {
-                                            userName = GetUserLogOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
-                                        }
-                                        catch { }
+                                        userName = GetUserLogOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
+
                                         if (!Regex.Replace(userName, @"\s+", "").Equals(""))
                                         {
                                             ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
@@ -257,7 +254,7 @@ namespace CAMS.Models
         }
         private string IsComputerLogedOn(String compName, string domain)
         {
-            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName +"." + domain + ".ad.bgu.ac.il -Quiet)";
+            String script = "(Test-Connection -ComputerName " + compName +"." + domain + ".ad.bgu.ac.il -Quiet)";
             return RunScript(script);
         }
 
