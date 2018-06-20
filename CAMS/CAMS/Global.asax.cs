@@ -66,7 +66,7 @@ namespace CAMS
             Console.WriteLine("### schedule Timer Started ###");
 
             DateTime nowTime = DateTime.Now;
-            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 4, 0, 0, 0); //Specify your scheduled time HH,MM,SS [8am and 42 minutes]
+            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 4, 0, 0, 0); 
             if (nowTime > scheduledTime)
             {
                 scheduledTime = scheduledTime.AddDays(1);
@@ -91,9 +91,7 @@ namespace CAMS
 
         //TBD- valid email address
         private const string Address = "partnermatcheryad2@gmail.com";
-
-
-
+        
         private void CheckSchedual()
         {
             Task t = Task.Factory.StartNew(() =>

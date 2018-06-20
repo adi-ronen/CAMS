@@ -88,15 +88,41 @@ namespace CAMS.Controllers
                 return list;
             }
         }
+
+        internal List<Department> GetAllDepartments()
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<Department> dep = db.Departments.ToList();
+                foreach (var item in dep)
+                {
+                    db.Entry(item).Collection(e => e.Labs).Load();
+                    db.Entry(item).Collection(e => e.UserDepartments).Load();
+                }
+                return dep;
+            }
+        }
+
         internal List<SelectListItem> GetUserDepartmentsListFull(int userId)
         {
             using (var db = new CAMS_DatabaseEntities())
             {
                 List<SelectListItem> list = new List<SelectListItem>();
-                List<UserDepartment> departments = db.UserDepartments.Where(e=>e.UserId==userId&& e.AccessType==AccessType.Full).ToList();
-                foreach (UserDepartment d in departments)
+                if (IsSuperUser())
                 {
-                    list.Add(new SelectListItem { Text = d.Department.DepartmentName, Value = d.Department.DepartmentId.ToString() });
+                    //for super user get all departments
+                    foreach (Department d in db.Departments.ToList())
+                    {
+                        list.Add(new SelectListItem { Text = d.DepartmentName, Value = d.DepartmentId.ToString() });
+                    }
+                }
+                else
+                {
+                    List<UserDepartment> departments = db.UserDepartments.Where(e => e.UserId == userId && e.AccessType == AccessType.Full).ToList();
+                    foreach (UserDepartment d in departments)
+                    {
+                        list.Add(new SelectListItem { Text = d.Department.DepartmentName, Value = d.Department.DepartmentId.ToString() });
+                    }
                 }
 
                 return list;

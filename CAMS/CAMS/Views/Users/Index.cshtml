@@ -83,7 +83,18 @@
                 </td>
                             }
                 <td>
-                    @Html.DisplayFor(modelItem => item.AccessType)
+                    @switch (item.AccessType)
+                    {
+                        case CAMS.Models.AccessType.Full:
+                            @Html.Raw("מלאה")
+                            break;
+                        case CAMS.Models.AccessType.Limited:
+                            @Html.Raw("חלקית")
+                            break;
+                        case CAMS.Models.AccessType.View:
+                            @Html.Raw("צפיה")
+                            break;
+                    }
                 </td>
                 <td>
                     @Html.ActionLink("ערוך", "/../Users/Edit", new { userId = item.User.UserId, depId = item.Department.DepartmentId }) |
