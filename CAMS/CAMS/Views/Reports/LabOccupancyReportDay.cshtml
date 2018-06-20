@@ -46,11 +46,11 @@
         data: {
             labels: dArr,
             datasets: [{
-            label: 'מנימום',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                data: minArr,
+                label: 'מקסימום',
                 fill: false,
+                backgroundColor: 'rgb(255, 205, 86)',
+                borderColor: 'rgb(255, 205, 86)',
+                data: maxArr,,
             }, {
                 label: 'ממוצע',
                 fill: false,
@@ -58,11 +58,11 @@
                 borderColor: 'rgb(54, 162, 235)',
                 data: avgArr,
             }, {
-                label: 'מקסימום',
+                label: 'מנימום',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: minArr,
                 fill: false,
-                backgroundColor: 'rgb(255, 205, 86)',
-                borderColor: 'rgb(255, 205, 86)',
-                data: maxArr,
             }]
         },
         options: {
