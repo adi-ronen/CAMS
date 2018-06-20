@@ -89,19 +89,7 @@ namespace CAMS.Controllers
             }
         }
 
-        internal List<Department> GetAllDepartments()
-        {
-            using (var db = new CAMS_DatabaseEntities())
-            {
-                List<Department> dep = db.Departments.ToList();
-                foreach (var item in dep)
-                {
-                    db.Entry(item).Collection(e => e.Labs).Load();
-                    db.Entry(item).Collection(e => e.UserDepartments).Load();
-                }
-                return dep;
-            }
-        }
+
 
         internal List<SelectListItem> GetUserDepartmentsListFull(int userId)
         {
