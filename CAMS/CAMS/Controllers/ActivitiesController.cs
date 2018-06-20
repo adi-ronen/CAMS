@@ -124,8 +124,16 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                var labs=db.Labs.Where(e => e.Building.Contains(building) && e.RoomNumber.Remove('-').Contains(room)).ToList();
-                return labs.First().LabId;
+                try
+                {
+                    var labs = db.Labs.Where(e => e.Building.Contains(building) && e.RoomNumber.Remove('-').Contains(room)).ToList();
+                    return labs.First().LabId;
+                }
+                catch
+                {
+                    return -1;
+                }
+
             }
         }
 

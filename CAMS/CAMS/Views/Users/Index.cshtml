@@ -25,10 +25,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.User.Email)@*TBD - Group by Email*@
+                    @Html.DisplayFor(modelItem => item.User.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Department.DepartmentName) @*TBD - for all departments*@
+                    @Html.DisplayFor(modelItem => item.Department.DepartmentName) 
                 </td>
                 <td>
                     @switch (item.AccessType)
@@ -40,7 +40,7 @@
                             @Html.Raw("חלקית")
                             break;
                         case CAMS.Models.AccessType.View:
-                            @Html.Raw("צפיה")
+                            @Html.Raw("צפייה")
                             break;
                     }
                         </td>
