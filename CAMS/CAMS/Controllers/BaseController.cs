@@ -258,8 +258,11 @@ namespace CAMS.Controllers
 
         protected void ExecudeCommand(string query)
         {
-            string connectionString = "data source=132.72.223.244;initial catalog=CAMS_Database;user id=CAMS_Admin;password=9O8qAft1;MultipleActiveResultSets=True;";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            string conn = System.Configuration.ConfigurationManager.ConnectionStrings["CAMS_DatabaseEntities"].ConnectionString;
+            int from = conn.IndexOf("data source");
+            int to = conn.IndexOf("App=EntityFramework");
+            conn = conn.Substring(from, to - from);
+            using (SqlConnection connection = new SqlConnection(conn))
             {
                 connection.Open();
 
