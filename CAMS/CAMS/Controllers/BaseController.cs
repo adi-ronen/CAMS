@@ -114,7 +114,6 @@ namespace CAMS.Controllers
                     return ActivityType.On;
                 return activities.Last().Mode;
 
-                // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
             }
 
 
@@ -203,20 +202,15 @@ namespace CAMS.Controllers
 
         protected Computer CreateComputer(string computerName, string domain)
         {
-            
+
             using (var db = new CAMS_DatabaseEntities())
             {
                 Computer comp = new Computer();
                 comp.ComputerName = computerName;
-                //comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
                 comp.LocationInLab = "0%,0%";
-                //comp.MAC= findComputerMac(computerName, domain);
-              //  lock (db)
-                {
-                    db.Computers.Add(comp);
-                    db.SaveChanges();
+                db.Computers.Add(comp);
+                db.SaveChanges();
 
-                }
                 return comp;
             }
             
