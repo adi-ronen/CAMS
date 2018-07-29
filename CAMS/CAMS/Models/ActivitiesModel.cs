@@ -93,7 +93,7 @@ namespace CAMS.Models
                                     ActivityType lastAct = _aController.CurrentActivityDetails(comp.ComputerId);
 
                                     // if the last activity is user activity from the day before- split to two activities for each day
-                                    if (lastAct.Equals(ActivityType.User))
+                                    if (!lastAct.Equals(ActivityType.On))
                                     {
                                        _aController.SplitActivity(comp.ComputerId);
                                     }
@@ -103,11 +103,8 @@ namespace CAMS.Models
                                     if (logedOn.Contains("T"))
                                     {
                                         String userName = "";
-                                        try
-                                        {
-                                            userName = GetUserLogOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
-                                        }
-                                        catch { }
+                                        userName = GetUserLogOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
+
                                         if (!Regex.Replace(userName, @"\s+", "").Equals(""))
                                         {
                                             ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
@@ -176,72 +173,79 @@ namespace CAMS.Models
         //TBD - איסוף שיבוץ חדרים
         public void GetClassesSchedule()
         {
-            List<Lab> labList = GetLabs();
-            string[] lines = System.IO.File.ReadAllLines(@"D:\olladi\free_class.txt");
-            Dictionary<string, string> classes = new Dictionary<string, string>();
-
-            foreach (string line in lines)
+            try
             {
-                try
-                {
-                    //format: 96-003    11/06/2014 17:00 20:00    
-                    char[] charSeparators = new char[] { ' ' };
-                    string[] location_time = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
-                    string lab = location_time[0];
-                    string building = lab.Split('-')[0];
-                    string room = lab.Split('-')[1];
-                    string date = location_time[1];
-                    string startTime = location_time[2];
-                    string endTime = location_time[3];
+                List<Lab> labList = GetLabs();
+                string[] lines = System.IO.File.ReadAllLines(@"~\GRAD\free_class.txt");
+                Dictionary<string, string> classes = new Dictionary<string, string>();
 
-                    DateTime day = DateTime.Parse(date);
-                    DateTime activityStart = day.AddHours(int.Parse(startTime.Split(':')[0]));
-                    DateTime activityEnd = day.AddHours(int.Parse(endTime.Split(':')[0]));
+                foreach (string line in lines)
+                {
                     try
                     {
-                        int labid=_aController.FindLabID(building, room);
-                        _aController.CreateNewClassActivity(labid, activityStart, activityEnd);
+                        //format: 96-003    11/06/2014 17:00 20:00    
+                        char[] charSeparators = new char[] { ' ' };
+                        string[] location_time = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                        string lab = location_time[0];
+                        string building = lab.Split('-')[0];
+                        string room = lab.Split('-')[1];
+                        string date = location_time[1];
+                        string startTime = location_time[2];
+                        string endTime = location_time[3];
 
+                        DateTime day = DateTime.Parse(date);
+                        DateTime activityStart = day.AddHours(int.Parse(startTime.Split(':')[0]));
+                        DateTime activityEnd = day.AddHours(int.Parse(endTime.Split(':')[0]));
+                        try
+                        {
+                            int labid = _aController.FindLabID(building, room);
+                            _aController.CreateNewClassActivity(labid, activityStart, activityEnd);
+
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("couldn't find lab " + location_time[0]);
+                        }
+
+
+
+                        if (classes.ContainsKey(lab))
+                        {
+                            classes[lab] += "," + startTime + "-" + endTime;
+                        }
+                        else
+                        {
+                            classes[lab] = startTime + "-" + endTime;
+                        }
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine("couldn't find lab " + location_time[0]);
+                        Debug.WriteLine("couldn't pars row :" + line);
                     }
 
-
-
-                    if (classes.ContainsKey(lab))
-                    {
-                        classes[lab] += "," + startTime + "-" + endTime;
-                    }
-                    else
-                    {
-                        classes[lab] = startTime + "-" + endTime;
-                    }
                 }
-                catch (Exception e)
+                //clear old schedule
+                _aController.ClearLabsSchedule();
+                //add daily class Schedule for each lab
+                foreach (var item in classes)
                 {
-                    Debug.WriteLine("couldn't pars row :" + line);
+                    try
+                    {
+                        string[] building_room = item.Key.Split('-');
+                        int labid = _aController.FindLabID(building_room[0], building_room[1]);
+                        _aController.UpdateLabSchedule(labid, item.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("couldn't find lab " + item.Key);
+                    }
                 }
 
             }
-            //clear old schedule
-            _aController.ClearLabsSchedule();
-            //add daily class Schedule for each lab
-            foreach (var item in classes)
+            catch (Exception e)
             {
-                try
-                {
-                    string[] building_room = item.Key.Split('-');
-                    int labid=_aController.FindLabID(building_room[0], building_room[1]);
-                    _aController.UpdateLabSchedule(labid, item.Value);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("couldn't find lab " + item.Key);
-                }
+                Debug.WriteLine("Updating schedual for today failed "+e.Message);
             }
-            
         }
 
         private List<Lab> GetLabs()
@@ -251,13 +255,13 @@ namespace CAMS.Models
 
         private string GetUserLogOn(string compNames, string domain)
         {
-            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + "."+domain+").UserName";
+            String script = "(Get-WmiObject -Class win32_computersystem -ComputerName "+ compNames + "."+domain+ ".ad.bgu.ac.il).UserName";
             String ans = RunScript(script);
             return ans;
         }
         private string IsComputerLogedOn(String compName, string domain)
         {
-            String script = "(Test-Connection -BufferSize 32 -Count 1 -ComputerName " + compName +"." + domain + " -Quiet)";
+            String script = "(Test-Connection -ComputerName " + compName +"." + domain + ".ad.bgu.ac.il -Quiet)";
             return RunScript(script);
         }
 

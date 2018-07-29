@@ -17,38 +17,55 @@ namespace CAMS.Models
             {
                 return GetNotifications();
             }
-           
+
         }
 
         public NotificationViewModel(User user, NotificationsController controller)
         {
             this.User = user;
             this._lController = controller;
-            
+
 
         }
         private List<Notification> GetNotifications()
         {
             List<Notification> notifications = new List<Notification>();
-            foreach (var department in User.UserDepartments)
-            {
-                foreach (var lab in department.Department.Labs)
-                {
-                    foreach (var comp in lab.Computers)
-                    {
+            List<Department> departments = _lController.GetUserViewDepartments(User.UserId);
 
+            foreach (var department in departments)
+            {
+                foreach (var lab in department.Labs)
+                {
+                    List<Computer> comps;
+                    try
+                    {
+                        comps = lab.Computers.ToList();
+                    }
+                    catch
+                    {
+                        comps = _lController.GetLabComputers(lab.LabId);
+                    }
+                    foreach (var comp in comps)
+                    {
                         //check for disconected notification
                         if (User.DisconnectedPeriod != null)
                         {
                             int days = User.DisconnectedPeriod.Value;
                             DateTime disconectedFrom = DateTime.Now.Date.AddDays(-days);
-
-                            List<Activity> offAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == ActivityType.Off && e.Login <= disconectedFrom).ToList();
+                            List<Activity> offAct;
+                            try
+                            {
+                                offAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == ActivityType.Off && e.Login <= disconectedFrom).ToList();
+                            }
+                            catch
+                            {
+                                offAct = _lController.GetCurrentDisconnectedActivity(comp.ComputerId, disconectedFrom);
+                            }
                             if (offAct.Count > 0)
                             {
                                 //for how long the computer is disconnected
                                 days = (int)(DateTime.Now.Date - offAct[0].Login.Date).TotalDays;
-                                Notification ntf = new Notification(comp, Constant.NotificationType.Disconnected, days);
+                                Notification ntf = new Notification(comp, lab, department.DepartmentName, Constant.NotificationType.Disconnected, days);
                                 notifications.Add(ntf);
                                 continue;
                             }
@@ -56,15 +73,31 @@ namespace CAMS.Models
                         //check for unused notification
                         if (User.NotActivePeriod != null)
                         {
-                            List<Activity> userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == ActivityType.User).ToList();
-                            //if there is no user connected rigth now
-                            if (userAct.Count == 0)
+                            Activity userAct;
+                            try
                             {
-                                //find the last time user loged out
-                                DateTime? lastLogout = comp.Activities.Where(e => e.Mode == ActivityType.User).Max(e => e.Logout);
+                                userAct = comp.Activities.Where(e => !e.Logout.HasValue && e.Mode == ActivityType.User).ToList().FirstOrDefault();
+                            }
+                            catch
+                            {
+                                userAct = _lController.GetUserActivity(comp.ComputerId);
+                            }
+                            //if there is no user connected rigth now
+                            if (userAct == null)
+                            {
+                                //find the last time a user loged out
+                                DateTime? lastLogout;
+                                try
+                                {
+                                    lastLogout = comp.Activities.Where(e => e.Mode == ActivityType.User).Max(e => e.Logout);
+                                }
+                                catch
+                                {
+                                    lastLogout = _lController.GetLastLogOutTime(comp.ComputerId);
+                                }
                                 if (lastLogout == null)
                                 {
-                                    ComputerLab cl = comp.ComputerLabs.Where(e => e.LabId == lab.LabId && !e.Exit.HasValue).ToList().First();
+                                    ComputerLab cl = comp.ComputerLabs.Where(e => e.LabId == lab.LabId && !e.Exit.HasValue).ToList().FirstOrDefault();
                                     if (cl != null)
                                     {
                                         //time from computer enterance to lab
@@ -72,7 +105,7 @@ namespace CAMS.Models
                                         //if the days passed from the computer enterance bigger than the given days- make notification 
                                         if (days >= User.NotActivePeriod.Value)
                                         {
-                                            Notification ntf = new Notification(comp, Constant.NotificationType.NotUsed, days);
+                                            Notification ntf = new Notification(comp, lab, department.DepartmentName, Constant.NotificationType.NotUsed, days);
                                             notifications.Add(ntf);
 
                                         }
@@ -85,7 +118,7 @@ namespace CAMS.Models
                                     //if the days passed from the last user activity bigger than the given days- make notification 
                                     if (days >= User.NotActivePeriod.Value)
                                     {
-                                        Notification ntf = new Notification(comp, Constant.NotificationType.NotUsed, days);
+                                        Notification ntf = new Notification(comp, lab, department.DepartmentName, Constant.NotificationType.NotUsed, days);
                                         notifications.Add(ntf);
 
                                     }
@@ -105,13 +138,13 @@ namespace CAMS.Models
 
     public class Notification
     {
-        public Notification(Computer comp, Constant.NotificationType type,int days)
+        public Notification(Computer comp,Lab lab, string departmentName, Constant.NotificationType type,int days)
         {
-            DepartmentName = comp.Lab.Department.DepartmentName ;
-            Building = comp.Lab.Building;
-            RoomNumber = comp.Lab.RoomNumber;
+            DepartmentName = departmentName ;
+            Building = lab.Building;
+            RoomNumber = lab.RoomNumber;
             ComputerName = comp.ComputerName;
-            LabId = comp.Lab.LabId;
+            LabId = lab.LabId;
             NotificationType = type;
             Days = days;
         }

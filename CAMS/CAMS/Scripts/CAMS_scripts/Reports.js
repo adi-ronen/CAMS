@@ -9,12 +9,12 @@
                 minDate: dateText
             })
         },
-        maxDate: 0
+        maxDate: -1
     });
     $("#toDate").datepicker('option',{
         changeMonth: true,
         changeYear: true,
-        maxDate: 0,
+        maxDate: -1,
         onSelect: function (dateText, inst) {
             $("#fromDate").datepicker('option', {
                 maxDate: dateText

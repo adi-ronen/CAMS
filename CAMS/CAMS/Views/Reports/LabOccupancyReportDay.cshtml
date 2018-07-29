@@ -1,0 +1,111 @@
+﻿@model object[]
+@{
+    ViewBag.Title = "LabOccupancyReportDay";
+    ViewBag.Reports = (IEnumerable<CAMS.Models.LabOccupancyReport>)Model[0];
+}
+<h2>דוח פעילות מחשבים לפי ימים</h2>
+<h4>@Model[1]</h4>
+<script>
+    var configs = {};
+    window.onload = function () {
+        for (var index in configs) {
+            var ctx = document.getElementById(index).getContext('2d');
+            window.myLine = new Chart(ctx, configs[index]);
+        }
+    };
+</script>
+@foreach (CAMS.Models.LabOccupancyReport item in ViewBag.Reports)
+{
+    <div>
+        <h5>מחלקה: @Html.DisplayFor(modelItem => item.Lab.Department.DepartmentName), בניין: @Html.DisplayFor(modelItem => item.Lab.Building), כיתה: @Html.DisplayFor(modelItem => item.Lab.RoomNumber)</h5>
+    </div>
+    <canvas id="@item.Lab.LabId" width="800" height="400"></canvas>
+    <script>
+        var dArr =[]
+        @foreach(var s in @item.GetDaysOfWeek())
+        {
+            @:dArr.push("@s");
+        }
+         var minArr =[]
+        @foreach(var s in @item.GetDaysMin())
+        {
+            @:minArr.push("@s");
+        }
+         var maxArr =[]
+        @foreach(var s in @item.GetDaysMax())
+        {
+            @:maxArr.push("@s");
+        }
+         var avgArr =[]
+        @foreach(var s in @item.GetDaysAvg())
+        {
+            @:avgArr.push("@s");
+        }
+        var config = {
+        type: 'line',
+        data: {
+            labels: dArr,
+            datasets: [{
+                label: 'מקסימום',
+                fill: false,
+                backgroundColor: 'rgb(255, 205, 86)',
+                borderColor: 'rgb(255, 205, 86)',
+                data: maxArr,,
+            }, {
+                label: 'ממוצע',
+                fill: false,
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderColor: 'rgb(54, 162, 235)',
+                data: avgArr,
+            }, {
+                label: 'מנימום',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: minArr,
+                fill: false,
+            }]
+        },
+        options: {
+            cubicInterpolationMode: 'monotone',
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'ימים'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'מחשבים פעילים בו זמנית'
+                    },
+                    ticks: {
+                        min: 0,
+                        max: 100,
+                        callback: function (value) { return value + "%" }
+                    }
+                }]
+            }
+        }
+        };
+        configs[@item.Lab.LabId] = config;
+    </script>
+}
+@section PreloadScripts{
+    <script type="text/javascript" src="~/Scripts/Chart.js"></script>
+}
+<p>
+    @Html.ActionLink("צור דוח חדש", "Create")
+</p>
+

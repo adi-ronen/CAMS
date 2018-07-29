@@ -15,6 +15,7 @@ using CAMS.Models;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Timers;
+using System.IO;
 
 namespace CAMS
 {
@@ -31,11 +32,12 @@ namespace CAMS
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             activitiesModel = new ActivitiesModel(new ActivitiesController());
-            Activity_Timer();
-            Schedule_Timer();
+            //Activity_Timer();
+            //Schedule_Timer();
             // sendReportsToUsers();
-        }
+           
 
+        }
         private const string collectionCacheItemKey = "collectionCache";
         private const string scheduleCacheItemKey = "classScheduleCache";
         private const string timeOfCollectingSchedule = "00:00";
@@ -64,7 +66,7 @@ namespace CAMS
             Console.WriteLine("### schedule Timer Started ###");
 
             DateTime nowTime = DateTime.Now;
-            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 4, 0, 0, 0); //Specify your scheduled time HH,MM,SS [8am and 42 minutes]
+            DateTime scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 4, 0, 0, 0); 
             if (nowTime > scheduledTime)
             {
                 scheduledTime = scheduledTime.AddDays(1);
@@ -89,9 +91,7 @@ namespace CAMS
 
         //TBD- valid email address
         private const string Address = "partnermatcheryad2@gmail.com";
-
-
-
+        
         private void CheckSchedual()
         {
             Task t = Task.Factory.StartNew(() =>

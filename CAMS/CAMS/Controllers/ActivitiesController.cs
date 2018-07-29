@@ -124,8 +124,16 @@ namespace CAMS.Controllers
         {
             using (var db = new CAMS_DatabaseEntities())
             {
-                var labs=db.Labs.Where(e => e.Building.Contains(building) && e.RoomNumber.Remove('-').Contains(room)).ToList();
-                return labs.First().LabId;
+                try
+                {
+                    var labs = db.Labs.Where(e => e.Building.Contains(building) && e.RoomNumber.Remove('-').Contains(room)).ToList();
+                    return labs.First().LabId;
+                }
+                catch
+                {
+                    return -1;
+                }
+
             }
         }
 
@@ -153,7 +161,9 @@ namespace CAMS.Controllers
                 {
                     if(!act.Login.Date.Equals(DateTime.Now.Date))
                     {
-                        act.Logout = DateTime.Now.Date.AddTicks(-1);
+                        DateTime end = act.Login.Date.AddDays(1).AddTicks(-1);
+                        ExecudeCommand("UPDATE Activities SET Logout = '" + end.ToString("MM/dd/yyyy HH:mm:ss") + "' WHERE ComputerId = '" + compId + "' AND Logout is null; ");
+
                         Activity newAct = new Activity
                         {
                             Login = DateTime.Now.Date

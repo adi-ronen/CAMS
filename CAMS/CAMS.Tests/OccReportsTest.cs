@@ -215,7 +215,7 @@ namespace CAMS.Tests
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = new DateTime(2010, 2, 16);
-            DateTime endDate = new DateTime(2010, 2, 16);
+            DateTime endDate = new DateTime(2010, 2, 17);
             DateTime startHour = new DateTime();
             TimeSpan ts = new TimeSpan(9, 00, 0);
             startHour = startHour.Date + ts;
@@ -261,7 +261,7 @@ namespace CAMS.Tests
 
             }
 
-            endDate = new DateTime(2010, 2, 17);
+            endDate = new DateTime(2010, 2, 18);
 
             msg = "one 2 hour activity in 2 day";
             lr = model.CreateOccupancyLabReport(startDate, endDate, startHour, endHour, lab, true);
@@ -518,7 +518,7 @@ namespace CAMS.Tests
             ReportModel model = new ReportModel(controller);
             List<int> list = new List<int>();
             DateTime startDate = new DateTime(2010, 2, 16);
-            DateTime endDate = new DateTime(2010, 2, 16);
+            DateTime endDate = new DateTime(2010, 2, 17);
             DateTime startHour = new DateTime();
             TimeSpan ts = new TimeSpan(9, 00, 0);
             startHour = startHour.Date + ts;
@@ -564,7 +564,7 @@ namespace CAMS.Tests
 
             }
 
-            endDate = new DateTime(2010, 2, 17);
+            endDate = new DateTime(2010, 2, 18);
 
             msg = "one 2 hour activity in 2 day (for both computers)";
             lr = model.CreateOccupancyLabReport(startDate, endDate, startHour, endHour, lab, true);
@@ -602,7 +602,7 @@ namespace CAMS.Tests
 
             }
 
-            endDate = new DateTime(2010, 2, 16);
+            endDate = new DateTime(2010, 2, 17);
             Activity act3 = new Activity();
             act3.Computer = cl2.Computer;
             cl2.Computer.Activities.Add(act3);
@@ -664,7 +664,7 @@ namespace CAMS.Tests
 
             }
 
-            endDate = new DateTime(2010, 2, 17);
+            endDate = new DateTime(2010, 2, 18);
             Activity act4 = new Activity();
             act4.Computer = cl.Computer;
             cl.Computer.Activities.Add(act4);

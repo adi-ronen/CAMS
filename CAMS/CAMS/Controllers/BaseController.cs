@@ -31,6 +31,27 @@ namespace CAMS.Controllers
                 return db.Labs.Where(lab => lab.DepartmentId == departmentId).ToList();
             }
         }
+        internal List<Department> GetAllDepartments()
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<Department> dep = db.Departments.ToList();
+                foreach (var item in dep)
+                {
+                    db.Entry(item).Collection(e => e.Labs).Load();
+                    db.Entry(item).Collection(e => e.UserDepartments).Load();
+                }
+                return dep;
+            }
+        }
+
+        public int GetComputerId(string v)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                return db.Computers.Where(e => e.ComputerName.ToLower() == v.ToLower()).Select(e => e.ComputerId).FirstOrDefault();
+            }
+        }
 
         internal int GetConnectedUser()
         {
@@ -62,8 +83,17 @@ namespace CAMS.Controllers
                 return lab;
             }
         }
-     
-        
+
+        public void AddComputerLab(ComputerLab cl)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                db.ComputerLabs.Add(cl);
+                db.SaveChanges();
+            }
+
+        }
+
         public ActivityType CurrentActivityDetails(int id)
         {
             Computer comp;
@@ -85,11 +115,19 @@ namespace CAMS.Controllers
                     return ActivityType.On;
                 return activities.Last().Mode;
 
-                // return computer.Activities.Select(e => e).Where(e => e.Mode != ActivityMode.Class.ToString() && e.Logout.Equals(null)).Last();
             }
 
 
 
+        }
+
+        public void AddActivity(Activity act)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                db.Activities.Add(act);
+                db.SaveChanges();
+            }
         }
 
         public List<User> GetEmailSubscribers(NotificationFrequency frequency)
@@ -102,6 +140,8 @@ namespace CAMS.Controllers
 
         internal bool IsFullAccess(int depId)
         {
+            if (IsSuperUser())
+                return true;
             Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
             if (acDic != null && acDic.ContainsKey(depId) && acDic[depId] == AccessType.Full)
                 return true;
@@ -111,6 +151,8 @@ namespace CAMS.Controllers
 
         internal bool IsFullAccessUser()
         {
+            if (IsSuperUser())
+                return true;
             Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
             if (acDic!=null && acDic.ContainsValue(AccessType.Full))
                 return true;
@@ -118,6 +160,8 @@ namespace CAMS.Controllers
         }
         internal bool IsViewAccessUser()
         {
+            if (IsSuperUser())
+                return true;
             Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
             if (acDic != null && acDic.Keys.Count>0)
                 return true;
@@ -126,6 +170,8 @@ namespace CAMS.Controllers
 
         internal bool IsLimitedAccess(int depId)
         {
+            if (IsSuperUser())
+                return true;
             Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
             if (acDic!=null && acDic.ContainsKey(depId) && (acDic[depId] == AccessType.Limited || acDic[depId] == AccessType.Full))
                 return true;
@@ -134,6 +180,8 @@ namespace CAMS.Controllers
         }
         internal bool IsViewAccess(int depId)
         {
+            if (IsSuperUser())
+                return true;
             Dictionary<int, AccessType> acDic = (Dictionary<int, AccessType>)Session["Accesses"];
             if (acDic != null && acDic.ContainsKey(depId))
                 return true;
@@ -155,20 +203,15 @@ namespace CAMS.Controllers
 
         protected Computer CreateComputer(string computerName, string domain)
         {
-            
+
             using (var db = new CAMS_DatabaseEntities())
             {
                 Computer comp = new Computer();
                 comp.ComputerName = computerName;
-                //comp.ComputerId = db.Computers.Max(e => e.ComputerId) + 1;
                 comp.LocationInLab = "0%,0%";
-                //comp.MAC= findComputerMac(computerName, domain);
-              //  lock (db)
-                {
-                    db.Computers.Add(comp);
-                    db.SaveChanges();
+                db.Computers.Add(comp);
+                db.SaveChanges();
 
-                }
                 return comp;
             }
             
@@ -205,12 +248,16 @@ namespace CAMS.Controllers
                 db.SaveChanges();
             }
         }
+
         
 
         protected void ExecudeCommand(string query)
         {
-            string connectionString = "data source=132.72.223.244;initial catalog=CAMS_Database;user id=CAMS_Admin;password=9O8qAft1;MultipleActiveResultSets=True;";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            string conn = System.Configuration.ConfigurationManager.ConnectionStrings["CAMS_DatabaseEntities"].ConnectionString;
+            int from = conn.IndexOf("data source");
+            int to = conn.IndexOf("App=EntityFramework");
+            conn = conn.Substring(from, to - from);
+            using (SqlConnection connection = new SqlConnection(conn))
             {
                 connection.Open();
 

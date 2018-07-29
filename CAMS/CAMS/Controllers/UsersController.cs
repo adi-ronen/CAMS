@@ -43,7 +43,8 @@ namespace CAMS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
-
+        
+        //get all users except the user loged on
         internal List<SelectListItem> GetUsersExcept(int userId)
         {
             using (var db = new CAMS_DatabaseEntities())
@@ -82,6 +83,34 @@ namespace CAMS.Controllers
                 foreach (Department d in departments)
                 {
                     list.Add(new SelectListItem { Text = d.DepartmentName, Value = d.DepartmentId.ToString() });
+                }
+
+                return list;
+            }
+        }
+
+
+
+        internal List<SelectListItem> GetUserDepartmentsListFull(int userId)
+        {
+            using (var db = new CAMS_DatabaseEntities())
+            {
+                List<SelectListItem> list = new List<SelectListItem>();
+                if (IsSuperUser())
+                {
+                    //for super user get all departments
+                    foreach (Department d in db.Departments.ToList())
+                    {
+                        list.Add(new SelectListItem { Text = d.DepartmentName, Value = d.DepartmentId.ToString() });
+                    }
+                }
+                else
+                {
+                    List<UserDepartment> departments = db.UserDepartments.Where(e => e.UserId == userId && e.AccessType == AccessType.Full).ToList();
+                    foreach (UserDepartment d in departments)
+                    {
+                        list.Add(new SelectListItem { Text = d.Department.DepartmentName, Value = d.Department.DepartmentId.ToString() });
+                    }
                 }
 
                 return list;
@@ -317,6 +346,7 @@ namespace CAMS.Controllers
                     {
                         db.UserDepartments.Remove(userDep);
                         db.SaveChanges();
+                        return RedirectToAction("Index");
                     }
                     return RedirectAcordingToLogin();
                 }
