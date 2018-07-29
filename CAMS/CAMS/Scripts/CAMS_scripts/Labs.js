@@ -4,7 +4,20 @@
     ChangeComputerSize(ComputerSize);
 });
 SetLocation = function(){
+    var coms = {};
+    coms[0] = 0;
+    $(".multidraggable").each(function () {
+        let Computer_Position = $(this).position();
+        let Div_Height = parseFloat($(this).parent().css("height"));
+        let Div_Width = parseFloat($(this).parent().css("width"));
+        let New_Computer_Top = Math.round(Computer_Position.top * 100 / Div_Height);
+        New_Computer_Top = Math.round(New_Computer_Top / 5) * 5;
+        let New_Computer_Left = Math.round(Computer_Position.left * 100 / Div_Width);
+        New_Computer_Left = Math.round(New_Computer_Left / 5) * 5;
+        coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
+    });
 
+    //TBD here need to refresh the canvas --> delete all computers and drop them again? 
 }
 Draggable = function () {
     $(".multidraggable").multidraggable({
