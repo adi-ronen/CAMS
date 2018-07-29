@@ -163,7 +163,8 @@ namespace CAMS.Controllers
                         int departmentId = Convert.ToInt32(Request.Form["Departments"].ToString());
                         AccessType accessType = (AccessType)Convert.ToByte(Request.Form["AccessType"].ToString());
                         User user;
-                        if (int.TryParse(Request.Form["UsersList"].ToString(), out int n))
+                        int n;
+                        if (int.TryParse(Request.Form["UsersList"].ToString(), out n))
                         {
                             user = db.Users.Find(n);
                         }

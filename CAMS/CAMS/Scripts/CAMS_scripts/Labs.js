@@ -3,6 +3,9 @@
     ComputerSize = $("#ComputerSize").val();
     ChangeComputerSize(ComputerSize);
 });
+SetLocation = function(){
+
+}
 Draggable = function () {
     $(".multidraggable").multidraggable({
         containment: "#LabErea"

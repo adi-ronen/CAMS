@@ -34,7 +34,8 @@ namespace CAMS.Controllers
 
         internal int GetConnectedUser()
         {
-            if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out int userId))
+            int userId;
+            if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out userId))
             {
                 return userId;
             }

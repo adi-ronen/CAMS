@@ -419,7 +419,8 @@ namespace CAMS.Controllers
                         continue;
                     Computer computer;
                     //if computer have an id
-                    if (int.TryParse(item.Key.Split(',')[1], out int n))
+                    int n;
+                    if (int.TryParse(item.Key.Split(',')[1], out n))
                     {
                         computer = db.Computers.Find(n);
                     }
