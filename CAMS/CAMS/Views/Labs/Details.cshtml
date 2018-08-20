@@ -1,5 +1,5 @@
 ﻿@model CAMS.Models.LabDetailsViewModel
-
+@using System.Text.RegularExpressions;
 
 @{
     ViewBag.Title = "Details";
@@ -64,7 +64,16 @@
                     }
                     string top = item.LocationInLab.Split(',')[0];
                     string left = item.LocationInLab.Split(',')[1];
-                    <img src="~/Images/@source" width="@Model.Lab.ComputerSize" title="@item.ComputerName" style="position:absolute;top:@top;left:@left" />
+                    string[] numbers = Regex.Split(item.ComputerName, @"\D+"); <!-- TBD - check if working -->
+                    string computerNumber = "";
+                    if (numbers != null && numbers.Length > 0)
+                    {
+                        computerNumber = numbers[numbers.Length - 1];
+                    }
+                    <figure class="flex-nowrap draggable-computer-list row computers-list" style="position:absolute;top:@top;left:@left">
+                        <img src="~/Images/@source" width="@Model.Lab.ComputerSize" title="@item.ComputerName" />
+                        <figcaption class="text-left grab">@computerNumber</figcaption>
+                    </figure>
                 }
             }
         </div>
@@ -89,7 +98,7 @@
 <p>
     @if (Model.IsLimitedAccess(Model.Lab.DepartmentId))
     {
-    @Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId })
+        @Html.ActionLink("ערוך", "Edit", new { id = Model.Lab.LabId })
         @:|
     }
     @Html.ActionLink("חזרה לרשימה", "Index")

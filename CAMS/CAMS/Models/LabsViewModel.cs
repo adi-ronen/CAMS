@@ -122,7 +122,8 @@ namespace CAMS.Models
             //    SearchBaseDomain[i] = "DC=" + SearchBaseDomain[i];
             //}
             string SearchBase = "DC=" + domain + ",DC=ad,DC=bgu,DC=ac,DC=il";
-            List<string> ComputerList = RunScript("Get-ADComputer -Filter * -SearchBase \"" + SearchBase + "\" " + "| select-object -expandproperty name");
+            //List<string> ComputerList = RunScript("Get-ADComputer -Filter * -SearchBase \"" + SearchBase + "\" " + "| select-object -expandproperty name");
+            List<string> ComputerList = RunScript("Get-ADComputer -Filter * -Server "+domain+".ad.bgu.ac.il | select Name | sort Name"); // TBD - check if working
             List<string> ComputersInLabs = _lController.ComputersInLabs();
             ComputerList = ComputerList.Except(ComputersInLabs).ToList();
             return ComputerList;

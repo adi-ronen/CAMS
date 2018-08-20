@@ -88,9 +88,6 @@ namespace CAMS
             Console.WriteLine("### Scheduled Task Finished ### \n\n");
             Schedule_Timer();
         }
-
-        //TBD- valid email address
-        private const string Address = "partnermatcheryad2@gmail.com";
         
         private void CheckSchedual()
         {
@@ -195,22 +192,16 @@ namespace CAMS
         private void SendEmail(string msg, User user)
         {
 
-            MailMessage mail = new MailMessage(Address, user.Email);
+            MailMessage mail = new MailMessage("noreply@bgu.ac.il", user.Email, "CAMS Computers Report", msg);
             SmtpClient client = new SmtpClient
             {
                 Port = 587,
-                Host = "smtp.gmail.com",
+                Host = "smtp.bgu.ac.il",
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                Credentials = new System.Net.NetworkCredential("partnermatcheryad2@gmail.com", "olla123456"),
                 EnableSsl = true
             };
-
-            mail.Subject = "CAMS Computers Report";
-            mail.Body = msg;
             mail.IsBodyHtml = true;
             client.Send(mail);
-
-          
         }
         
     }

@@ -105,7 +105,7 @@ namespace CAMS.Models
                                         String userName = "";
                                         userName = GetUserLogOn(comp.ComputerName, _aController.GetCompDomain(comp.ComputerId));
 
-                                        if (!Regex.Replace(userName, @"\s+", "").Equals(""))
+                                        if (!Regex.Replace(userName, @"\s+", "").Equals("") && !Regex.Replace(userName, @"\s+", "").ToLower().Contains("\\user"))
                                         {
                                             ////computer is taken by user 'userName'- compare with last activity and update if neseccery 
                                             if (lastAct == ActivityType.On)
