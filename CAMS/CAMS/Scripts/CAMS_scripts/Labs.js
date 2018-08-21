@@ -3,9 +3,7 @@
     ComputerSize = $("#ComputerSize").val();
     ChangeComputerSize(ComputerSize);
 });
-SetLocation = function(){
-    var coms = {};
-    coms[0] = 0;
+ToGrid = function () {
     $(".multidraggable").each(function () {
         let Computer_Position = $(this).position();
         let Div_Height = parseFloat($(this).parent().css("height"));
@@ -14,10 +12,9 @@ SetLocation = function(){
         New_Computer_Top = Math.round(New_Computer_Top / 5) * 5;
         let New_Computer_Left = Math.round(Computer_Position.left * 100 / Div_Width);
         New_Computer_Left = Math.round(New_Computer_Left / 5) * 5;
-        coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
+        this.style.top = New_Computer_Top + "%";
+        this.style.left = New_Computer_Left + "%";
     });
-
-    //TBD here need to refresh the canvas --> delete all computers and drop them again? 
 }
 Draggable = function () {
     $(".multidraggable").multidraggable({
@@ -39,7 +36,7 @@ SaveComputersLocations = function () {
         coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
     });
     $.ajax({
-        url: "/Labs/Update",
+        url: "CAMS/Labs/Update",
         type: 'post',
         data: {
             computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), ComputerSize: $("#ComputerSize").val()
@@ -58,7 +55,7 @@ dropList = function (element) {
     var computer_id = element.children[2].text;
     element.remove();
     $("#computers_list").append("<figure draggable=\"true\" ondragstart=\"drag(event)\" class=\"flex-nowrap draggable-computer-list row context-menu-one computers-list\" id=" + computer_name + ">" +
-        "<img draggable=\"false\" src=\"/Images/clear.png\" height=\"30\">" +
+        "<img draggable=\"false\" src=\"../../Images/clear.png\" height=\"30\">" +
         "<figcaption class=\"text-left grab\">" + computer_name + "</figcaption>" +
         "<a hidden>" + computer_id+"</a>"+
         "</figure>");
@@ -72,7 +69,7 @@ dropErea = function (ev) {
         var left = Math.round((ev.offsetX / $("#LabErea").width()) * 100);
         var top = Math.round((ev.offsetY / $("#LabErea").height()) * 100);
         $("#LabErea").append("<figure id=" + computer_name + " class=\"multidraggable grab\" style=\"position:absolute;top:" + top + "%; left: " + left + "%\">" +
-            "<img class=\"sizeable\" src=\"/Images/clear.png\">" +
+            "<img class=\"sizeable\" src=\"../../Images/clear.png\">" +
             "<figcaption class=\"text-center sizeable\">" + computer_name + "</figcaption>" +
             "<a hidden>," + computer_id + "</a>" +
             "</figure>");

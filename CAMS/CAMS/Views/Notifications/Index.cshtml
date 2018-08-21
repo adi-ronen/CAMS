@@ -13,7 +13,7 @@
 
 @if (ViewBag.Notifications.Count == 0)
 {
-    @Html.Label("אין התראות"); //TBD - find somthing else to write when the user dose not have notifications
+    @Html.Label("אין התראות"); 
 }
 else
 {
@@ -27,7 +27,7 @@ else
             <td>פירוט התראה</td>
             <th></th>
         </tr>
-        @foreach (CAMS.Models.Notification item in ViewBag.Notifications) //TBD - if user is logged it soppose to return only the labs that he can view + each lab and the access type
+        @foreach (CAMS.Models.Notification item in ViewBag.Notifications) 
         {
             if (ViewBag.LastDep == null || ViewBag.LastDep != item.DepartmentName)
             {

@@ -34,7 +34,7 @@ namespace CAMS
             activitiesModel = new ActivitiesModel(new ActivitiesController());
             //Activity_Timer();
             //Schedule_Timer();
-            // sendReportsToUsers();
+            //sendReportsToUsers();
            
 
         }

@@ -170,7 +170,7 @@ namespace CAMS.Models
         }
 
 
-        //TBD - איסוף שיבוץ חדרים
+        //איסוף שיבוץ חדרים
         public void GetClassesSchedule()
         {
             try
