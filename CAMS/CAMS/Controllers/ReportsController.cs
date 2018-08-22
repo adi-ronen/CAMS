@@ -60,7 +60,7 @@ namespace CAMS.Controllers
                 }
                 if (startHour.Value.Hour >= endHour.Hour)
                     throw new Exception();
-                string title = "מתאריך " + startDate.ToShortDateString() + " עד- " + endDate.Value.ToShortDateString() + inclucdeweekends + "בין השעות " + startHour.Value.ToString("HH:mm") + " עד- " + endHour.ToString("HH:mm");   
+                string title = "מתאריך " + startDate.ToString("dd/MM/yyyy") + " עד- " + endDate.Value.ToString("dd/MM/yyyy") + inclucdeweekends + "בין השעות " + startHour.Value.ToString("HH:mm") + " עד- " + endHour.ToString("HH:mm");   
                 switch (reportType)
                 {
                     case "AverageUsage":
