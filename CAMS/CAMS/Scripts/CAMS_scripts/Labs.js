@@ -36,7 +36,7 @@ SaveComputersLocations = function () {
         coms[$(this).children(2).text()] = New_Computer_Top + '%,' + New_Computer_Left + '%';
     });
     $.ajax({
-        url: "CAMS/Labs/Update",
+        url: "../../Labs/Update",
         type: 'post',
         data: {
             computers: coms, LabId: $("#LabId").val(), RoomNumber: $("#RoomNumber").val(), ComputerSize: $("#ComputerSize").val()
